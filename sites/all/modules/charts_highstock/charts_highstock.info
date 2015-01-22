@@ -1,0 +1,6 @@
+name = Highstock
+description = Charts module integration with Highstock library.
+package = Charts
+core = 7.x
+dependencies[] = libraries
+dependencies[]  = charts

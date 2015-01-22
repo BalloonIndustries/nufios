@@ -1,0 +1,4 @@
+name = Google Custom Search Image
+description = Integrates Google Custom Search Engine Image Search into Rules
+package = Content Generation
+core = 7.x

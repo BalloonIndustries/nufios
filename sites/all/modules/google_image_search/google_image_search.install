@@ -1,0 +1,21 @@
+<?php
+
+/*
+ * Implements hook_schema().
+ */
+
+function google_image_search_schema_alter(&$schema) {
+  $schema['content_generator']['fields']['image'] = array(
+    'description' => 'Determine whether to include image or not',
+    'type' => 'int',
+    'length' => 1,
+    'unsigned' => TRUE,
+    'default' => 0,
+    'not null' => TRUE);
+  $schema['content_generator']['fields']['image_field'] = array(
+    'description' => 'Field for the image data',
+    'type' => 'varchar',
+    'length' => 75,
+    'not null' => FALSE,
+    'default' => "",);
+}

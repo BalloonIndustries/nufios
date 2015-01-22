@@ -1,0 +1,403 @@
+<?php
+
+/**
+ * @file
+ *  API for retrieving stock information from Yahoo!
+ */
+// TODO: Add historical data option.
+// http://help.yahoo.com/l/us/yahoo/finance/quotes/quote-12.html
+// TODO: Updates to default stockinfo symbols
+
+module_load_include('inc', 'stockinfo');
+
+/**
+ * Implements hook_menu().
+ */
+function stockinfo_menu() {
+  $items = array();
+
+  $items['admin/config/services/stockinfo'] = array(
+    'title' => 'Stock Info settings',
+    'description' => 'Configure settings for Stock Info',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('stockinfo_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+  );
+
+  $items['admin/config/services/stockinfo/properties'] = array(
+    'title' => 'Stock Info Properties',
+    'description' => 'Configure properties for Stock Info',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('stockinfo_property_page'),
+    'access arguments' => array('administer site configuration'),
+  );
+
+  $items['admin/config/services/stockinfo/historical'] = array(
+    'title' => 'Historical Stock Info settings',
+    'description' => 'Pull historical data for stocks',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('stockinfo_historical_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+  );
+  $items['admin/structure/stocks'] = array(
+    'title' => 'Stock',
+    'description' => 'Stock data from the Stockinfo module',
+    'page callback' => array('stockinfo_display_page'),
+    'access arguments' => array('administer site configuration'),
+  );
+
+  $items['admin/config/services/stockinfo/fake-page'] = array(
+    'title' => 'FAKE PAGE',
+    'description' => 'Do any function I want!!!',
+    'page callback' => 'stockinfo_fetch_data',
+    'access arguments' => array('administer site configuration'),
+  );
+
+  return $items;
+}
+
+function stockinfo_display_page() {
+  $output = '';
+  return $output;
+}
+
+/**
+ * Create the form for Stock Info historical data admin settings.
+ */
+function stockinfo_historical_admin_settings() {
+
+  $form = array();
+
+  $form['stockinfo_historical_from_date'] = array(
+    '#type' => 'date',
+    '#title' => t('From Date'),
+    '#default_value' => variable_get("stockinfo_historical_from_date", variable_get("stockinfo_historical_from_date_default")),
+  );
+
+  $form['stockinfo_historical_symbols'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Default symbols'),
+    '#default_value' => variable_get('stockinfo_historical_symbols', variable_get('stockinfo_default_symbols')),
+    '#description' => t('Enter symbols to fetch quotes for, each separated by a space'),
+  );
+
+  return system_settings_form($form);
+}
+
+/**
+ * Create the form for Stock Info admin settings.
+ */
+function stockinfo_admin_settings() {
+
+  $form = array();
+
+  $form['stockinfo_markup'] = array(
+    '#type' => 'markup',
+    '#title' => 'Troublesome Items',
+    '#markup' => 'Bid Size, Ask Size, Market Cap, Float Shares, and Last Trade Size cause problems and have to be run through a slower process. Using them could slow your system down.',
+  );
+  $form['stockinfo_symbols'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Default symbols'),
+    '#default_value' => variable_get('stockinfo_symbols', variable_get('stockinfo_default_symbols')),
+    '#description' => t('Enter symbols to fetch quotes for, each separated by a space'),
+  );
+
+  return system_settings_form($form);
+}
+
+function stockinfo_mapstock($chunk, $type, $symbol = NULL) {
+  foreach ($chunk as $stock) {
+    if ($type == "stockinfo") {
+      drupal_alter('stockinfo_save', $stock);
+      $sid = db_query("SELECT sid FROM stockinfo WHERE symbol = :symbol", array("symbol" => $stock['symbol']))->fetchCol();
+      $entity = entity_create($type, array('type' => $type));
+      if (isset($sid[0])) {
+        unset($entity->is_new);
+        $entity->sid = $sid[0];
+      }
+
+      foreach ($stock as $key => $value) {
+        $entity->$key = $value;
+      }
+      $entity->updated = time();
+      entity_save("stockinfo", $entity);
+    }
+    elseif ($type == "historical") {
+      drupal_alter('stockinfo_historical_save', $stock);
+      $date = array();
+      foreach ($stock as $previous_stock) {
+
+        $sid = db_query("SELECT sid FROM stockinfo_historical WHERE symbol = :symbol AND date = :date", array("symbol" => $symbol, "date" => $previous_stock['date']))->fetchCol();
+        if (isset($sid[0])) {
+          
+        }
+        else {
+          $entity = entity_create($type, array('type' => $type));
+          foreach ($previous_stock as $key => $value) {
+            if ($key == "date") {
+              $entity->$key = $value;
+              $entity->symbol = $symbol;
+            }
+            else {
+              $entity->{$key} = $value;
+            }
+          }
+          entity_save("stockinfo_historical", $entity);
+        }
+      }
+    }
+  }
+}
+
+function stockinfo_stockinfo_historical_save_alter(&$stock) {
+  foreach ($stock as &$row) {
+    foreach ($row as $property => &$value)
+      if ($property == "date") {
+        $value = strtotime($value);
+      }
+  }
+}
+
+function stockinfo_save_alter(&$stock) {
+  // Turn all values into the correct format
+  $float_map = array(
+    'change',
+    'pct_chg',
+    'chg_52_week_low',
+    'days_value_change',
+    'pct_chg_frm_200_day_ma',
+    'pct_chg_frm_50_day_ma',
+    'chg_frm_200_day_ma',
+    'chg_frm_50_day_ma',
+    'pct_chg_from_52_wk_high',
+    'pct_chg_from_52_wk_low',
+    'last_size',
+    "bid_size",
+    "ask_size",
+    "pct_chg_52_wk_low",
+    "pct_chg_52_wk_high",
+    "float_shares",
+  );
+  // Troublesome numeric values here
+  $numeric = array(
+    "holdings_gain_pct",
+    "market_cap",
+    "holdings_gain",
+    "annualized_gain",
+  );
+  foreach ($stock as $key => &$value) {
+    $value = strip_tags($value);
+    $value = trim($value);
+    if ($value == 'N/A' || $value === "- " || $value === "-" || $value === "- - -" || !isset($value) || empty($value)) {
+      unset($stock[$key]);
+      $value = NULL;
+      continue;
+    }
+    if ($key == "market_cap" || $key == "market_cap_rt" || $key == "ebitda") {
+      if (strpos($value, "M")) {
+        $value = str_replace("M", "", $value);
+        $value = $value * 1000000;
+      }
+      elseif (strpos($value, "B")) {
+        $value = str_replace("B", "", $value);
+        $value = $value * 1000000000;
+      }
+      elseif (strpos($value, "K")) {
+        $value = str_replace("K", "", $value);
+        $value = $value * 1000;
+      }
+    }
+    if ($key == 'days_value_change') {
+      $stock[$key] = str_replace("- ", "", $value);
+    }
+    if (in_array($key, $float_map)) {
+      $stock[$key] = str_replace(str_split("+%"), "", $value);
+      $stock[$key] = str_replace(",", "", $value);
+      $value = (float) $value;
+      if (empty($value)) {
+        $value = NULL;
+      }
+    }
+    else if ($key == 'last_trade_date') {
+      $timestamp = strtotime($stock['last_trade_date'] . " " . $stock['last_trade_time']);
+      if (isset($timestamp) && is_numeric($timestamp)) {
+        $stock[$key] = $timestamp;
+      }
+      else {
+        $stock[$key] = NULL;
+      }
+    }
+    else if ($key == 'dividend_pay_date') {
+      $timestamp = strtotime($stock['dividend_pay_date'] . "/" . date('Y'));
+      if (isset($timestamp) && is_numeric($timestamp)) {
+        $stock[$key] = $timestamp;
+      }
+      else {
+        $stock[$key] = NULL;
+      }
+    }
+    else if ($key == 'ex_dividend_date') {
+      $timestamp = strtotime($stock['ex_dividend_date'] . "/" . date('Y'));
+      if (isset($timestamp) && is_numeric($timestamp)) {
+        $stock[$key] = $timestamp;
+      }
+      else {
+        $stock[$key] = NULL;
+      }
+    }
+    else if ($key == 'trade_date') {
+      $timestamp = strtotime($stock['trade_date'] . "/" . date('Y'));
+      if (isset($timestamp) && is_numeric($timestamp)) {
+        $stock[$key] = $timestamp;
+      }
+      else {
+        $stock[$key] = NULL;
+      }
+    }
+    else if ($key == 'last_trade_rt') {
+      $timestamp = strtotime($stock['last_trade_rt']);
+      if (isset($timestamp) && is_numeric($timestamp)) {
+        $stock[$key] = $timestamp;
+      }
+      else {
+        $stock[$key] = NULL;
+      }
+    }
+    if (!is_numeric($value) && in_array($key, $numeric)) {
+      unset($stock[$key]);
+    }
+  }
+}
+
+function stockinfo_import_batch_finished($success, $results, $operations) {
+  if ($success) {
+    drupal_set_message('Import is complete');
+  }
+  else {
+    $error_operation = reset($operations);
+    $message = t('An error occurred while processing %error_operation with arguments: @arguments', array(
+      '%error_operation' => $error_operation[0],
+      '@arguments' => print_r($error_operation[1], TRUE)
+    ));
+    drupal_set_message($message, 'error');
+  }
+}
+
+function stockinfo_fetch_data($type = "stockinfo") {
+
+  $batch = array(
+    'operations' => array(),
+    'title' => t('Processing Stock Import'),
+    'finished' => 'stockinfo_import_batch_finished',
+    'init_message' => t('Import is starting.'),
+    'progress_message' => t('Processed @current out of @total.'),
+    'error_message' => t('Import has encountered an error.'),
+  );
+
+  if ($type == "historical") {
+    $symbols = explode(" ", variable_get("stockinfo_historical_symbols", variable_get('stockinfo_default_symbols')));
+    $stock_array = array();
+    foreach ($symbols as $symbol) {
+      $stock = stockinfo_historical_fetch($symbol);
+      $stock_array[] = $stock;
+    }
+    $stock_chunks = array_chunk($stock_array, 200);
+    foreach ($stock_chunks as $chunk) {
+      $batch['operations'][] = array('stockinfo_mapstock', array($stock, $type, $symbol));
+    }
+    batch_set($batch);
+    batch_process("/admin/config/services/stockinfo/historical");
+  }
+  else {
+    $symbols = explode(" ", variable_get("stockinfo_symbols", variable_get('stockinfo_default_symbols')));
+    $stocks = stockinfo_fetch($symbols);
+    $stock_chunks = array_chunk($stocks, 200);
+    foreach ($stock_chunks as $chunk) {
+      $batch['operations'][] = array('stockinfo_mapstock', array($chunk, $type));
+    }
+    batch_set($batch);
+    batch_process("/admin/config/services/stockinfo");
+  }
+}
+
+/**
+ * Implements hook_entity_info().
+ */
+function stockinfo_entity_info() {
+
+  $info = array();
+
+  $info['stockinfo'] = array(
+    'label' => t('Stock Info'),
+    'plural label' => t('Stock Info'),
+    'base table' => 'stockinfo',
+    'entity keys' => array(
+      'id' => 'sid',
+      'label' => 'name',
+    ),
+    'module' => 'stockinfo',
+    'views controller class' => 'EntityDefaultViewsController',
+    'bundles' => array(
+      'stockinfo' => array(
+        'label' => t('stockinfo'),
+        'admin' => array(
+          'path' => 'admin/structure/stocks',
+          'real path' => 'admin/structure/stocks',
+          'access arguments' => array('administer site configuration'),
+        ),
+      ),
+    ),
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'stockinfo_access_callback',
+    'fieldable' => TRUE,
+    'uri callback' => 'entity_class_uri',
+  );
+
+  $info['stockinfo_historical'] = array(
+    'label' => t('Stock Info Historical'),
+    'plural label' => t('Stock Info Historical'),
+    'base table' => 'stockinfo_historical',
+    'entity keys' => array(
+      'id' => 'sid',
+      'label' => 'symbol',
+    ),
+    'module' => 'stockinfo',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'stock_info_access_callback',
+    'fieldable' => TRUE,
+  );
+
+  return $info;
+}
+
+function stockinfo_access_callback() {
+  return TRUE;
+}
+
+/**
+ * Implement hook_rules_action_info().
+ */
+function stockinfo_rules_action_info() {
+  return array(
+    'stockinfo_rules_action_pull_current_stock_data' => array(
+      'label' => t('Pull Current Stock Data'),
+      'group' => t('Stockinfo'),
+    ),
+    'stockinfo_rules_action_pull_historical_stock_data' => array(
+      'label' => t('Pull Historical Stock Data'),
+      'group' => t('Stockinfo'),
+    ),
+  );
+}
+
+// This callback fetches the current stock data
+function stockinfo_rules_action_pull_current_stock_data() {
+  stockinfo_fetch_data("stockinfo");
+}
+
+// This callback fetches the historical stock data
+function stockinfo_rules_action_pull_historical_stock_data() {
+  stockinfo_fetch_data("historical");
+}

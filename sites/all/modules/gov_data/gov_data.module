@@ -1,0 +1,597 @@
+<?php
+
+/**
+ * @file
+ *  API for retrieving government data from various APIs (currently just GovTrackUS)
+ */
+module_load_include('inc', 'gov_data');
+
+/**
+ * Implements hook_menu().
+ */
+function gov_data_menu() {
+  $items = array();
+
+  $items['admin/config/services/gov-data'] = array(
+    'title' => 'Government Data settings',
+    'description' => 'Configure settings for Government Data',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gov_data_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+  );
+  $items['admin/structure/gov-data/cosponsor'] = array(
+    'title' => 'Government Data Cosponsor',
+    'description' => 'Configure settings for Government Data',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gov_data_cosponsor_page'),
+    'access arguments' => array('administer site configuration'),
+  );
+  $items['admin/structure/gov-data/bill'] = array(
+    'title' => 'Government Data Bill',
+    'description' => 'Configure settings for Government Data',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gov_data_bill_page'),
+    'access arguments' => array('administer site configuration'),
+  );
+  $items['admin/structure/gov-data/committee'] = array(
+    'title' => 'Government Data Committee',
+    'description' => 'Configure settings for Government Data',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gov_data_committee_page'),
+    'access arguments' => array('administer site configuration'),
+  );
+  $items['admin/structure/gov-data/committee-member'] = array(
+    'title' => 'Government Data Committee Member',
+    'description' => 'Configure settings for Government Data',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gov_data_committee_member_page'),
+    'access arguments' => array('administer site configuration'),
+  );
+  $items['admin/structure/gov-data/person'] = array(
+    'title' => 'Government Data Person',
+    'description' => 'Configure settings for Government Data',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gov_data_person_page'),
+    'access arguments' => array('administer site configuration'),
+  );
+
+  $items['admin/structure/gov-data/role'] = array(
+    'title' => 'Government Data Role',
+    'description' => 'Configure settings for Government Data',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gov_data_role_page'),
+    'access arguments' => array('administer site configuration'),
+  );
+  $items['admin/structure/gov-data/voter'] = array(
+    'title' => 'Government Data Voter',
+    'description' => 'Configure settings for Government Data',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gov_data_voter_page'),
+    'access arguments' => array('administer site configuration'),
+  );
+  $items['admin/structure/gov-data/vote'] = array(
+    'title' => 'Government Data Vote',
+    'description' => 'Configure settings for Government Data',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('gov_data_vote_page'),
+    'access arguments' => array('administer site configuration'),
+  );
+  $items['admin/structure/gov-data'] = array(
+    'title' => 'Government Data',
+    'description' => 'Configure settings for Government Data',
+    'page callback' => 'gov_data_display_page',
+    'access arguments' => array('administer site configuration'),
+  );
+
+  return $items;
+}
+
+function gov_data_display_page() {
+  $output = '';
+  return $output;
+}
+
+function gov_data_cosponsor_page() {
+
+  $cosponsor = array(
+    //"person" => "Get Cosponsors Per Person",
+    "bill" => "Get Cosponsors Per Bill",
+  );
+
+  $form = array();
+
+  $form['gov_data_cosponsor'] = array(
+    '#type' => 'select',
+    '#title' => t('Select Cosponsor Records Per Congress'),
+    '#options' => $cosponsor,
+    '#multiple' => TRUE,
+    '#default_value' => variable_get('gov_data_cosponsor', "person"),
+  );
+  $form['gov_data_cosponsor_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Pull Cosponsor Data'),
+    '#submit' => array('gov_data_cosponsor_pull'),
+  );
+
+  return system_settings_form($form);
+}
+
+function gov_data_bill_page() {
+  $congress = array(
+    '100' => '100',
+    '101' => '101',
+    '102' => '102',
+    '103' => '103',
+    '104' => '104',
+    '105' => '105',
+    '106' => '106',
+    '107' => '107',
+    '108' => '108',
+    '109' => '109',
+    '110' => '110',
+    '111' => '111',
+    '112' => '112',
+    '113' => '113',
+    '114' => '114',
+  );
+
+  $form = array();
+  $form['gov_data_bill'] = array(
+    '#type' => 'select',
+    '#title' => t('Select Bills by Congress'),
+    '#options' => $congress,
+    '#multiple' => TRUE,
+    '#default_value' => variable_get('gov_data_bill', '113'),
+  );
+  $form['gov_data_bill_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Pull Bill Data'),
+    '#submit' => array('gov_data_bill_pull'),
+  );
+  $form['gov_data_term_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Pull Term Data'),
+    '#submit' => array('gov_data_term_pull'),
+  );
+
+  return system_settings_form($form);
+}
+
+function gov_data_committee_page() {
+  $form = array();
+  $form['gov_data_committee_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Pull Committee Data'),
+    '#submit' => array('gov_data_committee_pull'),
+  );
+  return system_settings_form($form);
+}
+
+function gov_data_committee_member_page() {
+
+  $committee_member = array(
+    "person" => "Get Committee Membership By Person",
+    "committee" => "Get Committee Membership by Committee",
+  );
+  $form = array();
+  $form['gov_data_committee_member'] = array(
+    '#type' => 'select',
+    '#title' => t('Select Committee Record Members'),
+    '#options' => $committee_member,
+    '#multiple' => TRUE,
+    '#default_value' => variable_get('gov_data_committee_member', "person"),
+  );
+  $form['gov_data_committee_member_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Pull Committee Member Data'),
+    '#submit' => array('gov_data_committee_member_pull'),
+  );
+  return system_settings_form($form);
+}
+
+function gov_data_person_page() {
+  $persons = array(
+    //"get_role_person" => "Get All Persons with Roles",
+    "all" => "Get All Persons",
+  );
+  $form = array();
+  $form['gov_data_person'] = array(
+    '#type' => 'select',
+    '#title' => t('Select Persons'),
+    '#options' => $persons,
+    '#multiple' => FALSE,
+    '#default_value' => variable_get('gov_data_person', "get_role_person"),
+  );
+  $form['gov_data_person_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Pull Person Data'),
+    '#submit' => array('gov_data_person_pull'),
+  );
+  return system_settings_form($form);
+}
+
+function gov_data_role_page() {
+  $role = array(
+    "current" => "Get Current Elected Officials",
+    "all" => "Get All Elected Officials",
+  );
+  $form = array();
+
+  $form['gov_data_role'] = array(
+    '#type' => 'select',
+    '#title' => t('Select Elected Officials'),
+    '#options' => $role,
+    '#multiple' => FALSE,
+    '#default_value' => variable_get('gov_data_role', "current"),
+  );
+  $form['gov_data_role_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Pull Elected Official Data'),
+    '#submit' => array('gov_data_role_pull'),
+  );
+  return system_settings_form($form);
+}
+
+function gov_data_voter_page() {
+  $voter = array(
+    "person" => "Get Voters for People",
+    "vote" => "Get Voters Per Vote",
+  );
+  $form = array();
+  $form['gov_data_voter'] = array(
+    '#type' => 'select',
+    '#title' => t('Select Voting Records Per Congress'),
+    '#options' => $voter,
+    '#multiple' => TRUE,
+    '#default_value' => variable_get('gov_data_voter', "person"),
+  );
+  $form['gov_data_voter_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Pull Voting Data'),
+    '#submit' => array('gov_data_voter_pull'),
+  );
+  return system_settings_form($form);
+}
+
+function gov_data_vote_page() {
+  $congress = array(
+    '100' => '100',
+    '101' => '101',
+    '102' => '102',
+    '103' => '103',
+    '104' => '104',
+    '105' => '105',
+    '106' => '106',
+    '107' => '107',
+    '108' => '108',
+    '109' => '109',
+    '110' => '110',
+    '111' => '111',
+    '112' => '112',
+    '113' => '113',
+    '114' => '114',
+  );
+  $form = array();
+  $form['gov_data_vote'] = array(
+    '#type' => 'select',
+    '#title' => t('Select Vote Records Per Congress'),
+    '#options' => $congress,
+    '#multiple' => TRUE,
+    '#default_value' => variable_get('gov_data_vote', array("113")),
+  );
+  $form['gov_data_vote_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Pull Vote Data'),
+    '#submit' => array('gov_data_vote_pull'),
+  );
+  return system_settings_form($form);
+}
+
+/**
+ * Create the form for Stock Info admin settings.
+ */
+
+/*
+function gov_data_admin_settings() {
+
+  $congress = array(
+    '100' => '100',
+    '101' => '101',
+    '102' => '102',
+    '103' => '103',
+    '104' => '104',
+    '105' => '105',
+    '106' => '106',
+    '107' => '107',
+    '108' => '108',
+    '109' => '109',
+    '110' => '110',
+    '111' => '111',
+    '112' => '112',
+    '113' => '113',
+  );
+
+  $persons = array(
+    "get_role_person" => "Get All Persons with Roles",
+    "all" => "Get All Persons",
+  );
+
+  $role = array(
+    "current" => "Get Current Elected Officials",
+    "all" => "Get All Elected Officials",
+  );
+
+  $voter = array(
+    "person" => "Get Votes for People",
+    "vote" => "Get Voters Per Vote",
+  );
+  $cosponsor = array(
+    "person" => "Get Cosponsors Per Person",
+    "bill" => "Get Cosponsors Per Bill",
+  );
+
+  $committee_member = array(
+    "person" => "Get Committee Membership By Person",
+    "committee" => "Get Committee Membership by Committee",
+  );
+
+  $form = array();
+  $form['gov_data_bill'] = array(
+    '#type' => 'select',
+    '#title' => t('Select Bills by Congress'),
+    '#options' => $congress,
+    '#multiple' => TRUE,
+    '#default_value' => variable_get('gov_data_bill', '113'),
+  );
+  $form['gov_data_bill_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Pull Bill Data'),
+    '#submit' => array('gov_data_bill_pull'),
+  );
+  $form['gov_data_role'] = array(
+    '#type' => 'select',
+    '#title' => t('Select Elected Officials'),
+    '#options' => $role,
+    '#multiple' => FALSE,
+    '#default_value' => variable_get('gov_data_role', "current"),
+  );
+  $form['gov_data_role_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Pull Elected Official Data'),
+    '#submit' => array('gov_data_role_pull'),
+  );
+  $form['gov_data_person'] = array(
+    '#type' => 'select',
+    '#title' => t('Select Persons'),
+    '#options' => $persons,
+    '#multiple' => FALSE,
+    '#default_value' => variable_get('gov_data_person', "get_role_person"),
+  );
+  $form['gov_data_person_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Pull Person Data'),
+    '#submit' => array('gov_data_person_pull'),
+  );
+  $form['gov_data_vote'] = array(
+    '#type' => 'select',
+    '#title' => t('Select Vote Records Per Congress'),
+    '#options' => $congress,
+    '#multiple' => TRUE,
+    '#default_value' => variable_get('gov_data_vote', array("113")),
+  );
+  $form['gov_data_vote_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Pull Vote Data'),
+    '#submit' => array('gov_data_vote_pull'),
+  );
+  $form['gov_data_voter'] = array(
+    '#type' => 'select',
+    '#title' => t('Select Voting Records Per Congress'),
+    '#options' => $voter,
+    '#multiple' => TRUE,
+    '#default_value' => variable_get('gov_data_voter', "person"),
+  );
+  $form['gov_data_voter_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Pull Voting Data'),
+    '#submit' => array('gov_data_voter_pull'),
+  );
+  $form['gov_data_cosponsor'] = array(
+    '#type' => 'select',
+    '#title' => t('Select Cosponsor Records Per Congress'),
+    '#options' => $cosponsor,
+    '#multiple' => TRUE,
+    '#default_value' => variable_get('gov_data_cosponsor', "person"),
+  );
+  $form['gov_data_cosponsor_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Pull Cosponsor Data'),
+    '#submit' => array('gov_data_cosponsor_pull'),
+  );
+  $form['gov_data_committee_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Pull Committee Data'),
+    '#submit' => array('gov_data_committee_pull'),
+  );
+  $form['gov_data_committee_member'] = array(
+    '#type' => 'select',
+    '#title' => t('Select Committee Record Members'),
+    '#options' => $committee_member,
+    '#multiple' => TRUE,
+    '#default_value' => variable_get('gov_data_committee_member', "person"),
+  );
+  $form['gov_data_committee_member_submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Pull Committee Member Data'),
+    '#submit' => array('gov_data_committee_member_pull'),
+  );
+  if (module_exists('gov_data_entities')) {
+    $form['gov_data_term_submit'] = array(
+      '#type' => 'submit',
+      '#value' => t('Pull Term Data'),
+      '#submit' => array('gov_data_term_pull'),
+    );
+  }
+
+  return system_settings_form($form);
+}
+
+/**
+ * Implements hook_entity_info().
+ */
+function gov_data_entity_info() {
+
+  $info = array();
+
+  $info['gov_data'] = array(
+    'label' => t('Government Data'),
+    'plural label' => t('Government Data'),
+    'label plural' => t('Government Data'),
+    'base table' => 'gov_data',
+    'entity keys' => array(
+      'id' => 'gid',
+      'label' => 'type',
+      'bundle' => 'type',
+    ),
+    'module' => 'gov_data',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'gov_data_access_callback',
+    'fieldable' => TRUE,
+    'bundle keys' => array(
+      'bundle' => 'type',
+    ),
+    'bundles' => array(
+      'bill' => array(
+        'label' => t('Bills'),
+        'admin' => array(
+          'path' => 'admin/structure/gov-data/bill',
+          'real path' => 'admin/structure/gov-data/bill',
+          //'real path' => 'admin/structure/gov-data/manage/',
+          'access arguments' => array('administer site configuration'),
+        ),
+      ),
+      'committee' => array(
+        'label' => t('Committee'),
+        'admin' => array(
+          'path' => 'admin/structure/gov-data/committee',
+          'access arguments' => array('administer site configuration'),
+        ),
+      ),
+      'committee_member' => array(
+        'label' => t('Committee Member'),
+        'admin' => array(
+          'path' => 'admin/structure/gov-data/committee-member',
+          'access arguments' => array('administer site configuration'),
+        ),
+      ),
+      'cosponsor' => array(
+        'label' => t('Cosponsor'),
+        'admin' => array(
+          'path' => 'admin/structure/gov-data/cosponsor',
+          'access arguments' => array('administer site configuration'),
+        ),
+      ),
+      'person' => array(
+        'label' => t('Person'),
+        'admin' => array(
+          'path' => 'admin/structure/gov-data/person',
+          'access arguments' => array('administer site configuration'),
+        ),
+      ),
+      'role' => array(
+        'label' => t('Role'),
+        'admin' => array(
+          'path' => 'admin/structure/gov-data/role',
+          'access arguments' => array('administer site configuration'),
+        ),
+      ),
+      'vote' => array(
+        'label' => t('Vote'),
+        'admin' => array(
+          'path' => 'admin/structure/gov-data/vote',
+          'access arguments' => array('administer site configuration'),
+        ),
+      ),
+      'voter' => array(
+        'label' => t('Voter'),
+        'admin' => array(
+          'path' => 'admin/structure/gov-data/voter',
+          'access arguments' => array('administer site configuration'),
+        ),
+      ),
+    ),
+      /* 'admin ui' => array(
+        'path' => 'admin/structure/gov-data',
+        'controller class' => 'EntityDefaultUIController',
+        ) */
+  );
+
+  return $info;
+}
+
+/**
+ * Implements hook_entity_property_info().
+ */
+function gov_data_property_info() {
+
+  $info = array();
+
+  $info['gov_data']['properties']['gid'] = array(
+    'label' => t('Government Data ID'),
+    'description' => t('The ID of the government item.'),
+    'type' => 'integer',
+    'schema field' => 'gid',
+  );
+  $info['template']['properties']['type'] = array(
+    'label' => t('Government Data Type'),
+    'description' => t('The bundle of the government data.'),
+    'type' => 'text',
+    'schema field' => 'type',
+  );
+  $info['template']['properties']['bid'] = array(
+    'label' => t('Bundle ID'),
+    'description' => t('The ID of the bundle.'),
+    'type' => 'integer',
+    'schema field' => 'bid',
+  );
+  return $info;
+}
+
+/**
+ * Implements hook_ctools_plugin_api()
+ */
+/*function gov_data_ctools_plugin_api($module = '', $api = '') {
+  if ($module == "feeds" && $api == "plugins") {
+    return array("version" => 1);
+  }
+}
+
+/**
+ * Implements hook_enable().
+ */
+/*function gov_data_enable() {
+  ctools_get_plugins_reset();
+}*/
+
+/**
+ * Implements hook_feeds_plugins().
+ */
+/*function gov_data_feeds_plugins() {
+  return array(
+    'GovData' => array(
+      'name' => 'Government Data Processor',
+      'description' => 'Pulls government data down.',
+      'handler' => array(
+        'parent' => 'FeedsProcessor',
+        'class' => 'GovDataProcessor',
+        'file' => 'GovDataProcessor.inc',
+        'path' => drupal_get_path('module', 'gov_data'),
+      ),
+    ),
+  );
+}*/
+
+function gov_data_access_callback() {
+  return TRUE;
+}

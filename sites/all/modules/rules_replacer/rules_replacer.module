@@ -1,0 +1,114 @@
+<?php
+
+/**
+ * Implement hook_rules_action_info().
+ */
+function rules_replacer_rules_action_info() {
+  return array(
+    'rules_replacer_rules_action_random_number' => array(
+      'label' => t('Random Number Generator'),
+      'group' => t('Rules Replacer'),
+      'parameter' => array(
+        'min' => array(
+          'type' => 'integer',
+          'label' => t('Minimum Number'),
+          'optional' => TRUE,
+          'description' => t('The minimum number possible to be generated.'),
+        ),
+        'max' => array(
+          'type' => 'integer',
+          'label' => t('Maximum Number'),
+          'optional' => TRUE,
+          'description' => t('The maximum number possible to be generated.'),
+        ),
+      ),
+      'provides' => array(
+        'random' => array(
+          'type' => 'integer',
+          'label' => t('Random Number'),
+        ),
+      ),
+    ),
+    'rules_replacer_rules_action_tokenizer' => array(
+      'label' => t('Pull Tokens'),
+      'group' => t('Rules Replacer'),
+      'parameter' => array(
+        'text' => array(
+          'type' => 'value',
+          'label' => t('Text'),
+          'description' => t('Text to pull tokens from.'),
+        ),
+      ),
+      'provides' => array(
+        'tokens' => array(
+          'type' => 'text',
+          'label' => t('Tokens'),
+        ),
+      ),
+    ),
+    'rules_replacer_rules_action_string_replace' => array(
+      'label' => t('String Replace'),
+      'group' => t('Rules Replacer'),
+      'parameter' => array(
+        'search' => array(
+          'type' => 'text',
+          'label' => t('Search'),
+          'description' => t('String to search for in the text.'),
+        ),
+        'replace' => array(
+          'type' => 'text',
+          'label' => t('Replace'),
+          'description' => t('String to replace with.'),
+        ),
+        'subject' => array(
+          'type' => 'text',
+          'label' => t('Subject'),
+          'description' => t('Text to do replacement for.'),
+        ),
+        'count' => array(
+          'type' => 'integer',
+          'label' => t('Count'),
+          'optional' => TRUE,
+          'description' => t('Number of replacements performed.'),
+        ),
+      ),
+      'provides' => array(
+        'replaced_text' => array(
+          'type' => 'text',
+          'label' => t('Replaced Text'),
+        ),
+      ),
+    )
+  );
+}
+
+function rules_replacer_rules_action_random_number($min = NULL, $max = NULL) {
+  $number = mt_rand($mix, $max);
+  return array(
+    'random' => $number,
+  );
+}
+
+function rules_replacer_rules_action_string_replace($search, $replace, $subject, $count = NULL) {
+
+  if ($count == NULL) {
+    $replaced_text = str_replace($search, $replace, $subject);
+  }
+  elseif (is_int($count)) {
+    $replaced_text = str_replace($search, $replace, $subject, $count);
+  }
+
+  return array(
+    'replaced_text' => $replaced_text,
+  );
+}
+
+function rules_replacer_rules_action_tokenizer($text) {
+  watchdog("text", "<pre>" . print_r($text, true) . "</pre>");
+  $tokens = token_scan($text);
+  watchdog("tokens", "<pre>" . print_r($tokens, true) . "</pre>");
+
+  return array(
+    'tokens' => $tokens,
+  );
+}

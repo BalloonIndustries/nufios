@@ -1,0 +1,14 @@
+<?php
+
+function computed_field_field_volume_percentage_compute(&$entity_field, $entity_type, $entity, $field, $instance, $langcode, $items) {
+  $entity_field[0]['value'] = 0;
+  if (is_numeric($entity->volume) && is_numeric($entity->avg_daily_volume) || $entity->volume != 0 || $entity->avg_daily_volume != 0) {
+    $entity_field[0]['value'] = round($entity->volume / $entity->avg_daily_volume, 10);
+  }
+}
+
+function nufios_stockinfo_save(&$stock) {
+  if (strpos($stock['name'], "Corporati") !== false) {
+    substr_replace($stock['name'], "Corporation", " ", 9);
+  }
+}

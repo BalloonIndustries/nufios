@@ -1,0 +1,15 @@
+name = Lextext
+description = Content generation with Lextext
+package = Content Generation
+core = 7.x
+
+dependencies[] = entity
+dependencies[] = views
+
+files[] = lextext.admin.inc
+files[] = lextext_type.admin.inc
+files[] = views/lextext.views.inc
+files[] = views/lextext_handler_link_field.inc
+files[] = views/lextext_handler_delete_link_field.inc
+files[] = views/lextext_handler_edit_link_field.inc
+files[] = views/lextext_handler_lextext_operations_field.inc

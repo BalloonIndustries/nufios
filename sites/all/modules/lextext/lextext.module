@@ -1,0 +1,839 @@
+<?php
+
+/**
+ * Implements hook_menu().
+ */
+/*
+  function lextext_menu() {
+  $items = array();
+
+  $items['admin/structure/lextext'] = array(
+  'title' => 'Automatic Content Generation',
+  'description' => 'Configure settings for automatic content lextext',
+  'page callback' => 'lextext_admin_menu',
+  'access arguments' => array('administer site configuration'),
+  );
+
+  $items['admin/structure/lextext/delete/%'] = array(
+  'title' => 'Delete Automatic Content Lextext',
+  'description' => 'This allows you to delete lextexts',
+  'page callback' => 'lextext_delete',
+  'page arguments' => array(4),
+  'access arguments' => array('administer site configuration'),
+  );
+
+  $items['admin/structure/lextext/create'] = array(
+  'title' => 'Create New Automatic Content Lextext',
+  "description" => "This allows you to create an entirely new lextext for automatic content",
+  "page callback" => 'drupal_get_form',
+  'page arguments' => array('lextext_create', 4),
+  'access arguments' => array('administer site configuration'),
+  );
+
+  return $items;
+  }
+ */
+function lextext_admin_menu() {
+  $output = l("Create new lextext", "admin/structure/lextext/create", array());
+  $menu_items = db_query("SELECT * FROM lextext")->fetchAll();
+  $header = array('Lextext ID', 'Name', 'Type', 'Title', 'Lextext', "Bundle", "Field", "Operations");
+  $rows = array();
+  if (!empty($menu_items)) {
+    foreach ($menu_items as $menu_item) {
+      $rows[] = array(
+        $menu_item->tid,
+        $menu_item->name,
+        $menu_item->type,
+        $menu_item->title,
+        $menu_item->lextext,
+        $menu_item->bundle,
+        $menu_item->field,
+        l("Edit", "admin/structure/lextext/create/" . $menu_item->tid) . " " . l("Delete", "admin/structure/lextext/delete/" . $menu_item->tid),
+      );
+    }
+  }
+  $output .= theme("table", array(
+    "header" => $header,
+    "rows" => $rows,
+    "sticky" => true,
+    "caption" => "",
+    "colgroups" => array(),
+    "empty" => t("Table has no rows"),
+      )
+  );
+  return $output;
+}
+
+function lextext_fields_callback($form, $form_state) {
+  return $form['lextext_field'];
+}
+
+function lextext_node_save($content) {
+  $hash = entity_hash_hash_item($content);
+  $hash_array = db_query("SELECT hash FROM node WHERE hash = :hash", array("hash" => $hash))->fetchCol();
+  if (in_array($hash, $hash_array)) {
+    return FALSE;
+  }
+  else {
+    node_save($content);
+  }
+}
+
+function lextext_old_save($form, &$form_state) {
+  // switch textfield with machine name when time permits
+  watchdog("form", "<pre>" . print_r($form, true) . "</pre>");
+  watchdog("form state", "<pre>" . print_r($form_state, true) . "</pre>");
+  $lextext = $form_state['values']['lextext_lextext'];
+  $type = $form_state['values']['lextext_type'];
+  $name = $form_state['values']['lextext_name'];
+  $tid = $form_state['values']['lextext_hidden'];
+  $field = $form_state['values']['lextext_field'];
+  $bundle = $form_state['values']['lextext_bundle'];
+  $title = $form_state['values']['lextext_title'];
+
+  if ($tid != NULL) {
+    try {
+      db_update("lextext")
+          ->fields(array(
+            "name" => $name,
+            "type" => $type,
+            "lextext" => $lextext,
+            "title" => $title,
+            "field" => $field,
+            "bundle" => $bundle,
+          ))
+          ->condition("tid", $tid, "=")
+          ->execute();
+    }
+    catch (PDOException $e) {
+      drupal_set_message(t('Error: %message', array('%message' => $e->getMessage())), 'error');
+    }
+  }
+  elseif ($tid == NULL) {
+
+    try {
+      db_insert("lextext")
+          ->fields(array(
+            "name" => $name,
+            "type" => $type,
+            "lextext" => $lextext,
+            "title" => $title,
+            "field" => $field,
+            "bundle" => $bundle,
+          ))
+          ->execute();
+    }
+    catch (PDOException $e) {
+      drupal_set_message(t('Error: %message', array('%message' => $e->getMessage())), 'error');
+    }
+  }
+}
+
+function _lextext_machine_name($machine_name) {
+  $type = db_query("SELECT type FROM {lextext} WHERE type = :type", array("type" => $machine_name))->fetchField();
+  if (!empty($type)) {
+    return TRUE;
+  }
+  else
+    return FALSE;
+}
+
+/*function lextext_cron() {
+  $content = lextext_generate("This is the {greatest, adj} {writer, n} ever in the {history, n} of mankind");
+  watchdog("content", print_r($content, true));
+}*/
+
+function lextext_lemmatize_map($pos) {
+  watchdog("map pos", print_r($pos, true));
+  $pos = trim($pos);
+  $map = array(
+    "adj" => "adjective",
+    "adv" => "adverb",
+    "n" => "noun",
+    "v" => "verb",
+  );
+  watchdog("true Map", "<pre>" . print_r($map, true) . "</pre>");
+  $map_pos = $map[$pos];
+  watchdog("Map", "<pre>" . print_r($map_pos, true) . "</pre>");
+  return $map[$pos];
+}
+
+function lextext_lemmatize($match, $pos = "n") {
+  //$wordClass = lextext_lemmatize_map($pos);
+  $url = "http://devadorner.northwestern.edu/maserver/lemmatizer?corpusConfig=ncf&media=json&spelling=" . $match;
+  //$url = "http://devadorner.northwestern.edu/maserver/lemmatizer?corpusConfig=ncf&wordClass=$wordClass&media=json&spelling=" . $match;
+  $result = drupal_http_request($url);
+  $result_json = json_decode($result->data);
+  watchdog("result json", "<pre>" . print_r($result_json, true) . "</pre>");
+  $lemma = $result_json->LemmatizerResult->lemma;
+  return $lemma;
+}
+
+function lextext_process($content) {
+  
+}
+
+function lextext_generate($content) {
+  
+  preg_match_all('/{(.*?), (.*?)}/', $content, $matches);
+  
+  watchdog("match stuff", "<pre>" . print_r($matches, true) . "</pre>");
+  
+  $match_list = array();
+  
+  foreach($matches[1] as $match) {
+    
+    watchdog("match ok", "<pre>" . print_r($match, true) . "</pre>");
+  
+  if(strpos($match, ",") !== false) {
+    $match_list[] = explode(",", $match);
+  }
+  else {
+    $match_list = array($match, "");
+  }
+    
+  }
+  
+  watchdog("match data", "<pre>" . print_r($match_list, true) . "</pre>");
+  
+  drupal_alter('lextext', $content);
+  
+  //preg_match_all('/{(.*?, .*?)}/', $content, $matches); // to add part of speech
+  
+  /*preg_match_all('/^[a-z0-9]+(, [a-z0-9]+)*$/i', $content, $matches);
+  watchdog("matches", "<pre>" . print_r($matches, true) . "</pre>");
+  watchdog("content lextext", "<pre>" . print_r($matches[1], true) . "</pre>");*/
+  if(empty($matches[1])) {
+    return $content;
+  }
+  foreach ($matches[1] as &$match) {
+    watchdog("match original", "<pre>" . print_r($match, true) . "</pre>");
+    //$match = explode(",", $match);
+    //$lemma = lextext_lemmatize($match[0], $match[1]); //Use the Morphadorna API for now
+    $lemma = lextext_lemmatize($match);
+    $word = lextext_synonym($lemma);
+    /*watchdog("word", print_r($word, true));
+    watchdog("content", "<pre>" . print_r($content, true) . "</pre>");
+    watchdog("match 0", "<pre>" . print_r($match[0], true) . "</pre>");
+    watchdog("match 1", "<pre>" . print_r($match[1], true) . "</pre>");*/
+    //watchdog("matches 0 key", "<pre>" . print_r($matches[0][$key], true) . "</pre>");
+    //$content = preg_replace('/{(' . trim($match[0]) . ", " . trim($match[1]) . ')}/', $word, $content, 1);
+    $content = preg_replace('/{(' . $match . ')}/', $word, $content, 1);
+  }
+  watchdog("content replaced", "<pre>" . print_r($content, true) . "</pre>");
+  return $content;
+}
+
+function lextext_synonym($word) {
+  /*
+   * Uses insecure processing of array data, but for some reason Drupal was choking on it.
+   * This should be fixed at some point.
+   */
+
+  db_set_active("wordnet");
+  $wordid = db_query("SELECT wordid FROM {words} WHERE lemma = :word", array("word" => $word))->fetchField();
+  if (empty($wordid)) {
+    return $word;
+  }
+  $synset = db_query("SELECT synsetid FROM {senses} WHERE wordid = :wordid", array("wordid" => $wordid))->fetchField();
+  $wordid_feed = implode(",", db_query("SELECT wordid FROM {senses} WHERE synsetid = :synsetid", array("synsetid" => $synset))->fetchCol());
+  $words = db_query("SELECT lemma FROM {words} WHERE wordid IN (" . $wordid_feed . ")")->fetchCol(); // insecure, fix this
+  foreach ($words as &$word_item) {
+    $word_item = "'" . $word_item . "'";
+  }
+  $words = implode(",", $words);
+  db_set_active("anc");
+  // Grabs each POS and combines them equally. This will eventually be changed to only the POS that is being used
+  // By the program
+  $word_count_initial = db_query("SELECT lemma, count FROM {anc} WHERE lemma IN (" . $words . ")")->fetchAll();
+  $word_count = array();
+  foreach ($word_count_initial as $word_count_item) {
+    if (array_key_exists($word_count_item->lemma, $word_count)) {
+      $word_count[$word_count_item->lemma] = $word_count_item->count + $word_count[$word_count_item->lemma];
+    }
+    else {
+      $word_count[$word_count_item->lemma] = $word_count_item->count;
+    }
+  }
+  $word_replaced = lextext_weighted($word_count);
+  db_set_active();
+  return $word_replaced;
+}
+
+function lextext_weighted($weightedValues) {
+  $rand = mt_rand(1, (int) array_sum($weightedValues));
+
+  foreach ($weightedValues as $key => $value) {
+    $rand -= $value;
+    if ($rand <= 0) {
+      return $key;
+    }
+  }
+}
+
+/**
+ * Implement hook_rules_action_info().
+ */
+function lextext_rules_action_info() {
+  return array(
+    'lextext_rules_action_create' => array(
+      'label' => t('Generate Content'),
+      'group' => t('Content Lextext'),
+      'parameter' => array(
+        'content' => array(
+          'type' => 'text',
+          'label' => t('Text'),
+          'description' => t('Lextext text to generate from.'),
+        ),
+      ),
+      'provides' => array(
+        'generated_content' => array(
+          'type' => 'text',
+          'label' => t('Generated Content'),
+        ),
+      ),
+  ));
+}
+
+function lextext_rules_action_create($content) {
+  watchdog("content generated", "<pre>" . print_r($content, true) . "</pre>");
+  $content_value = lextext_generate($content);
+
+  return array(
+    'generated_content' => $content_value,
+  );
+}
+
+/**
+ * Implements hook_entity_property_info().
+ */
+function lextext_entity_property_info() {
+
+  $info = array();
+
+  $info['lextext']['properties']['tid'] = array(
+    'label' => t('Lextext ID'),
+    'description' => t('The ID of the lextext.'),
+    'type' => 'integer',
+    'schema field' => 'tid',
+  );
+  $info['lextext']['properties']['name'] = array(
+    'label' => t('Lextext name'),
+    'description' => t('Name of the lextext.'),
+    'type' => 'text',
+    'schema field' => 'name',
+  );
+  $info['lextext']['properties']['lextext'] = array(
+    'label' => t('Lextext data'),
+    'description' => t('Lextext data.'),
+    'type' => 'text',
+    'schema field' => 'lextext',
+  );
+  $info['lextext']['properties']['type'] = array(
+    'label' => t('Type'),
+    'description' => t('Bundle of the lextext.'),
+    'type' => 'text',
+    'schema field' => 'type',
+  );
+  $info['lextext']['properties']['field'] = array(
+    'label' => t('Field'),
+    'description' => t('Field to generate content for.'),
+    'type' => 'text',
+    'schema field' => 'field',
+  );
+  $info['lextext']['properties']['bundle'] = array(
+    'label' => t('Bundle'),
+    'description' => t('The bundle that content is being generated for.'),
+    'type' => 'text',
+    'schema field' => 'bundle',
+  );
+  $info['lextext']['properties']['title'] = array(
+    'label' => t('Title'),
+    'description' => t('Title of the content generated.'),
+    'type' => 'text',
+    'schema field' => 'title',
+  );
+  return $info;
+}
+
+/**
+ * Implement hook_entity_info().
+ *
+ * We define two entities here - the actual entity that will hold our domain
+ * specific information and an entity that holds information about the different
+ * types of entities. See here: http://drupal.org/node/977380 for a discussion on this
+ * choice.
+ */
+function lextext_entity_info() {
+  $return['lextext'] = array(
+    'label' => t('Lextext'),
+    // The entity class and controller class extend the classes provided by the
+    // Entity API
+    'entity class' => 'Lextext',
+    'controller class' => 'LextextController',
+    'base table' => 'lextext',
+    'fieldable' => TRUE,
+    'entity keys' => array(
+        'id' => 'tid',
+        'bundle' => 'type',
+    ),
+    // Bundles are defined by the lextext types below
+    'bundles' => array(),
+    // Bundle keys tell the FieldAPI how to extract information from the bundle objects
+    'bundle keys' => array(
+      'bundle' => 'type',
+    ),
+    'label callback' => 'entity_class_label',
+    'uri callback' => 'entity_class_uri',
+    'creation callback' => 'lextext_create',
+    'access callback' => 'lextext_access',
+    'module' => 'lextext',
+    // The information below is used by the LextextUIController (which extends the EntityDefaultUIController)
+    'admin ui' => array(
+      'path' => 'admin/content/lextexts',
+      'file' => 'lextext.admin.inc',
+      'controller class' => 'LextextUIController',
+      'menu wildcard' => '%lextext',
+    ),
+  );
+  // The entity that holds information about the entity types	  
+  $return['lextext_type'] = array(
+    'label' => t('Lextext Type'),
+    'entity class' => 'LextextType',
+    'controller class' => 'LextextTypeController',
+    'base table' => 'lextext_type',
+    'fieldable' => FALSE,
+    'bundle of' => 'lextext',
+    'exportable' => TRUE,
+    'entity keys' => array(
+      'id' => 'id',
+      'name' => 'type',
+      'label' => 'label',
+    ),
+    'access callback' => 'lextext_type_access',
+    'module' => 'lextext',
+    // Enable the entity API's admin UI.
+    'admin ui' => array(
+      'path' => 'admin/structure/lextext_types',
+      'file' => 'lextext_type.admin.inc',
+      'controller class' => 'LextextTypeUIController',
+    ),
+  );
+
+  return $return;
+}
+
+
+/**
+ * Implements hook_entity_info_alter().
+ *
+ * We are adding the info about the lextext types via a hook to avoid a recursion
+ * issue as loading the lextext types requires the entity info as well.
+ *
+ * @todo This needs to be improved
+ */
+function lextext_entity_info_alter(&$entity_info) {
+  foreach (lextext_get_types() as $type => $info) {
+    $entity_info['lextext']['bundles'][$type] = array(
+      'label' => $info->label,
+      'admin' => array(
+        'path' => 'admin/structure/lextext_types/manage/%lextext_type',
+        'real path' => 'admin/structure/lextext_types/manage/' . $type,
+        'bundle argument' => 4,
+        'access arguments' => array('administer lextext types'),
+      ),
+    );
+  }
+}
+  
+
+/**
+ * Implements hook_permission().
+ */
+function lextext_permission() {
+  // We set up permisssions to manage entity types, manage all entities and the
+  // permissions for each individual entity
+  $permissions = array(
+    'administer lextext types' => array(
+      'title' => t('Administer lextext types'),
+      'description' => t('Create and delete fields for lextext types, and set their permissions.'),
+    ),
+    'administer lextexts' => array(
+      'title' => t('Administer lextexts'),
+      'description' => t('Edit and delete all lextexts'),
+    ),  
+  );
+  
+  //Generate permissions per lextext 
+  foreach (lextext_get_types() as $type) {
+    $type_name = check_plain($type->type);
+    $permissions += array(
+      "edit any $type_name lextext" => array(
+        'title' => t('%type_name: Edit any lextext', array('%type_name' => $type->label)),
+      ),
+      "view any $type_name lextext" => array(
+        'title' => t('%type_name: View any lextext', array('%type_name' => $type->label)),
+      ),
+    );
+  }
+  return $permissions;  
+}
+
+
+/**
+ * Determines whether the given user has access to a lextext.
+ *
+ * @param $op
+ *   The operation being performed. One of 'view', 'update', 'create', 'delete'
+ *   or just 'edit' (being the same as 'create' or 'update').
+ * @param $lextext
+ *   Optionally a lextext or a lextext type to check access for. If nothing is
+ *   given, access for all lextexts is determined.
+ * @param $account
+ *   The user to check for. Leave it to NULL to check for the global user.
+ * @return boolean
+ *   Whether access is allowed or not.
+ */
+function lextext_access($op, $lextext = NULL, $account = NULL) {
+  if (user_access('administer lextexts', $account)) {
+    return TRUE;
+  }
+  watchdog("lextext error", "<pre>" . print_r($lextext, true) . "</pre>");
+  if (isset($lextext) && $type_name = $lextext->type) {
+    $op = ($op == 'view') ? 'view' : 'edit';
+    if (user_access("$op any $type_name lextext", $account)) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+
+/**
+ * Access callback for the entity API.
+ */
+function lextext_type_access($op, $type = NULL, $account = NULL) {
+  return user_access('administer lextext types', $account);
+}
+
+
+/**
+ * Gets an array of all lextext types, keyed by the type name.
+ *
+ * @param $type_name
+ *   If set, the type with the given name is returned.
+ * @return LextextType[]
+ *   Depending whether $type isset, an array of lextext types or a single one.
+ */
+function lextext_get_types($type_name = NULL) {
+  // entity_load will get the Entity controller for our lextext entity and call the load
+  // function of that object - we are loading entities by name here.
+  $types = entity_load_multiple_by_name('lextext_type', isset($type_name) ? array($type_name) : FALSE);
+  return isset($type_name) ? reset($types) : $types;
+}
+
+
+/**
+ * Menu argument loader; Load a lextext type by string.
+ *
+ * @param $type
+ *   The machine-readable name of a lextext type to load.
+ * @return
+ *   A lextext type array or FALSE if $type does not exist.
+ */
+function lextext_type_load($type) {
+  return lextext_get_types($type);
+}
+
+
+/**
+ * Fetch a lextext object. Make sure that the wildcard you choose 
+ * in the lextext entity definition fits the function name here.
+ *
+ * @param $tid
+ *   Integer specifying the lextext id.
+ * @param $reset
+ *   A boolean indicating that the internal cache should be reset.
+ * @return
+ *   A fully-loaded $lextext object or FALSE if it cannot be loaded.
+ *
+ * @see lextext_load_multiple()
+ */
+function lextext_load($tid, $reset = FALSE) {
+  $lextexts = lextext_load_multiple(array($tid), array(), $reset);
+  return reset($lextexts);
+}
+
+
+/**
+ * Load multiple lextexts based on certain conditions.
+ *
+ * @param $tids
+ *   An array of lextext IDs.
+ * @param $conditions
+ *   An array of conditions to match against the {lextext} table.
+ * @param $reset
+ *   A boolean indicating that the internal cache should be reset.
+ * @return
+ *   An array of lextext objects, indexed by tid.
+ *
+ * @see entity_load()
+ * @see lextext_load()
+ */
+function lextext_load_multiple($tids = array(), $conditions = array(), $reset = FALSE) {
+  return entity_load('lextext', $tids, $conditions, $reset);
+}
+
+
+/**
+ * Deletes a lextext.
+ */
+function lextext_delete(Lextext $lextext) {
+  $lextext->delete();
+}
+
+
+/**
+ * Delete multiple lextexts.
+ *
+ * @param $tids
+ *   An array of lextext IDs.
+ */
+function lextext_delete_multiple(array $tids) {
+  entity_get_controller('lextext')->delete($tids);
+}
+
+
+/**
+ * Create a lextext object.
+ */
+function lextext_create($values = array()) {
+  return entity_get_controller('lextext')->create($values);
+}
+
+
+/**
+ * Saves a lextext to the database.
+ *
+ * @param $lextext
+ *   The lextext object.
+ */
+function lextext_save(Lextext $lextext) {
+  return $lextext->save();
+}
+
+
+/**
+ * Saves a lextext type to the db.
+ */
+function lextext_type_save(LextextType $type) {
+  $type->save();
+}
+
+
+/**
+ * Deletes a lextext type from the db.
+ */
+function lextext_type_delete(LextextType $type) {
+  $type->delete();
+}
+
+
+/**
+ * URI callback for lextexts
+ */
+function lextext_uri(Lextext $lextext){
+  return array(
+    'path' => 'lextext/' . $lextext->tid,
+  );
+}
+
+
+/**
+ * Menu title callback for showing individual entities
+ */
+function lextext_page_title(Lextext $lextext){
+  return $lextext->name;
+}
+
+
+/**
+ * Sets up content to show an individual lextext
+ * @todo - get rid of drupal_set_title();
+ */
+function lextext_page_view($lextext, $view_mode = 'full') {    
+  $controller = entity_get_controller('lextext');  
+  $content = $controller->view(array($lextext->tid => $lextext));
+  drupal_set_title($lextext->name);
+  return $content;
+}
+
+
+/**
+ * Implements hook_views_api().
+ */
+function lextext_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'lextext') . '/views',
+  );
+}
+
+
+/**
+ * Implement hook_theme().
+ */
+function lextext_theme() {
+  return array(
+    'lextext_add_list' => array(
+      'variables' => array('content' => array()),
+      'file' => 'lextext.admin.inc',
+    ),
+    'lextext' => array(
+      'render element' => 'elements',
+      'lextext' => 'lextext',
+    ),
+   'lextext_sample_data' => array(
+      'variables' => array('lextext_sample_data', 'lextext' => NULL),
+      'lextext' => 'lextext-sample-data',
+    ),
+
+
+  );
+}  
+
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ */
+function lextext_menu_local_tasks_alter(&$data, $router_item, $root_path) {
+  // Add action link 'admin/structure/lextexts/add' on 'admin/structure/lextexts'.
+  if ($root_path == 'admin/content/lextexts') {
+    $item = menu_get_item('admin/content/lextexts/add');
+    if ($item['access']) {
+      $data['actions']['output'][] = array(
+        '#theme' => 'menu_local_action',
+        '#link' => $item,
+      );
+    }
+  }
+}
+
+
+/**
+ * The class used for lextext entities
+ */
+class Lextext extends Entity {
+  
+  public function __construct($values = array()) {
+    parent::__construct($values, 'lextext');
+  }
+
+  protected function defaultLabel() {
+    return $this->name;
+  }
+
+  protected function defaultUri() {
+    return array('path' => 'lextext/' . $this->tid);
+  }
+  
+  
+}
+
+
+/**
+ * The class used for lextext type entities
+ */
+class LextextType extends Entity {
+  
+  public $type;
+  public $label;
+  
+  public function __construct($values = array()) {
+    parent::__construct($values, 'lextext_type');
+  }
+  
+}
+
+
+/**
+ * The Controller for Lextext entities
+ */
+class LextextController extends EntityAPIController {
+  public function __construct($entityType) {
+    parent::__construct($entityType);
+  }
+
+
+  /**
+   * Create a lextext - we first set up the values that are specific
+   * to our lextext schema but then also go through the EntityAPIController
+   * function.
+   * 
+   * @param $type
+   *   The machine-readable type of the lextext.
+   *
+   * @return
+   *   A lextext object with all default fields initialized.
+   */
+  public function create(array $values = array()) {
+    // Add values that are specific to our Lextext
+    $values += array( 
+      'tid' => '',
+      'is_new' => TRUE,
+      'title' => '',
+      'created' => '',
+      'changed' => '',
+      'data' => '',
+    );
+    
+    $lextext = parent::create($values);
+    return $lextext;
+  }
+  
+  /**
+   * Overriding the buldContent function to add entity specific fields
+   */
+  public function buildContent($entity, $view_mode = 'full', $langcode = NULL, $content = array()) {
+    $content = parent::buildContent($entity, $view_mode, $langcode, $content);
+    $content['lextext_sample_data'] =  array(
+      '#markup' => theme('lextext_sample_data', array('lextext_sample_data' => check_plain($entity->data['sample_data']), 'lextext' => $entity)),
+    );
+
+    return $content;
+  }
+  
+}
+
+
+/**
+ * The Controller for Lextext entities
+ */
+class LextextTypeController extends EntityAPIControllerExportable {
+  public function __construct($entityType) {
+    parent::__construct($entityType);
+  }
+  
+   /**
+   * Create a lextext type - we first set up the values that are specific
+   * to our lextext type schema but then also go through the EntityAPIController
+   * function.
+   * 
+   * @param $type
+   *   The machine-readable type of the lextext.
+   *
+   * @return
+   *   A lextext type object with all default fields initialized.
+   */
+  public function create(array $values = array()) {
+    // Add values that are specific to our Lextext
+    $values += array( 
+      'id' => '',
+      'is_new' => TRUE,
+      'data' => '',
+    );
+    $lextext_type = parent::create($values);
+    return $lextext_type;
+  }
+
+}

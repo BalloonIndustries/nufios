@@ -1,0 +1,262 @@
+<?php
+
+function google_image_search_download($query, $max) {
+  $key = variable_get("google_image_search_key", "");
+  $cx = variable_get("google_image_search_engine_id", "");
+  if (!empty($key) && !empty($cx)) {
+
+    $url = "https://www.googleapis.com/customsearch/v1?key=" . $key . "&cx=" . $cx . "&q=" . $query . "&num=" . $max;
+    $request = drupal_http_request($url);
+    $json_response = drupal_json_decode($request->data);
+    $search_items = $json_response['items'];
+    $count = 0;
+    //ensure that max is an integer and shifts 1 to 0 position
+    $max = (int) $max - 1;
+    $image = array();
+    while ($count <= $max) {
+      if (isset($search_items[$count]['pagemap']['imageobject'][0]['url'])) {
+        $image[] = $search_items[$count]['pagemap']['imageobject'][0]['url'];
+      }
+      $count = $count + 1;
+    }
+    $image_key = array_rand($image);
+    $image_item = $image[$image_key];
+    return $image_item;
+  }
+  else {
+    drupal_set_message(t("Please input Google Custom Search settings"), 'error');
+    return FALSE;
+  }
+}
+
+function google_image_search_form_alter(&$form, &$form_state, $form_id) {
+  global $user;
+  if($user->uid == 1) {
+  drupal_set_message(print_r($form_id, true));
+  }
+  if ($form_id == "content_generator_create") {
+    if ($form['content_generator_hidden'] != NULL) {
+      $select = db_select("content_generator", "cg")
+              ->fields("cg", array("tid", "image_field", "image"))
+              ->condition("tid", $form['content_generator_hidden']['#value'], "=")
+              ->execute()->fetchObject();
+      if (!isset($select->tid)) {
+        $tid = NULL;
+      }
+    }
+
+    $field_map = array();
+    foreach (field_info_field_map() as $key => $field) {
+      switch ($field['type']) {
+        case "image":
+          if (isset($field['bundles']["node"])) {
+            foreach ($field['bundles']['node'] as $bundle) {
+              $field_map[$bundle][] = $key;
+            }
+          }
+          break;
+      }
+    }
+    $field_name = array();
+    $bundle = array();
+    if (!empty($form_state['values']['content_generator_bundle'])) {
+      foreach ($field_map as $bundle_item => $field_name_item) {
+        $bundle[] = $bundle_item;
+        foreach ($field_name_item as $field_name_item_value) {
+          if ($bundle_item == $form_state['values']['content_generator_bundle']) {
+            $field_name[] = $field_name_item_value;
+          }
+        }
+      }
+    }
+    else {
+      foreach ($field_map as $bundle_item => $field_name_item) {
+        $bundle[] = $bundle_item;
+        foreach ($field_name_item as $field_name_item_value) {
+          if ($bundle_item == $bundle[0]) {
+            $field_name[] = $field_name_item_value;
+          }
+        }
+      }
+    }
+    $field_name = array_unique($field_name);
+
+    $include_image = array(
+      '#type' => 'checkbox',
+      '#title' => t('Include Image'),
+      '#default_value' => isset($select->image) ? $select->image : 0,
+    );
+
+    $image_field = array(
+      '#type' => 'select',
+      '#title' => t('Select Image Field'),
+      '#options' => drupal_map_assoc($field_name),
+      '#default_value' => isset($select->image_field) ? $select->image_field : "",
+      '#suffix' => '</div>'
+    );
+
+    $form = array_slice($form, 0, 5, true) +
+        array("google_image_search_include_image" => $include_image) +
+        array("google_image_search_field" => $image_field) +
+        array_slice($form, 5, count($form) - 1, true);
+  }
+  $form['content_generator_submit']['#submit'][] = 'google_image_search_submit';
+}
+
+function google_image_search_submit($form, &$form_state) {
+
+  $tid = $form['content_generator_hidden']['#value'];
+  $image = $form['google_image_search_include_image']['#value'];
+  $field = $form['google_image_search_field']['#value'];
+
+  if ($tid != NULL) {
+    try {
+      db_update("content_generator")
+          ->fields(array(
+            "image" => $image,
+            "image_field" => $field,
+          ))
+          ->condition("tid", $tid, "=")
+          ->execute();
+    }
+    catch (PDOException $e) {
+      drupal_set_message(t('Error: %message', array('%message' => $e->getMessage())), 'error');
+    }
+  }
+  elseif ($tid == NULL) {
+
+    try {
+      db_insert("content_generator")
+          ->fields(array(
+            "image" => $image,
+            "image_field" => $field,
+          ))
+          ->execute();
+    }
+    catch (PDOException $e) {
+      drupal_set_message(t('Error: %message', array('%message' => $e->getMessage())), 'error');
+    }
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function google_image_search_menu() {
+  $items = array();
+
+  $items['admin/config/services/images'] = array(
+    'title' => 'Google Image Search Keys',
+    'description' => 'Configure settings for Google Image search',
+    "page callback" => 'drupal_get_form',
+    'page arguments' => array('google_image_search_settings'),
+    'access arguments' => array('administer site configuration'),
+  );
+  return $items;
+}
+
+function google_image_search_settings() {
+  $form = array();
+  $form['google_image_search_key'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Google Custom Search Key'),
+    '#default_value' => variable_get("google_image_search_key", ""),
+    '#required' => TRUE,
+  );
+  $form['google_image_search_engine_id'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Google Custom Search Engine ID'),
+    '#default_value' => variable_get("google_image_search_engine_id", ""),
+    '#required' => TRUE,
+  );
+  return system_settings_form($form);
+}
+
+/**
+ * Implements hook_entity_property_info_alter().
+ */
+function google_image_search_entity_property_info_alter(&$info) {
+
+  $info['content_generator']['properties']['image'] = array(
+    'label' => t('Image Checkbox'),
+    'description' => t('Determines if the image will be added or not.'),
+    'type' => 'integer',
+    'schema field' => 'image',
+  );
+  $info['content_generator']['properties']['image_field'] = array(
+    'label' => t('Image Field'),
+    'description' => t('Image field mapped to.'),
+    'type' => 'text',
+    'schema field' => 'image_field',
+  );
+}
+
+/**
+ * Implement hook_rules_action_info().
+ */
+function google_image_search_rules_action_info() {
+  return array(
+    'google_image_search_rules_action_pull_image' => array(
+      'label' => t('Pull Image'),
+      'group' => t('Content Template'),
+      'parameter' => array(
+        'search' => array(
+          'type' => 'text',
+          'label' => t('Search string'),
+          'description' => t('Search string for image.'),
+        ),
+        'max' => array(
+          'type' => 'text',
+          'label' => t('Max Items'),
+          'description' => t('Maximum search items.'),
+        ),
+      ),
+      'provides' => array(
+        'generated_image' => array(
+          'type' => 'text',
+          'label' => t('Generated Image'),
+        ),
+      ),
+    ),
+    'google_image_search_rules_action_fid' => array(
+      'label' => t('URL to FID'),
+      'group' => t('Content Template'),
+      'parameter' => array(
+        'url' => array(
+          'type' => 'text',
+          'label' => t('URL'),
+          'description' => t('Converts URL to FID.'),
+        ),
+      ),
+      'provides' => array(
+        'fid' => array(
+          'type' => 'integer',
+          'label' => t('FID'),
+        ),
+      ),
+    ),
+  );
+}
+
+function google_image_search_rules_action_fid($url) {
+  global $base_url;
+  $url_remove = str_replace(variable_get('file_public_path', 'sites/default/files') . '/', "", $url);
+  $uri = file_build_uri(str_replace($base_url . '/', "", $url_remove));
+  $fid = db_query("SELECT fid from {file_managed} where uri = :uri LIMIT 1", array("uri" => $uri))->fetchCol();
+  $fid = $fid[0];
+  //watchdog("fid", "<pre>" . print_r($fid, true) . "</pre>");
+
+  return array(
+    'fid' => $fid,
+  );
+}
+
+function google_image_search_rules_action_pull_image($search, $max) {
+
+  $search = drupal_encode_path($search);
+  $image_value = google_image_search_download($search, $max);
+
+  return array(
+    'generated_image' => $image_value,
+  );
+}

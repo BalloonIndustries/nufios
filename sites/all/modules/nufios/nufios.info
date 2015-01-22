@@ -1,0 +1,5 @@
+name = Nufios Changes
+description = Nufios site specific changes
+package = nufios
+core = 7.x
+

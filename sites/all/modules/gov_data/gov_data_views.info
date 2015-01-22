@@ -1,0 +1,7 @@
+name = Government Data Views Integration
+description = This integrates Government Data with Views
+core = 7.x
+package = government
+dependencies[] = views
+dependencies[] = gov_data
+files[] = views/gov_data_views.views.inc

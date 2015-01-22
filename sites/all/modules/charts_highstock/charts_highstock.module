@@ -1,0 +1,70 @@
+<?php
+/**
+ * @file
+ * Charts module integration with Highstock library.
+ */
+
+/**
+ * Implements hook_charts_info().
+ */
+function charts_highstock_charts_info() {
+  $info['highstock'] = array(
+    'label' => t('Highstock'),
+    'render' => '_charts_highstock_render',
+    'types' => array('area', 'bar', 'column', 'line', 'pie', 'scatter'),
+    'file' => 'charts_highstock.inc',
+  );
+  return $info;
+}
+
+/**
+ * Implements hook_library().
+ */
+function charts_highstock_library() {
+  if ($highstock_info = libraries_detect('highstock')) {
+    $library['highstock'] = array(
+      'title' => t('Highstock library'),
+      'website' => $highstock_info['vendor url'],
+      'version' => $highstock_info['version'],
+      'js' => array(
+        array('data' => $highstock_info['library path'] . '/js/highstock.js', 'type' => 'file'),
+      ),
+    );
+  }
+  $library['charts_highstock'] = array(
+    'title' => t('Highstock integration'),
+    'version' => '1.0',
+    'js' => array(
+      array('data' => drupal_get_path('module', 'charts_highstock') . '/charts_highstock.js', 'type' => 'file'),
+    ),
+    'dependencies' => array(
+      array('charts_highstock', 'highstock'),
+    ),
+  );
+
+  return $library;
+}
+
+/**
+ * Implements hook_libraries_info().
+ *
+ * Note that this is hook_libraries_info(), provided by libraries.module, rather
+ * than hook_library() provided by core.
+ */
+function charts_highstock_libraries_info() {
+  $libraries['highstock'] = array(
+    'name' => t('Highstock'),
+    'vendor url' => 'http://www.highcharts.com',
+    'download url' => 'http://www.highcharts.com/download',
+    'version arguments' => array(
+      'file' => 'highstock.js',
+      // 3.x.x
+      'pattern' => '/v(\d+\.\d+\.\d)/',
+      'lines' => 5,
+    ),
+    'files' => array(
+      'js' => array('js/highstock.js'),
+    ),
+  );
+  return $libraries;
+}
