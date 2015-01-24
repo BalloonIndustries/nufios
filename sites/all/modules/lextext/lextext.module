@@ -33,6 +33,19 @@
   return $items;
   }
  */
+
+function lextext_menu() {
+    $items['admin/structure/lextext/drag'] = array(
+  'title' => 'Lextext Drag',
+  "description" => "This allows you to create an entirely new lextext for automatic content",
+  "page callback" => 'drupal_get_form',
+  'page arguments' => array('lextext_form'),
+  'access arguments' => array('administer site configuration'),
+  );
+
+  return $items;
+}
+
 function lextext_admin_menu() {
   $output = l("Create new lextext", "admin/structure/lextext/create", array());
   $menu_items = db_query("SELECT * FROM lextext")->fetchAll();
@@ -127,6 +140,67 @@ function lextext_old_save($form, &$form_state) {
       drupal_set_message(t('Error: %message', array('%message' => $e->getMessage())), 'error');
     }
   }
+}
+
+/**
+ * Implements hook_form().
+ */
+function lextext_form($form, &$form_state) {
+  $form['lextext_attributes'] = array(
+    '#prefix' => '<div id="curve-attributes">',
+    '#suffix' => '</div>',
+    '#tree' => TRUE,
+    '#theme' => 'lextext_components',
+  );
+  for($i=1; $i<6; $i++) {
+    $form['lextext_attributes'][$i]['label'] = array(
+      '#type' => 'item',
+      '#markup' => "Item" . $i,
+    );
+    $form['lextext_attributes'][$i]['textfield'] = array(
+      '#type' => 'textfield', 
+      '#default_value' => 'Sample textfield ' . $i,
+      '#size' => 60, 
+      '#maxlength' => 128, 
+      '#required' => TRUE,
+    );
+    $form['lextext_attributes'][$i]['weight'] = array(
+      '#type' => 'textfield',
+      '#default_value' => $i,
+      '#size' => 3,
+      '#attributes' => array('class' => array('item-row-weight')),
+    ); 
+  }
+  return system_settings_form( $form );
+}
+
+// Custom theme output.
+function theme_lextext_components($vars) {
+  $element = $vars['element'];
+  drupal_add_tabledrag('sample_table', 'order', 'sibling', 'row-weight');
+ 
+  $header = array(
+    'label' => t('Attribute'), 
+    'checkbox' => t('Enabled/disabled'),
+    'weight' => t('Weight'),
+  );
+ 
+  $rows = array();
+  foreach (element_children($element) as $key) {
+    $row = array();
+    $row['data'] = array();
+    foreach ($header as $fieldname => $title) {
+      $row['data'][] = drupal_render($element[$key][$fieldname]);
+      $row['class'] = array('draggable');
+    }
+    $rows[] = $row;
+  }
+ 
+  return theme('table', array(
+    'header' => $header, 
+    'rows' => $rows,
+    'attributes' => array('id' => 'sample_table'),
+  ));
 }
 
 function _lextext_machine_name($machine_name) {
@@ -697,8 +771,9 @@ function lextext_theme() {
       'variables' => array('lextext_sample_data', 'lextext' => NULL),
       'lextext' => 'lextext-sample-data',
     ),
-
-
+        'lextext_components' => array(
+      'render element' => 'element'
+    ),
   );
 }  
 
