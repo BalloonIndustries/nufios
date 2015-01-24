@@ -35,7 +35,7 @@
  */
 
 function lextext_menu() {
-    $items['admin/structure/lextext/drag'] = array(
+    $items['admin/structure/lextext'] = array(
   'title' => 'Lextext Drag',
   "description" => "This allows you to create an entirely new lextext for automatic content",
   "page callback" => 'drupal_get_form',
@@ -152,7 +152,7 @@ function lextext_form($form, &$form_state) {
     '#tree' => TRUE,
     '#theme' => 'lextext_components',
   );
-  for($i=1; $i<6; $i++) {
+  for($i=1; $i<20; $i++) {
     $form['lextext_attributes'][$i]['label'] = array(
       '#type' => 'item',
       '#markup' => "Item" . $i,
