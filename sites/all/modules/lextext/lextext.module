@@ -312,6 +312,7 @@ foreach($functions as $container) {
   $function = key($container);
   $container_value = array_shift($container);
   $word = $function($word, $container_value['arguments']);
+  watchdog("word before insertion", "<pre>" . print_r($word, true) . "</pre>");
 }
 $words_replaced[] = $word;
   }
