@@ -326,6 +326,8 @@ function lextext_synonym($word_info, $arguments = NULL) {
    * This should be fixed at some point.
    */
   
+  watchdog("word_info", "<pre>" . print_r($word_info, true) . "</pre>");
+  
   $word = $word_info[0];
   $pos = $word_info[1];
 
