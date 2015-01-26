@@ -339,6 +339,7 @@ function lextext_synonym($word_info, $arguments = NULL) {
     return $word;
   }
   $synset = db_query("SELECT synsetid FROM {senses} WHERE wordid = :wordid", array("wordid" => $wordid))->fetchField();
+  watchdog("synset", "<pre>" . print_r($synset, true) . "</pre>");
   $wordid_feed = implode(",", db_query("SELECT wordid FROM {senses} WHERE synsetid = :synsetid", array("synsetid" => $synset))->fetchCol());
   watchdog("wordid feed", "<pre>" . print_r($wordid_feed, true) . "</pre>");
   $words = db_query("SELECT lemma FROM {words} WHERE wordid IN (" . $wordid_feed . ")")->fetchCol(); // insecure, fix this
