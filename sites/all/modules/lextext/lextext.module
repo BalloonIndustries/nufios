@@ -310,7 +310,7 @@ foreach($functions as $container) {
   watchdog("container", "<pre>" . print_r($container, true) . "</pre>");
   $function = key($container);
   $container_value = array_shift($container);
-  $function($word, $container_value['arguments']);
+  $word = $function($word, $container_value['arguments']);
 }
 $words_replaced[] = $word;
   }
