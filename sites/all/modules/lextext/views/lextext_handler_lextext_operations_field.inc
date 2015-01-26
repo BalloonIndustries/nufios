@@ -7,7 +7,6 @@
 class lextext_handler_lextext_operations_field extends views_handler_field {
   function construct() {
     parent::construct();
-
     $this->additional_fields['tid'] = 'tid';
   }
 

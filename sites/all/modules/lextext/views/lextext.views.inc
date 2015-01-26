@@ -176,7 +176,6 @@ function lextext_views_default_views() {
   $handler->display->display_options['fields']['operations']['element_default_classes'] = 1;
   $handler->display->display_options['fields']['operations']['hide_empty'] = 0;
   $handler->display->display_options['fields']['operations']['empty_zero'] = 0;
-  
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'lextexts_admin_page');
   $handler->display->display_options['path'] = 'admin/content/lextexts/list';
