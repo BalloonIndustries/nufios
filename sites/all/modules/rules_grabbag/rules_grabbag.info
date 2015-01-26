@@ -1,0 +1,4 @@
+name = Rules Grabbag
+description = Collection of miscellaneous rules
+package = Rules
+core = 7.x

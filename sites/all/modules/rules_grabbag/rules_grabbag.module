@@ -3,9 +3,9 @@
 /**
  * Implement hook_rules_action_info().
  */
-function rules_replacer_rules_action_info() {
+function rules_grabbag_rules_action_info() {
   return array(
-    'rules_replacer_rules_action_random_number' => array(
+    'rules_grabbag_rules_action_random_number' => array(
       'label' => t('Random Number Generator'),
       'group' => t('Rules Replacer'),
       'parameter' => array(
@@ -29,7 +29,7 @@ function rules_replacer_rules_action_info() {
         ),
       ),
     ),
-    'rules_replacer_rules_action_tokenizer' => array(
+    'rules_grabbag_rules_action_tokenizer' => array(
       'label' => t('Pull Tokens'),
       'group' => t('Rules Replacer'),
       'parameter' => array(
@@ -46,7 +46,7 @@ function rules_replacer_rules_action_info() {
         ),
       ),
     ),
-    'rules_replacer_rules_action_string_replace' => array(
+    'rules_grabbag_rules_action_string_replace' => array(
       'label' => t('String Replace'),
       'group' => t('Rules Replacer'),
       'parameter' => array(
@@ -82,14 +82,14 @@ function rules_replacer_rules_action_info() {
   );
 }
 
-function rules_replacer_rules_action_random_number($min = NULL, $max = NULL) {
+function rules_grabbag_rules_action_random_number($min = NULL, $max = NULL) {
   $number = mt_rand($mix, $max);
   return array(
     'random' => $number,
   );
 }
 
-function rules_replacer_rules_action_string_replace($search, $replace, $subject, $count = NULL) {
+function rules_grabbag_rules_action_string_replace($search, $replace, $subject, $count = NULL) {
 
   if ($count == NULL) {
     $replaced_text = str_replace($search, $replace, $subject);
@@ -103,7 +103,7 @@ function rules_replacer_rules_action_string_replace($search, $replace, $subject,
   );
 }
 
-function rules_replacer_rules_action_tokenizer($text) {
+function rules_grabbag_rules_action_tokenizer($text) {
   watchdog("text", "<pre>" . print_r($text, true) . "</pre>");
   $tokens = token_scan($text);
   watchdog("tokens", "<pre>" . print_r($tokens, true) . "</pre>");

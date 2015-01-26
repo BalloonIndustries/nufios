@@ -1,4 +1,0 @@
-name = Rules Replacer
-description = Text and token replacement module for rules
-package = Rules
-core = 7.x
