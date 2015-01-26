@@ -270,7 +270,6 @@ function lextext_process() {
   $lextext_attributes = variable_get("lextext_attributes", NULL);
   //watchdog("lextext attributes", "<pre>" . print_r($lextext_attributes, true) . "</pre>");
   if(empty($lextext_attributes)) {
-    drupal_set_message("Please enable text modifiers", 'error');
   }
   else {
     $lextext_info = lextext_info();
@@ -321,7 +320,7 @@ $words_replaced[] = $word;
   return $content;
 }
 
-function lextext_synonym(&$word_info, $arguments = NULL) {
+function lextext_synonym($word_info, $arguments = NULL) {
   /*
    * Uses insecure processing of array data, but for some reason Drupal was choking on it.
    * This should be fixed at some point.
@@ -361,6 +360,7 @@ function lextext_synonym(&$word_info, $arguments = NULL) {
 }
 
 function lextext_weighted($weightedValues) {
+  watchdog("weighted values", "<pre>" . print_r($weightedValues, true) . "</pre>");
   $rand = mt_rand(1, (int) array_sum($weightedValues));
 
   foreach ($weightedValues as $key => $value) {
