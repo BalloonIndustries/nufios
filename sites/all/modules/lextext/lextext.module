@@ -306,6 +306,7 @@ function lextext_generate($content) {
   $words_replaced = array();
   $functions = lextext_process();
   foreach($words as $word) {
+    watchdog("word written", "<pre>" . print_r($word, true) . "</pre>");
 foreach($functions as $container) {
   watchdog("container", "<pre>" . print_r($container, true) . "</pre>");
   $function = key($container);
