@@ -15,7 +15,7 @@ function nufios_stockinfo_save(&$stock) {
 
 function nufios_get_wordid_from_word($word) {
   $wordid = db_query("SELECT wordid FROM {words} WHERE lemma = :word", array("word" => $word))->fetchField();
-    if (empty($wordid)) {
+  if (empty($wordid)) {
     return FALSE;
   }
   else {
@@ -23,39 +23,50 @@ function nufios_get_wordid_from_word($word) {
   }
 }
 
-function nufios_synonym($word_info, $arguments = NULL) {
-  /*
-   * Uses insecure processing of array data, but for some reason Drupal was choking on it.
-   * This should be fixed at some point.
-   */
-  
-  watchdog("word_info", "<pre>" . print_r($word_info, true) . "</pre>");
-  
-  $word = $word_info[0];
-  $pos = $word_info[1];
-
-  db_set_active("wordnet");
-  if(nufios_get_wordid_from_word($word) == FALSE) {
-    return $word;
+function nufios_get_synset_from_wordid($wordid) {
+  $synsets = implode(",", db_query("SELECT synsetid FROM {senses} WHERE wordid = :wordid", array("wordid" => $wordid))->fetchCol());
+  if (empty($synsets)) {
+    return FALSE;
   }
-  else (
-      $wordid = nufios_get_wordid_from_word($word);
-      )
-
-  $synset = db_query("SELECT synsetid FROM {senses} WHERE wordid = :wordid", array("wordid" => $wordid))->fetchField();
-  watchdog("synset", "<pre>" . print_r($synset, true) . "</pre>");
-  $wordid_feed = implode(",", db_query("SELECT wordid FROM {senses} WHERE synsetid = :synsetid", array("synsetid" => $synset))->fetchCol());
-  watchdog("wordid feed", "<pre>" . print_r($wordid_feed, true) . "</pre>");
-  $words = db_query("SELECT lemma FROM {words} WHERE wordid IN (" . $wordid_feed . ")")->fetchCol(); // insecure, fix this
-  watchdog("words watchedoged for real", "<pre>" . print_r($words, true) . "</pre>");
-  foreach ($words as &$word_item) {
-    $word_item = "'" . $word_item . "'";
+  else {
+    return $synsets;
   }
-  $words = implode(",", $words);
+}
+
+function nufios_get_words_from_synsets($synsets) {
+  $wordids = implode(",", db_query("SELECT wordid FROM {senses} WHERE synsetid IN (" . $synsets . ")")->fetchCol()); //insecure, fix this
+  if (empty($wordids)) {
+    return FALSE;
+  }
+  else {
+    $words = db_query("SELECT lemma FROM {words} WHERE wordid IN (" . $wordids . ")")->fetchCol(); // insecure, fix this
+    if (empty($words)) {
+      return FALSE;
+    }
+    else {
+      foreach ($words as &$word_item) {
+        $word_item = "'" . $word_item . "'";
+      }
+      $words = implode(",", $words);
+      return $words;
+    }
+  }
+}
+
+function nufios_word_count($words, $pos = NULL) {
+  
+  if(isset($pos)) {
+    $string_pos = "AND pos = $pos";
+  }
+  else {
+    $string_pos = "";
+  }
+
   db_set_active("anc");
   // Grabs each POS and combines them equally. This will eventually be changed to only the POS that is being used
   // By the program
-  $word_count_initial = db_query("SELECT lemma, count FROM {anc} WHERE lemma IN (" . $words . ")")->fetchAll();
+
+  $word_count_initial = db_query("SELECT lemma, count FROM {anc} WHERE lemma IN (" . $words . ") $string_pos")->fetchAll();
   $word_count = array();
   foreach ($word_count_initial as $word_count_item) {
     if (array_key_exists($word_count_item->lemma, $word_count)) {
@@ -65,7 +76,44 @@ function nufios_synonym($word_info, $arguments = NULL) {
       $word_count[$word_count_item->lemma] = $word_count_item->count;
     }
   }
-  $word_replaced = lextext_weighted($word_count);
+  return $word_count;
+}
+
+function nufios_anc_pos_map($pos) {
+  return $pos;
+}
+
+function nufios_synonym($word_info, $arguments = NULL) {
+  /*
+   * Uses insecure processing of array data, but for some reason Drupal was choking on it.
+   * This should be fixed at some point.
+   */
+
+  watchdog("word_info", "<pre>" . print_r($word_info, true) . "</pre>");
+
+  $word = $word_info[0];
+  if(isset($word_info[1])) {
+    $pos = $word_info[1];
+  }
+  else {
+    $pos = NULL;
+  }
+  
+  $mapped_pos = nufios_anc_pos_map($pos);
+
+  db_set_active("wordnet");
+  if ($wordid = nufios_get_wordid_from_word($word) == FALSE) {
+    return $word;
+  }
+  if ($synsets = nufios_get_synset_from_wordid == FALSE) {
+    return $word;
+  }
+  if ($words = nufios_get_words_from_synsets == FALSE) {
+    return $word;
+  }
+  $word_count = nufios_word_count($words, $mapped_pos);
+
+  $word_replaced = nufios_weighted($word_count);
   db_set_active();
   return array($word_replaced, $pos);
 }
@@ -83,8 +131,8 @@ function nufios_weighted($weightedValues) {
 }
 
 function nufios_lextext_info_alter(&$lextext_info) {
-      $lextext_info['nufios_synonym'] = array(
-      'label' => t('Word Synonym'),
-      'arguments' => array(),
-    );
+  $lextext_info['nufios_synonym'] = array(
+    'label' => t('Word Synonym'),
+    'arguments' => array(),
+  );
 }
