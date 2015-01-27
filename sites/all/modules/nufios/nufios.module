@@ -12,3 +12,66 @@ function nufios_stockinfo_save(&$stock) {
     substr_replace($stock['name'], "Corporation", " ", 9);
   }
 }
+
+function nufios_synonym($word_info, $arguments = NULL) {
+  /*
+   * Uses insecure processing of array data, but for some reason Drupal was choking on it.
+   * This should be fixed at some point.
+   */
+  
+  watchdog("word_info", "<pre>" . print_r($word_info, true) . "</pre>");
+  
+  $word = $word_info[0];
+  $pos = $word_info[1];
+
+  db_set_active("wordnet");
+  $wordid = db_query("SELECT wordid FROM {words} WHERE lemma = :word", array("word" => $word))->fetchField();
+  if (empty($wordid)) {
+    return $word;
+  }
+  $synset = db_query("SELECT synsetid FROM {senses} WHERE wordid = :wordid", array("wordid" => $wordid))->fetchField();
+  watchdog("synset", "<pre>" . print_r($synset, true) . "</pre>");
+  $wordid_feed = implode(",", db_query("SELECT wordid FROM {senses} WHERE synsetid = :synsetid", array("synsetid" => $synset))->fetchCol());
+  watchdog("wordid feed", "<pre>" . print_r($wordid_feed, true) . "</pre>");
+  $words = db_query("SELECT lemma FROM {words} WHERE wordid IN (" . $wordid_feed . ")")->fetchCol(); // insecure, fix this
+  watchdog("words watchedoged for real", "<pre>" . print_r($words, true) . "</pre>");
+  foreach ($words as &$word_item) {
+    $word_item = "'" . $word_item . "'";
+  }
+  $words = implode(",", $words);
+  db_set_active("anc");
+  // Grabs each POS and combines them equally. This will eventually be changed to only the POS that is being used
+  // By the program
+  $word_count_initial = db_query("SELECT lemma, count FROM {anc} WHERE lemma IN (" . $words . ")")->fetchAll();
+  $word_count = array();
+  foreach ($word_count_initial as $word_count_item) {
+    if (array_key_exists($word_count_item->lemma, $word_count)) {
+      $word_count[$word_count_item->lemma] = $word_count_item->count + $word_count[$word_count_item->lemma];
+    }
+    else {
+      $word_count[$word_count_item->lemma] = $word_count_item->count;
+    }
+  }
+  $word_replaced = lextext_weighted($word_count);
+  db_set_active();
+  return array($word_replaced, $pos);
+}
+
+function nufios_weighted($weightedValues) {
+  watchdog("weighted values", "<pre>" . print_r($weightedValues, true) . "</pre>");
+  $rand = mt_rand(1, (int) array_sum($weightedValues));
+
+  foreach ($weightedValues as $key => $value) {
+    $rand -= $value;
+    if ($rand <= 0) {
+      return $key;
+    }
+  }
+}
+
+function nufios_lextext_info_alter(&$lextext_info) {
+      $lextext_info['nufios_synonym'] = array(
+      'label' => t('Word Synonym'),
+      'arguments' => array(),
+    );
+}
