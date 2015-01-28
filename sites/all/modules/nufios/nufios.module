@@ -54,8 +54,8 @@ function nufios_get_words_from_synsets($synsets) {
 }
 
 function nufios_word_count($words, $pos = NULL) {
-  
-  if(isset($pos)) {
+
+  if (isset($pos)) {
     $string_pos = "AND pos = $pos";
   }
   else {
@@ -92,13 +92,13 @@ function nufios_synonym($word_info, $arguments = NULL) {
   watchdog("word_info", "<pre>" . print_r($word_info, true) . "</pre>");
 
   $word = $word_info[0];
-  if(isset($word_info[1])) {
+  if (isset($word_info[1])) {
     $pos = $word_info[1];
   }
   else {
     $pos = NULL;
   }
-  
+
   $mapped_pos = nufios_anc_pos_map($pos);
 
   db_set_active("wordnet");
