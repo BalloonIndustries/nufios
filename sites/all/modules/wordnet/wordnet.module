@@ -1,0 +1,125 @@
+<?php
+
+function wordnet_get_wordid_from_word($word) {
+  $wordid = db_query("SELECT wordid FROM {words} WHERE lemma = :word", array("word" => $word))->fetchField();
+  if (empty($wordid)) {
+    return FALSE;
+  }
+  else {
+    return $wordid;
+  }
+}
+
+function wordnet_get_synset_from_wordid($wordid) {
+  $synsets = implode(",", db_query("SELECT synsetid FROM {senses} WHERE wordid = :wordid", array("wordid" => $wordid))->fetchCol());
+  if (empty($synsets)) {
+    return FALSE;
+  }
+  else {
+    return $synsets;
+  }
+}
+
+function wordnet_get_words_from_synsets($synsets) {
+  $wordids = implode(",", db_query("SELECT wordid FROM {senses} WHERE synsetid IN (" . $synsets . ")")->fetchCol()); //insecure, fix this
+  if (empty($wordids)) {
+    return FALSE;
+  }
+  else {
+    $words = db_query("SELECT lemma FROM {words} WHERE wordid IN (" . $wordids . ")")->fetchCol(); // insecure, fix this
+    if (empty($words)) {
+      return FALSE;
+    }
+    else {
+      foreach ($words as &$word_item) {
+        $word_item = "'" . $word_item . "'";
+      }
+      $words = implode(",", $words);
+      return $words;
+    }
+  }
+}
+
+function wordnet_word_count($words, $pos = NULL) {
+
+  if (isset($pos)) {
+    $string_pos = "AND pos = $pos";
+  }
+  else {
+    $string_pos = "";
+  }
+
+  db_set_active("anc");
+  // Grabs each POS and combines them equally. This will eventually be changed to only the POS that is being used
+  // By the program
+
+  $word_count_initial = db_query("SELECT lemma, count FROM {anc} WHERE lemma IN (" . $words . ") $string_pos")->fetchAll();
+  $word_count = array();
+  foreach ($word_count_initial as $word_count_item) {
+    if (array_key_exists($word_count_item->lemma, $word_count)) {
+      $word_count[$word_count_item->lemma] = $word_count_item->count + $word_count[$word_count_item->lemma];
+    }
+    else {
+      $word_count[$word_count_item->lemma] = $word_count_item->count;
+    }
+  }
+  return $word_count;
+}
+
+function wordnet_anc_pos_map($pos) {
+  return $pos;
+}
+
+function wordnet_synonym($word_info, $arguments = NULL) {
+  /*
+   * Uses insecure processing of array data, but for some reason Drupal was choking on it.
+   * This should be fixed at some point.
+   */
+
+  watchdog("word_info", "<pre>" . print_r($word_info, true) . "</pre>");
+
+  $word = $word_info[0];
+  if (isset($word_info[1])) {
+    $pos = $word_info[1];
+  }
+  else {
+    $pos = NULL;
+  }
+
+  $mapped_pos = wordnet_anc_pos_map($pos);
+
+  db_set_active("wordnet");
+  if ($wordid = wordnet_get_wordid_from_word($word) == FALSE) {
+    return $word;
+  }
+  if ($synsets = wordnet_get_synset_from_wordid == FALSE) {
+    return $word;
+  }
+  if ($words = wordnet_get_words_from_synsets == FALSE) {
+    return $word;
+  }
+  $word_count = wordnet_word_count($words, $mapped_pos);
+
+  $word_replaced = wordnet_weighted($word_count);
+  db_set_active();
+  return array($word_replaced, $pos);
+}
+
+function wordnet_weighted($weightedValues) {
+  watchdog("weighted values", "<pre>" . print_r($weightedValues, true) . "</pre>");
+  $rand = mt_rand(1, (int) array_sum($weightedValues));
+
+  foreach ($weightedValues as $key => $value) {
+    $rand -= $value;
+    if ($rand <= 0) {
+      return $key;
+    }
+  }
+}
+
+function wordnet_lextext_info_alter(&$lextext_info) {
+  $lextext_info['wordnet_synonym'] = array(
+    'label' => t('Word Synonym'),
+    'arguments' => array(),
+  );
+}

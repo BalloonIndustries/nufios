@@ -1,0 +1,5 @@
+name = Wordnet
+description = Provides access to a Wordnet database for Lextext
+dependencies[] = lextext
+package = Content Generation
+core = 7.x
