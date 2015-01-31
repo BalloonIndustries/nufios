@@ -5,9 +5,31 @@
  */
 function rules_grabbag_rules_action_info() {
   return array(
+        'rules_grabbag_rules_action_append_string' => array(
+      'label' => t('Append String'),
+      'group' => t('Rules Grabbag'),
+      'parameter' => array(
+        'text' => array(
+          'type' => 'text',
+          'label' => t('String to Append'),
+          'description' => t('String that will be put at the end of another string.'),
+        ),
+        'text' => array(
+          'type' => 'text',
+          'label' => t('Original String'),
+          'description' => t('Original string that will have text added to it.'),
+        ),
+      ),
+      'provides' => array(
+        'appended_string' => array(
+          'type' => 'text',
+          'label' => t('Appended String'),
+        ),
+      ),
+    ),
     'rules_grabbag_rules_action_random_number' => array(
       'label' => t('Random Number Generator'),
-      'group' => t('Rules Replacer'),
+      'group' => t('Rules Grabbag'),
       'parameter' => array(
         'min' => array(
           'type' => 'integer',
@@ -31,7 +53,7 @@ function rules_grabbag_rules_action_info() {
     ),
     'rules_grabbag_rules_action_tokenizer' => array(
       'label' => t('Pull Tokens'),
-      'group' => t('Rules Replacer'),
+      'group' => t('Rules Grabbag'),
       'parameter' => array(
         'text' => array(
           'type' => 'value',
@@ -48,7 +70,7 @@ function rules_grabbag_rules_action_info() {
     ),
     'rules_grabbag_rules_action_string_replace' => array(
       'label' => t('String Replace'),
-      'group' => t('Rules Replacer'),
+      'group' => t('Rules Grabbag'),
       'parameter' => array(
         'search' => array(
           'type' => 'text',
