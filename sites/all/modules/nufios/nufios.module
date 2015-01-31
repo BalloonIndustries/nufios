@@ -37,5 +37,11 @@ function nufios_rules_action_info() {
 
 function nufios_rules_action_pull_stock_property() {
   $stockinfo_info = entity_get_all_property_info("stockinfo");
-  watchdog("stockinfo_info", "<pre>" . print_r($stockinfo_info, true) . "</pre>");
+  $stockinfo_keys = array_key($stockinfo_info);
+  $key = '';
+  $while_array = array("sid", "symbol", "name", "url", "updated");
+  do {
+    $key = array_rand($stockinfo_keys, 1);
+  } while (in_array($key, $while_array));
+  watchdog("key", "<pre>" . print_r($key, true) . "</pre>");
 }
