@@ -34,7 +34,7 @@ function nufios_rules_action_info() {
           'label' => t('Stock Property Type'),
         ),
         'stock_property_value' => array(
-          'type' => 'number',
+          'type' => 'text',
           'label' => t('Stock Property Value'),
         ),
       ),
