@@ -42,7 +42,7 @@ function nufios_rules_action_info() {
   );
 }
 
-function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $count) {
+function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $count = 0) {
   $key = '';
   $while_array = array("sid", "symbol", "name", "url", "updated", "exchange");
   do {
@@ -60,10 +60,12 @@ function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $count) 
     if ($count > 30) {
       watchdog("Recursion Problem", "Too many instances of recursion are occuring. Please take a look.");
     }
-    nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $count);
+    $property_info = nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $count);
+    return $property_info;
   }
   else {
-    return array("stock_property" => $key, "stock_property_value" => (string) $property);
+    $property_info = array("stock_property" => $key, "stock_property_value" => (string) $property);
+    return $property_info;
   }
 }
 

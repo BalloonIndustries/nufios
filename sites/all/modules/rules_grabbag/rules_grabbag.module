@@ -5,7 +5,7 @@
  */
 function rules_grabbag_rules_action_info() {
   return array(
-        'rules_grabbag_rules_action_append_string' => array(
+    'rules_grabbag_rules_action_append_string' => array(
       'label' => t('Append String'),
       'group' => t('Rules Grabbag'),
       'parameter' => array(
