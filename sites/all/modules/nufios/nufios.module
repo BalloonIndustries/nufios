@@ -12,3 +12,30 @@ function nufios_stockinfo_save(&$stock) {
     substr_replace($stock['name'], "Corporation", " ", 9);
   }
 }
+
+/**
+ * Implement hook_rules_action_info().
+ */
+function nufios_rules_action_info() {
+  return array(
+    'nufios_rules_action_pull_stock_property' => array(
+      'label' => t('Pull Stock Property Value'),
+      'group' => t('Nufios'),
+      'provides' => array(
+        'stock_property' => array(
+          'type' => 'text',
+          'label' => t('Stock Property Type'),
+        ),
+        'stock_property_value' => array(
+          'type' => 'number',
+          'label' => t('Stock Property Value'),
+        ),
+      ),
+    ),
+  );
+}
+
+function nufios_rules_action_pull_stock_property() {
+  $stockinfo_info = entity_get_all_property_info("stockinfo");
+  watchdog("stockinfo_info", "<pre>" . print_r($stockinfo_info, true) . "</pre>");
+}

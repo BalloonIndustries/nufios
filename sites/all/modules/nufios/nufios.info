@@ -3,3 +3,4 @@ description = Nufios site specific changes
 package = nufios
 core = 7.x
 
+dependencies[] = entity
