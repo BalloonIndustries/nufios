@@ -21,6 +21,13 @@ function nufios_rules_action_info() {
     'nufios_rules_action_pull_stock_property' => array(
       'label' => t('Pull Stock Property Value'),
       'group' => t('Nufios'),
+      'parameter' => array(
+        'symbol' => array(
+          'type' => 'text',
+          'label' => t('Symbol'),
+          'description' => t('Stock symbol to collect data from.'),
+        ),
+      ),
       'provides' => array(
         'stock_property' => array(
           'type' => 'text',
@@ -35,13 +42,34 @@ function nufios_rules_action_info() {
   );
 }
 
-function nufios_rules_action_pull_stock_property() {
+function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $count) {
+  $key = '';
+  $while_array = array("sid", "symbol", "name", "url", "updated", "exchange");
+  do {
+    $numeric_key = array_rand($stockinfo_keys, 1);
+    $key = $stockinfo_keys[$numeric_key];
+  } while (in_array($key, $while_array));
+
+  // db_query was not working here, switch to db_query in the future if possible
+  $property = db_select("stockinfo", "si")
+          ->fields("si", array($key))
+          ->condition("symbol", $symbol, "=")
+          ->execute()->fetchField();
+  if (empty($property)) {
+    $count = $count + 1;
+    if ($count > 30) {
+      watchdog("Recursion Problem", "Too many instances of recursion are occuring. Please take a look.");
+    }
+    nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $count);
+  }
+  else {
+    return array("stock_property" => $key, "stock_property_value" => $property);
+  }
+}
+
+function nufios_rules_action_pull_stock_property($symbol) {
   $stockinfo_info = entity_get_all_property_info("stockinfo");
   $stockinfo_keys = array_keys($stockinfo_info);
-  $key = '';
-  $while_array = array("sid", "symbol", "name", "url", "updated");
-  do {
-    $key = array_rand($stockinfo_keys, 1);
-  } while (in_array($key, $while_array));
-  watchdog("key", "<pre>" . print_r($key, true) . "</pre>");
+  $property = nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, 0);
+  return $property;
 }
