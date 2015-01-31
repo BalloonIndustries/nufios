@@ -63,7 +63,7 @@ function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $count) 
     nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $count);
   }
   else {
-    return array("stock_property" => $key, "stock_property_value" => $property);
+    return array("stock_property" => $key, "stock_property_value" => (string) $property);
   }
 }
 
