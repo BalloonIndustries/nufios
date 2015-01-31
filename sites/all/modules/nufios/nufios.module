@@ -37,7 +37,7 @@ function nufios_rules_action_info() {
 
 function nufios_rules_action_pull_stock_property() {
   $stockinfo_info = entity_get_all_property_info("stockinfo");
-  $stockinfo_keys = array_key($stockinfo_info);
+  $stockinfo_keys = array_keys($stockinfo_info);
   $key = '';
   $while_array = array("sid", "symbol", "name", "url", "updated");
   do {
