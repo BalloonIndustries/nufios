@@ -156,6 +156,9 @@ function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $label_a
       $property = number_format($property);
       $property = (string) $property . "M";
     }
+    elseif($property > 1000) {
+      $property = number_format($property);
+    }
     $property_info = array("stock_property" => $final_key, "stock_property_value" => (string) $property);
     return $property_info;
   }
