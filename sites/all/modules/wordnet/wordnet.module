@@ -115,8 +115,9 @@ db_set_active();
     return $word;
   }
   $word_count = wordnet_word_count($words, $mapped_pos);
-
-  $word_replaced = wordnet_weighted($word_count);
+watchdog("word count", "<pre>" . print_r($word_count, true) . "</pre>");
+$word_replaced = wordnet_weighted($word_count);
+watchdog("word replaced early", "<pre>" . print_r($word_replaced, true) . "</pre>");
   db_set_active();
   return array($word_replaced, $pos);
 }
