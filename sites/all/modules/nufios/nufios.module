@@ -126,15 +126,15 @@ function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $label_a
     $machine_name = variable_get('stockinfo_field_machine_name');
     $machine_key = array_search($key, $machine_name);
     $final_key = $label_array[$machine_key];
-    if($final_key > 1000000000) {
-      $final_key = $final_key / 1000000000;
-      $final_key = number_format($final_key);
-      $final_key = (string) $final_key . "B";
+    if($property > 1000000000) {
+      $property = $property / 1000000000;
+      $property = number_format($property);
+      $property = (string) $property . "B";
     }
-    elseif($final_key > 1000000) {
-      $final_key = $final_key / 1000000;
-      $final_key = number_format($final_key);
-      $final_key = (string) $final_key . "M";
+    elseif($property > 1000000) {
+      $property = $property / 1000000;
+      $property = number_format($property);
+      $property = (string) $property . "M";
     }
     $property_info = array("stock_property" => $final_key, "stock_property_value" => (string) $property);
     return $property_info;
