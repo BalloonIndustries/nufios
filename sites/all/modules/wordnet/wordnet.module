@@ -21,7 +21,15 @@ function wordnet_get_synset_from_wordid($wordid) {
 }
 
 function wordnet_get_words_from_synsets($synsets) {
-  $wordids = implode(",", db_query("SELECT wordid FROM {senses} WHERE synsetid IN (" . $synsets . ")")->fetchCol()); //insecure, fix this
+  //$wordids = implode(",", db_query("SELECT wordid FROM {senses} WHERE synsetid IN (" . $synsets . ")")->fetchCol()); //insecure, fix this
+  $wordid_result = db_select("senses", "s")
+      ->fields("s", array("wordid"))
+      ->condition("synsetid", $synsets, "IN");
+      if($pos != NULL) {
+        $wordid_result->condition("pos", $pos, "=");
+      }
+      $wordid = implode(",", $wordid_result->fetchCol());
+      watchdog("wordid", "<pre>" . print_r($wordid, true) . "</pre>");
   if (empty($wordids)) {
     return FALSE;
   }
