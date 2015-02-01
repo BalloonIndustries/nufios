@@ -90,12 +90,15 @@ function wordnet_synonym($word_info, $arguments = NULL) {
 
   db_set_active("wordnet");
   if ($wordid = wordnet_get_wordid_from_word($word) == FALSE) {
+db_set_active();
     return $word;
   }
-  if ($synsets = wordnet_get_synset_from_wordid == FALSE) {
+  if ($synsets = wordnet_get_synset_from_wordid($wordid) == FALSE) {
+db_set_active();
     return $word;
   }
-  if ($words = wordnet_get_words_from_synsets == FALSE) {
+  if ($words = wordnet_get_words_from_synsets($synsets) == FALSE) {
+db_set_active();
     return $word;
   }
   $word_count = wordnet_word_count($words, $mapped_pos);
