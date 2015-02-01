@@ -88,7 +88,7 @@ function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $count =
   }
   else {
     $machine_name = variable_get('stockinfo_field_machine_name');
-    $machine_key = $machine_name[$key];
+    $machine_key = array_search($key, $machine_name);
     $label_name = variable_get('stockinfo_field_label');
     $final_key = $label_name[$machine_key];
     $property_info = array("stock_property" => $final_key, "stock_property_value" => (string) $property);
