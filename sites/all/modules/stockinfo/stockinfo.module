@@ -107,7 +107,6 @@ function stockinfo_admin_settings() {
 }
 
 function stockinfo_mapstock($chunk, $type, $symbol = NULL) {
-  watchdog("does it get here?!?!?", "<pre>" . print_r("does it get here??", true) . "</pre>");
   foreach ($chunk as $stock) {
     if ($type == "stockinfo") {
       drupal_alter('stockinfo_save', $stock);
