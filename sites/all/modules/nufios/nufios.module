@@ -28,10 +28,11 @@ function nufios_stockinfo_save_alter(&$stock) {
   if (strpos($stock['name'], "Banco") !== false) {
     substr_replace($stock['name'], "", " ", 5);
   }
-    if (strpos($stock['name'], "Gulf Resources, I") !== false) {
-    substr_replace($stock['name'], "Gulf Resources, I", "Gulf Resources, Inc");
+    if (strpos($stock['name'], "Financial Man") !== false) {
+    substr_replace($stock['name'], "Financial Management", " ", 13);
   }
   $stock['name'] = rtrim($stock['name'], ",");
+  $stock['name'] = rtrim($stock['name'], ", I");
 }
 
 /**
@@ -76,7 +77,9 @@ function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $count =
     "field_volume_percentage",
     "last_trade_date",
     "last_trade_with_time",
-    "last_trade_price_only");
+    "last_trade_price_only",
+    "price_paid",
+    "open");
   do {
     $numeric_key = array_rand($stockinfo_keys, 1);
     $key = $stockinfo_keys[$numeric_key];
@@ -87,7 +90,7 @@ function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $count =
           ->fields("si", array($key))
           ->condition("symbol", $symbol, "=")
           ->execute()->fetchField();
-  if (empty($property)) {
+  if (empty($property) || $property == "-0") {
     $count = $count + 1;
     if ($count > 30) {
       watchdog("Recursion Problem", "Too many instances of recursion are occuring. Please take a look.");
