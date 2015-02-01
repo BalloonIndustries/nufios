@@ -119,11 +119,6 @@ function rules_grabbag_rules_action_string_replace($search, $replace, $subject, 
   elseif (is_int($count)) {
     $replaced_text = str_replace($search, $replace, $subject, $count);
   }
-  
-  watchdog("search", "<pre>" . print_r($search, true) . "</pre>");
-  watchdog("replace", "<pre>" . print_r($replace, true) . "</pre>");
-  watchdog("subject", "<pre>" . print_r($subject, true) . "</pre>");
-  watchdog("replaced_text", "<pre>" . print_r($replaced_text, true) . "</pre>");
 
   return array(
     'replaced_text' => $replaced_text,

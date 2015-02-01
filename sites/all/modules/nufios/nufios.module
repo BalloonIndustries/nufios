@@ -11,6 +11,18 @@ function nufios_stockinfo_save(&$stock) {
   if (strpos($stock['name'], "Corporati") !== false) {
     substr_replace($stock['name'], "Corporation", " ", 9);
   }
+    if (strpos($stock['name'], "Corporatio") !== false) {
+    substr_replace($stock['name'], "Corporation", " ", 10);
+  }
+  if (strpos($stock['name'], "Acqu") !== false) {
+    substr_replace($stock['name'], "Acquistion", " ", 4);
+  }
+  if (strpos($stock['name'], "Intersta") !== false) {
+    substr_replace($stock['name'], "Interstate", " ", 7);
+  }
+    if (strpos($stock['name'], "Banco") !== false) {
+    substr_replace($stock['name'], "", " ", 5);
+  }
 }
 
 /**
@@ -44,7 +56,7 @@ function nufios_rules_action_info() {
 
 function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $count = 0) {
   $key = '';
-  $while_array = array("sid", "symbol", "name", "url", "updated", "exchange");
+  $while_array = array("sid", "symbol", "name", "url", "updated", "exchange", "chg_and_pct_chg", "field_volume_percentage", "last_trade_date");
   do {
     $numeric_key = array_rand($stockinfo_keys, 1);
     $key = $stockinfo_keys[$numeric_key];
