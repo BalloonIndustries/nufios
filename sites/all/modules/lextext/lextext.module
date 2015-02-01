@@ -277,7 +277,7 @@ function lextext_process() {
     }
     ksort($lextext_order);
     //watchdog("lextext info", "<pre>" . print_r($lextext_info, true) . "</pre>");
-    watchdog("lextext order", "<pre>" . print_r($lextext_order, true) . "</pre>");
+    //watchdog("lextext order", "<pre>" . print_r($lextext_order, true) . "</pre>");
     
     
     return $lextext_order;

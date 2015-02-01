@@ -107,6 +107,7 @@ function stockinfo_admin_settings() {
 }
 
 function stockinfo_mapstock($chunk, $type, $symbol = NULL) {
+  watchdog("does it get here?!?!?", "<pre>" . print_r("does it get here??", true) . "</pre>");
   foreach ($chunk as $stock) {
     if ($type == "stockinfo") {
       drupal_alter('stockinfo_save', $stock);
@@ -159,7 +160,8 @@ function stockinfo_stockinfo_historical_save_alter(&$stock) {
   }
 }
 
-function stockinfo_save_alter(&$stock) {
+function stockinfo_stockinfo_save_alter(&$stock) {
+  watchdog("it gets here", "<pre>" . print_r("it gets here", true) . "</pre>");
   // Turn all values into the correct format
   $float_map = array(
     'change',
@@ -207,6 +209,8 @@ function stockinfo_save_alter(&$stock) {
         $value = str_replace("K", "", $value);
         $value = $value * 1000;
       }
+            watchdog("key multiplied", "<pre>" . print_r($key, true) . "</pre>");
+      watchdog("value multiplied", "<pre>" . print_r($value, true) . "</pre>");
     }
     if ($key == 'days_value_change') {
       $stock[$key] = str_replace("- ", "", $value);

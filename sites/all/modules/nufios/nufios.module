@@ -7,7 +7,10 @@ function computed_field_field_volume_percentage_compute(&$entity_field, $entity_
   }
 }
 
-function nufios_stockinfo_save(&$stock) {
+/*
+ * Normalizes data from YAHOO!, intended to resolve typos, etc. Conditions are added as they pop up.
+ */
+function nufios_stockinfo_save_alter(&$stock) {
   
   // replace with regular expressions soonish
   if (strpos($stock['name'], "Corporati") !== false) {
@@ -28,6 +31,7 @@ function nufios_stockinfo_save(&$stock) {
     if (strpos($stock['name'], "Gulf Resources, I") !== false) {
     substr_replace($stock['name'], "Gulf Resources, I", "Gulf Resources, Inc");
   }
+  $stock['name'] = rtrim($stock['name'], ",");
 }
 
 /**
