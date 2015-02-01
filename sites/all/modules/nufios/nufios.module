@@ -10,8 +10,9 @@ function computed_field_field_volume_percentage_compute(&$entity_field, $entity_
 /*
  * Normalizes data from YAHOO!, intended to resolve typos, etc. Conditions are added as they pop up.
  */
+
 function nufios_stockinfo_save_alter(&$stock) {
-  
+
   // replace with regular expressions soonish
   if (strpos($stock['name'], "Corporati") !== false) {
     substr_replace($stock['name'], "Corporation", " ", 9);
@@ -28,7 +29,7 @@ function nufios_stockinfo_save_alter(&$stock) {
   if (strpos($stock['name'], "Banco") !== false) {
     substr_replace($stock['name'], "", " ", 5);
   }
-    if (strpos($stock['name'], "Financial Man") !== false) {
+  if (strpos($stock['name'], "Financial Man") !== false) {
     substr_replace($stock['name'], "Financial Management", " ", 13);
   }
   $stock['name'] = rtrim($stock['name'], ",");
@@ -103,7 +104,26 @@ function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $label_a
     "last_trade_price_only",
     "price_paid",
     "open",
-    "pct_chg");
+    "pct_chg",
+    'last_trade_with_time',
+    'last_trade_price_only',
+    'last_trade_date',
+    'last_trade_time',
+    'notes',
+    'last_trade_rt',
+    'bid_rt',
+    'ask_rt',
+    'pct_chg_rt',
+    'chg_rt',
+    'holdings_value_rt',
+    'days_value_chg_rt',
+    'holdings_gain_pct_rt',
+    'holdings_gain_rt',
+    'days_range_rt',
+    'market_cap_rt',
+    'pe_rt',
+    'after_hours_change_rt',
+    'order_book_rt');
   do {
     $numeric_key = array_rand($stockinfo_keys, 1);
     $key = $stockinfo_keys[$numeric_key];
@@ -126,12 +146,12 @@ function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $label_a
     $machine_name = variable_get('stockinfo_field_machine_name');
     $machine_key = array_search($key, $machine_name);
     $final_key = $label_array[$machine_key];
-    if($property > 1000000000) {
+    if ($property > 1000000000) {
       $property = $property / 1000000000;
       $property = number_format($property);
       $property = (string) $property . "B";
     }
-    elseif($property > 1000000) {
+    elseif ($property > 1000000) {
       $property = $property / 1000000;
       $property = number_format($property);
       $property = (string) $property . "M";
