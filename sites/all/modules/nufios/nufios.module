@@ -33,6 +33,29 @@ function nufios_stockinfo_save_alter(&$stock) {
   }
   $stock['name'] = rtrim($stock['name'], ",");
   $stock['name'] = rtrim($stock['name'], ", I");
+  $stock['name'] = ucfirst($stock['name']);
+  $stock['name'] = str_replace("VelocityShares Da", "VelocityShares Data", $stock['name']);
+  $stock['name'] = str_replace("Vanguard Long-Te", "Vanguard Long-Term", $stock['name']);
+  $stock['name'] = str_replace("Vanguard Short-Te", "Vanguard Short-Term", $stock['name']);
+  $stock['name'] = str_replace("VASCO Data Securi", "VASCO Data Security", $stock['name']);
+  $stock['name'] = str_replace("Vanguard Intermed", "Vanguard Intermediate", $stock['name']);
+  $stock['name'] = str_replace("Video Display Cor", "Video Display Corporation", $stock['name']);
+  $stock['name'] = str_replace("Vident Internatio", "Vident International", $stock['name']);
+  $stock['name'] = str_replace("Vical Incorpate", "Vical Incorporated", $stock['name']);
+  $stock['name'] = str_replace("Vimicro Internati", "Vimicro International", $stock['name']);
+  $stock['name'] = str_replace("Vicro Manufacturi", "Vicro Manufacturing", $stock['name']);
+  $stock['name'] = str_replace("Meridian Bioscien", "Meridian Bioscience", $stock['name']);
+  $stock['name'] = str_replace("Knightsbridge Shi", "Knightsbridge Shipping", $stock['name']);
+  $stock['name'] = str_replace("Village Super Mar", "Village Super Market", $stock['name']);
+  $stock['name'] = str_replace("Knightsbridge Shi", "Knightsbridge Shipping", $stock['name']);
+  $stock['name'] = str_replace("Valley National B", "Valley National Bank", $stock['name']);
+  $stock['name'] = str_replace("Vanda Pharmaceuti", "Vanda Pharmaceutical", $stock['name']);
+  $stock['name'] = str_replace("Voltari Corporati", "Voltari Corporation", $stock['name']);
+  $stock['name'] = str_replace("Vanguard Global e", "Vanguard Global Equity Fund", $stock['name']);
+  $stock['name'] = str_replace("Vanguard Natural", "Vanguard Natural Resources", $stock['name']);
+  $stock['name'] = str_replace("Gulf Resources, I", "Gulf Resources", $stock['name']);
+  $stock['name'] = str_replace("HopFed Bancorp, I", "HopFed Bancorp", $stock['name']);
+  $stock['name'] = str_replace("HF2 Financial Man", "HF2 Financial Management", $stock['name']);
 }
 
 /**
