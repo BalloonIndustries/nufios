@@ -139,7 +139,7 @@ function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $label_a
     if ($count > 30) {
       watchdog("Recursion Problem", "Too many instances of recursion are occuring. Please take a look.");
     }
-    $property_info = nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $count);
+    $property_info = nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $label_array, $count);
     return $property_info;
   }
   else {
@@ -148,16 +148,16 @@ function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $label_a
     $final_key = $label_array[$machine_key];
     if ($property > 1000000000) {
       $property = $property / 1000000000;
-      $property = number_format($property);
+      $property = number_format($property, 1);
       $property = (string) $property . "B";
     }
     elseif ($property > 1000000) {
       $property = $property / 1000000;
-      $property = number_format($property);
+      $property = number_format($property, 1);
       $property = (string) $property . "M";
     }
     elseif($property > 1000) {
-      $property = number_format($property);
+      $property = number_format($property, 1);
     }
     $property_info = array("stock_property" => $final_key, "stock_property_value" => (string) $property);
     return $property_info;
