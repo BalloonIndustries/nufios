@@ -13,7 +13,7 @@ watchdog("wordid stuff", "<pre>" . print_r($wordid, true) . "</pre>");
 
 function wordnet_get_synset_from_wordid($wordid) {
 watchdog("wordid before syn", "<pre>" . print_r($wordid, true) . "</pre>");
-  $synsets = implode(",", db_query("SELECT synsetid FROM {senses} WHERE wordid = :wordid", array("wordid" => $wordid))->fetchCol());
+  $synsets = db_query("SELECT synsetid FROM {senses} WHERE wordid = :wordid", array("wordid" => $wordid))->fetchCol();
 watchdog("synsets", "<pre>" . print_r($synsets, true) . "</pre>");
   if (empty($synsets)) {
     return FALSE;
@@ -109,6 +109,7 @@ watchdog("wordid before synset stuff", "<pre>" . print_r($wordid, true) . "</pre
 db_set_active();
     return $word;
   }
+watchdog("synset stuff not empty", "<pre>" . print_r($synsets, true) . "</pre>");
   if (($words = wordnet_get_words_from_synsets($synsets)) == FALSE) {
 db_set_active();
     return $word;
