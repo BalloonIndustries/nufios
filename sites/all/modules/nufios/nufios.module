@@ -56,7 +56,17 @@ function nufios_rules_action_info() {
 
 function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $count = 0) {
   $key = '';
-  $while_array = array("sid", "symbol", "name", "url", "updated", "exchange", "chg_and_pct_chg", "field_volume_percentage", "last_trade_date");
+  $while_array = array(
+      "sid",
+      "symbol",
+      "name",
+      "url",
+      "updated",
+      "exchange",
+      "chg_and_pct_chg",
+      "field_volume_percentage",
+      "last_trade_date",
+      "last_trade_with_time");
   do {
     $numeric_key = array_rand($stockinfo_keys, 1);
     $key = $stockinfo_keys[$numeric_key];
