@@ -2,6 +2,7 @@
 
 function wordnet_get_wordid_from_word($word) {
   $wordid = db_query("SELECT wordid FROM {words} WHERE lemma = :word", array("word" => $word))->fetchField();
+watchdog("wordid stuff", "<pre>" . print_r($wordid, true) . "</pre>");
   if (empty($wordid)) {
     return FALSE;
   }
@@ -12,6 +13,7 @@ function wordnet_get_wordid_from_word($word) {
 
 function wordnet_get_synset_from_wordid($wordid) {
   $synsets = implode(",", db_query("SELECT synsetid FROM {senses} WHERE wordid = :wordid", array("wordid" => $wordid))->fetchCol());
+watchdog("synsets", "<pre>" . print_r($synsets, true) . "</pre>");
   if (empty($synsets)) {
     return FALSE;
   }
@@ -20,7 +22,7 @@ function wordnet_get_synset_from_wordid($wordid) {
   }
 }
 
-function wordnet_get_words_from_synsets($synsets) {
+function wordnet_get_words_from_synsets($synsets, $pos) {
   //$wordids = implode(",", db_query("SELECT wordid FROM {senses} WHERE synsetid IN (" . $synsets . ")")->fetchCol()); //insecure, fix this
   $wordid_result = db_select("senses", "s")
       ->fields("s", array("wordid"))
@@ -28,7 +30,7 @@ function wordnet_get_words_from_synsets($synsets) {
       if($pos != NULL) {
         $wordid_result->condition("pos", $pos, "=");
       }
-      $wordid = implode(",", $wordid_result->fetchCol());
+      $wordid = implode(",", $wordid_result->execute()->fetchCol());
       watchdog("wordid", "<pre>" . print_r($wordid, true) . "</pre>");
   if (empty($wordids)) {
     return FALSE;
