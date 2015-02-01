@@ -8,6 +8,8 @@ function computed_field_field_volume_percentage_compute(&$entity_field, $entity_
 }
 
 function nufios_stockinfo_save(&$stock) {
+  
+  // replace with regular expressions soonish
   if (strpos($stock['name'], "Corporati") !== false) {
     substr_replace($stock['name'], "Corporation", " ", 9);
   }
@@ -22,6 +24,9 @@ function nufios_stockinfo_save(&$stock) {
   }
   if (strpos($stock['name'], "Banco") !== false) {
     substr_replace($stock['name'], "", " ", 5);
+  }
+    if (strpos($stock['name'], "Gulf Resources, I") !== false) {
+    substr_replace($stock['name'], "Gulf Resources, I", "Gulf Resources, Inc");
   }
 }
 
@@ -92,7 +97,6 @@ function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $count =
     $label_name = variable_get('stockinfo_field_label');
     $final_key = $label_name[$machine_key];
     $property_info = array("stock_property" => $final_key, "stock_property_value" => (string) $property);
-    $property_info = array("stock_property" => $key, "stock_property_value" => (string) $property);
     return $property_info;
   }
 }
