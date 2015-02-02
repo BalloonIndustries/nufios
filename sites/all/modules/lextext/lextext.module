@@ -262,12 +262,12 @@ function lextext_convert_strict_pos($pos = NULL) {
   }
   elseif ($lemmatized == TRUE) {
     $pos_map = array(
-      "JJa" => "JJ",
-      "JJs" => "JJ",
-      "JJRa" => "JJ",
-      "JJRs" => "JJ",
-      "JJSa" => "JJ",
-      "JJSs" => "JJ",
+      "JJa",
+      "JJs",
+      "JJRa",
+      "JJRs",
+      "JJSa",
+      "JJSs",
     );
   }
   if ($pos == NULL) {
@@ -275,7 +275,7 @@ function lextext_convert_strict_pos($pos = NULL) {
   }
   else {
     if (in_array($pos, $pos_map)) {
-      $mapped_pos = $pos_map[$pos];
+      $mapped_pos = "JJ";
       return $mapped_pos;
     }
     else {
