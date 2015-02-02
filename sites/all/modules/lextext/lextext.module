@@ -247,6 +247,29 @@ function lextext_lemmatize_map($pos) {
   return $map[$pos];
 }
 
+function lextext_convert_strict_pos($pos = NULL) {
+    $pos_map = array(
+    "JJa" => "JJ",
+    "JJs" => "JJ",
+    "JJRa" => "JJR",
+    "JJRs" => "JJR",
+    "JJSa" => "JJS",
+    "JJSs" => "JJS",
+  );
+  if($pos == NULL) {
+    return NULL;
+  }
+  else {
+    if(in_array($pos, $pos_map)) {
+    $mapped_pos = $pos_map[$pos];
+    return $mapped_pos;
+    }
+    else {
+      return $pos;
+    }
+  }
+}
+
 function lextext_lemmatize($word_info, $arguments = NULL) {
   
   $word = $word_info[0];
