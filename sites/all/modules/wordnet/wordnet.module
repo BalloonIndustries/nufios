@@ -76,7 +76,6 @@ watchdog("imploded", "<pre>" . print_r($words_imploded, true) . "</pre>");
   watchdog("word count initial", "<pre>" . print_r($word_count_initial, true) . "</pre>");
   $word_count = array();
   foreach ($word_count_initial as $word_count_item) {
-watchdog("word count item", "<pre>" . print_r($word_count_item, true) . "</pre>");
     if (array_key_exists($word_count_item->lemma, $word_count)) {
       $word_count[$word_count_item->lemma] = $word_count_item->count + $word_count[$word_count_item->lemma];
     }
@@ -176,6 +175,7 @@ elseif($pos == "JJSs" || $pos == "JJSa") {
   $pos = "JJS";
   $word_replaced = $word_replaced . "est";
 }
+watchdog("word with superlatives", "<pre>" . print_r($word_replaced, true) . "</pre>");
   db_set_active("anc");
   $returned_word = db_query("SELECT word FROM anc WHERE lemma = :lemma AND pos = :pos", array(":lemma" => $word_replaced, ":pos" => $pos))->fetchCol();
   if(empty($returned_word)) {
