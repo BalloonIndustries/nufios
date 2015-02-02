@@ -54,7 +54,7 @@ function wordnet_get_words_from_synsets($synsets, $pos = NULL) {
 function wordnet_word_count($words, $pos = NULL) {
 
   if (isset($pos)) {
-    $string_pos = "AND pos = $pos";
+    $string_pos = "AND pos = '$pos'";
   }
   else {
     $string_pos = "";
@@ -64,7 +64,14 @@ function wordnet_word_count($words, $pos = NULL) {
   // Grabs each POS and combines them equally. This will eventually be changed to only the POS that is being used
   // By the program
 
-  $word_count_initial = db_query("SELECT lemma, count FROM {anc} WHERE lemma IN (" . $words . ") $string_pos")->fetchAll();
+  //$word_count_initial = db_query("SELECT lemma, count FROM {anc} WHERE lemma IN (" . $words . ") $string_pos")->fetchAll();
+  $results = db_select("anc", "a")
+      ->fields("a", array("lemma, count"))
+      ->condition("lemma", $words, "IN");
+      if($pos != NULL) {
+        $results->condition("pos", $pos, "=");
+      }
+      $results->execute()->fetchAll();
   $word_count = array();
   foreach ($word_count_initial as $word_count_item) {
     if (array_key_exists($word_count_item->lemma, $word_count)) {
@@ -75,10 +82,6 @@ function wordnet_word_count($words, $pos = NULL) {
     }
   }
   return $word_count;
-}
-
-function wordnet_anc_pos_map($pos) {
-  return $pos;
 }
 
 function wordnet_synonym($word_info, $arguments = NULL) {
