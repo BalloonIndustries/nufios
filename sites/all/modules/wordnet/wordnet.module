@@ -112,12 +112,12 @@ function wordnet_map_pos($pos = NULL) {
   }
 }
 
-function wordnet_synonym($word_info, &$lemmatized = FALSE, $arguments = NULL) {
+function wordnet_synonym($word_info, $arguments = NULL) {
   /*
    * Uses insecure processing of array data, but for some reason Drupal was choking on it.
    * This should be fixed at some point.
    */
-
+  
   $word = $word_info[0];
   if (isset($word_info[1])) {
     $pos = $word_info[1];

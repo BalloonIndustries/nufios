@@ -113,3 +113,7 @@ function lextext_schema() {
 
   return $schema;
 }
+
+function lextext_install() {
+  variable_set("lemmatized", FALSE);
+}
