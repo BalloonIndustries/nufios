@@ -49,8 +49,8 @@ function wordnet_get_words_from_synsets($synsets, $pos = NULL) {
 }
 
 function wordnet_word_count($words, $pos = NULL) {
-  //watchdog("word count before anc active", "<pre>" . print_r($words, true) . "</pre>");
-//watchdog("pos stuff crazyness", "<pre>" . print_r($pos, true) . "</pre>");
+  watchdog("word count before anc active", "<pre>" . print_r($words, true) . "</pre>");
+watchdog("pos stuff crazyness", "<pre>" . print_r($pos, true) . "</pre>");
 
   db_set_active("anc");
   // Grabs each POS and combines them equally. This will eventually be changed to only the POS that is being used
@@ -63,7 +63,7 @@ function wordnet_word_count($words, $pos = NULL) {
     $results->condition("pos", $pos, "=");
   }
   $word_count_initial = $results->execute()->fetchAll();
-  //watchdog("word count initial", "<pre>" . print_r($word_count_initial, true) . "</pre>");
+  watchdog("word count initial", "<pre>" . print_r($word_count_initial, true) . "</pre>");
   $word_count = array();
   foreach ($word_count_initial as $word_count_item) {
     if (array_key_exists($word_count_item->lemma, $word_count)) {
@@ -144,6 +144,7 @@ function wordnet_synonym($word_info, $arguments = NULL) {
   $strict_pos = lextext_convert_strict_pos($pos);
 watchdog("strict pos", "<pre>" . print_r($strict_pos, true) . "</pre>");
   $word_count = wordnet_word_count($words, $strict_pos);
+  watchdog("word count", "<pre>" . print_r($word_count, true) . "</pre>");
   $word_replaced = wordnet_weighted($word_count);
   db_set_active();
   return array($word_replaced, $pos);
