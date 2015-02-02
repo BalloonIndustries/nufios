@@ -73,8 +73,6 @@ watchdog("imploded", "<pre>" . print_r($words_imploded, true) . "</pre>");
   if ($pos != NULL) {
     $results->condition("pos", $pos, "=");
   }*/
-  watchdog("query results", "<pre>" . print_r((string) $results, true) . "</pre>");
-  $word_count_initial = $results->execute()->fetchAll();
   watchdog("word count initial", "<pre>" . print_r($word_count_initial, true) . "</pre>");
   $word_count = array();
   foreach ($word_count_initial as $word_count_item) {
