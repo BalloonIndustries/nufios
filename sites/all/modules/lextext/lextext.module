@@ -318,8 +318,6 @@ function lextext_process() {
 
     return $lextext_order;
   }
-
-  variable_set("lemmatized", FALSE);
   return $content;
 }
 
@@ -348,9 +346,10 @@ function lextext_generate($content) {
     }
     $words_replaced[] = $word;
   }
+  watchdog("final words replaced", "<pre>" . print_r($words_replaced, true) . "</pre>");
 
   //watchdog("word totally replaced", "<pre>" . print_r($words_replaced, true) . "</pre>");
-
+variable_set("lemmatized", FALSE);
   return $content;
 }
 
