@@ -12,9 +12,7 @@ function wordnet_get_wordid_from_word($word) {
 }
 
 function wordnet_get_synset_from_wordid($wordid) {
-  watchdog("wordid before syn", "<pre>" . print_r($wordid, true) . "</pre>");
   $synsets = db_query("SELECT synsetid FROM {senses} WHERE wordid = :wordid", array("wordid" => $wordid))->fetchCol();
-  watchdog("synsets", "<pre>" . print_r($synsets, true) . "</pre>");
   if (empty($synsets)) {
     return FALSE;
   }
@@ -32,7 +30,6 @@ function wordnet_get_words_from_synsets($synsets, $pos = NULL) {
     $wordid_result->condition("pos", $pos, "=");
   }
   $wordids = implode(",", $wordid_result->execute()->fetchCol());
-  watchdog("wordid", "<pre>" . print_r($wordids, true) . "</pre>");
   if (empty($wordids)) {
     return FALSE;
   }
@@ -119,8 +116,6 @@ function wordnet_synonym($word_info, $arguments = NULL) {
    * This should be fixed at some point.
    */
 
-  watchdog("word_info", "<pre>" . print_r($word_info, true) . "</pre>");
-
   $word = $word_info[0];
   if (isset($word_info[1])) {
     $pos = $word_info[1];
@@ -134,22 +129,18 @@ function wordnet_synonym($word_info, $arguments = NULL) {
     db_set_active();
     return $word;
   }
-  watchdog("wordid before synset stuff", "<pre>" . print_r($wordid, true) . "</pre>");
   if (($synsets = wordnet_get_synset_from_wordid($wordid)) == FALSE) {
     db_set_active();
     return $word;
   }
-  watchdog("synset stuff not empty", "<pre>" . print_r($synsets, true) . "</pre>");
-  if (($words = wordnet_get_words_from_synsets($synsets)) == FALSE) {
+  $mapped_pos = wordnet_map_pos($pos);
+  if (($words = wordnet_get_words_from_synsets($synsets, $mapped_pos)) == FALSE) {
     db_set_active();
     return $word;
   }
-  watchdog("words omg not another watchdog", "<pre>" . print_r($words, true) . "</pre>");
   $strict_pos = lextext_convert_strict_pos($pos);
   $word_count = wordnet_word_count($words, $strict_pos);
-  watchdog("word count", "<pre>" . print_r($word_count, true) . "</pre>");
   $word_replaced = wordnet_weighted($word_count);
-  watchdog("word replaced early", "<pre>" . print_r($word_replaced, true) . "</pre>");
   db_set_active();
   return array($word_replaced, $pos);
 }
