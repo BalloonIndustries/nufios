@@ -2,7 +2,7 @@
 
 function wordnet_get_wordid_from_word($word) {
   $wordid = db_query("SELECT wordid FROM {words} WHERE lemma = :word", array("word" => $word))->fetchField();
-watchdog("wordid stuff", "<pre>" . print_r($wordid, true) . "</pre>");
+  watchdog("wordid stuff", "<pre>" . print_r($wordid, true) . "</pre>");
   if (empty($wordid)) {
     return FALSE;
   }
@@ -12,9 +12,9 @@ watchdog("wordid stuff", "<pre>" . print_r($wordid, true) . "</pre>");
 }
 
 function wordnet_get_synset_from_wordid($wordid) {
-watchdog("wordid before syn", "<pre>" . print_r($wordid, true) . "</pre>");
+  watchdog("wordid before syn", "<pre>" . print_r($wordid, true) . "</pre>");
   $synsets = db_query("SELECT synsetid FROM {senses} WHERE wordid = :wordid", array("wordid" => $wordid))->fetchCol();
-watchdog("synsets", "<pre>" . print_r($synsets, true) . "</pre>");
+  watchdog("synsets", "<pre>" . print_r($synsets, true) . "</pre>");
   if (empty($synsets)) {
     return FALSE;
   }
@@ -28,11 +28,11 @@ function wordnet_get_words_from_synsets($synsets, $pos = NULL) {
   $wordid_result = db_select("senses", "s")
       ->fields("s", array("wordid"))
       ->condition("synsetid", $synsets, "IN");
-      if($pos != NULL) {
-        $wordid_result->condition("pos", $pos, "=");
-      }
-      $wordids = implode(",", $wordid_result->execute()->fetchCol());
-      watchdog("wordid", "<pre>" . print_r($wordids, true) . "</pre>");
+  if ($pos != NULL) {
+    $wordid_result->condition("pos", $pos, "=");
+  }
+  $wordids = implode(",", $wordid_result->execute()->fetchCol());
+  watchdog("wordid", "<pre>" . print_r($wordids, true) . "</pre>");
   if (empty($wordids)) {
     return FALSE;
   }
@@ -56,15 +56,14 @@ function wordnet_word_count($words, $pos = NULL) {
   db_set_active("anc");
   // Grabs each POS and combines them equally. This will eventually be changed to only the POS that is being used
   // By the program
-
   //$word_count_initial = db_query("SELECT lemma, count FROM {anc} WHERE lemma IN (" . $words . ") $string_pos")->fetchAll();
   $results = db_select("anc", "a")
       ->fields("a", array("lemma", "count"))
       ->condition("lemma", $words, "IN");
-      if($pos != NULL) {
-        $results->condition("pos", $pos, "=");
-      }
-      $results->execute()->fetchAll();
+  if ($pos != NULL) {
+    $results->condition("pos", $pos, "=");
+  }
+  $word_count_initial = $results->execute()->fetchAll();
   $word_count = array();
   foreach ($word_count_initial as $word_count_item) {
     if (array_key_exists($word_count_item->lemma, $word_count)) {
@@ -100,13 +99,13 @@ function wordnet_map_pos($pos = NULL) {
     "NP" => "n",
     "NPS" => "n",
   );
-  if($pos == NULL) {
+  if ($pos == NULL) {
     return NULL;
   }
   else {
-    if(in_array($pos, $pos_map)) {
-    $mapped_pos = $pos_map[$pos];
-    return $mapped_pos;
+    if (in_array($pos, $pos_map)) {
+      $mapped_pos = $pos_map[$pos];
+      return $mapped_pos;
     }
     else {
       return NULL;
@@ -132,25 +131,25 @@ function wordnet_synonym($word_info, $arguments = NULL) {
 
   db_set_active("wordnet");
   if (($wordid = wordnet_get_wordid_from_word($word)) == FALSE) {
-db_set_active();
+    db_set_active();
     return $word;
   }
-watchdog("wordid before synset stuff", "<pre>" . print_r($wordid, true) . "</pre>");
+  watchdog("wordid before synset stuff", "<pre>" . print_r($wordid, true) . "</pre>");
   if (($synsets = wordnet_get_synset_from_wordid($wordid)) == FALSE) {
-db_set_active();
+    db_set_active();
     return $word;
   }
-watchdog("synset stuff not empty", "<pre>" . print_r($synsets, true) . "</pre>");
+  watchdog("synset stuff not empty", "<pre>" . print_r($synsets, true) . "</pre>");
   if (($words = wordnet_get_words_from_synsets($synsets)) == FALSE) {
-db_set_active();
+    db_set_active();
     return $word;
   }
-watchdog("words omg not another watchdog", "<pre>" . print_r($words, true) . "</pre>");
-$strict_pos = lextext_convert_strict_pos($pos);
+  watchdog("words omg not another watchdog", "<pre>" . print_r($words, true) . "</pre>");
+  $strict_pos = lextext_convert_strict_pos($pos);
   $word_count = wordnet_word_count($words, $strict_pos);
-watchdog("word count", "<pre>" . print_r($word_count, true) . "</pre>");
-$word_replaced = wordnet_weighted($word_count);
-watchdog("word replaced early", "<pre>" . print_r($word_replaced, true) . "</pre>");
+  watchdog("word count", "<pre>" . print_r($word_count, true) . "</pre>");
+  $word_replaced = wordnet_weighted($word_count);
+  watchdog("word replaced early", "<pre>" . print_r($word_replaced, true) . "</pre>");
   db_set_active();
   return array($word_replaced, $pos);
 }
