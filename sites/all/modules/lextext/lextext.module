@@ -300,6 +300,7 @@ function lextext_lemmatize($word_info, $arguments = NULL) {
 }
 
 function lextext_process() {
+  variable_set("lemmatized", FALSE);
   $lextext_attributes = variable_get("lextext_attributes", NULL);
   if (empty($lextext_attributes)) {
     
@@ -318,6 +319,7 @@ function lextext_process() {
     return $lextext_order;
   }
 
+  variable_set("lemmatized", FALSE);
   return $content;
 }
 
