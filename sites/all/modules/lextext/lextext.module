@@ -249,6 +249,7 @@ function lextext_lemmatize_map($pos) {
 
 function lextext_convert_strict_pos($pos = NULL) {
   $lemmatized = variable_get("lemmatized");
+watchdog("lemmatized", "<pre>" . print_r($lemmatized, true) . "</pre>");
   if($lemmatized == FALSE) {
     $pos_map = array(
     "JJa" => "JJ",
@@ -269,12 +270,14 @@ function lextext_convert_strict_pos($pos = NULL) {
     "JJSs" => "JJ",
       );
   }
+watchdog("lemmatized map version", "<pre>" . print_r($pos_map, true) . "</pre>");
+watchdog("what is pos here", "<pre>" . print_r($pos, true) . "</pre>");
   if($pos == NULL) {
     return NULL;
   }
   else {
-    if(in_array($pos, $pos_map)) {
-    $mapped_pos = $pos_map[$pos];
+    if(isset($pos_map[$pos])) {
+$mapped_pos = $pos_map[$pos];
     return $mapped_pos;
     }
     else {

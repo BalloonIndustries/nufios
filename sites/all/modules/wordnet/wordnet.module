@@ -142,6 +142,7 @@ function wordnet_synonym($word_info, $arguments = NULL) {
     return $word;
   }
   $strict_pos = lextext_convert_strict_pos($pos);
+watchdog("strict pos", "<pre>" . print_r($strict_pos, true) . "</pre>");
   $word_count = wordnet_word_count($words, $strict_pos);
   $word_replaced = wordnet_weighted($word_count);
   db_set_active();
