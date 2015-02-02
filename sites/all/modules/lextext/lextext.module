@@ -262,12 +262,12 @@ function lextext_convert_strict_pos($pos = NULL) {
   }
   elseif ($lemmatized == TRUE) {
     $pos_map = array(
-      "JJa",
-      "JJs",
-      "JJRa",
-      "JJRs",
-      "JJSa",
-      "JJSs",
+      "JJa" => "JJ",
+      "JJs" => "JJ",
+      "JJRa" => "JJ",
+      "JJRs" => "JJ",
+      "JJSa" => "JJ",
+      "JJSs" => "JJ",
     );
   }
   if ($pos == NULL) {
