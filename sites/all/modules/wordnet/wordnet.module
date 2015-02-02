@@ -170,7 +170,7 @@ function wordnet_anc_delemmatize($word_replaced, $pos) {
   db_set_active("anc");
   $returned_word = db_query("SELECT word FROM anc WHERE lemma = :lemma AND pos = :pos", array(":lemma" => $word_replaced, ":pos" => $pos))->fetchCol();
   if(empty($returned_word)) {
-    return $replaced_word;
+    return $word_replaced;
   }
   else {
   return $returned_word;
