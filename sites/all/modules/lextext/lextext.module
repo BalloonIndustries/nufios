@@ -247,7 +247,8 @@ function lextext_lemmatize_map($pos) {
   return $map[$pos];
 }
 
-function lextext_convert_strict_pos($pos = NULL) {
+function lextext_convert_strict_pos($pos = NULL, &$lemmatized = FALSE) {
+  if($lemmatized == FALSE) {
     $pos_map = array(
     "JJa" => "JJ",
     "JJs" => "JJ",
@@ -256,6 +257,17 @@ function lextext_convert_strict_pos($pos = NULL) {
     "JJSa" => "JJS",
     "JJSs" => "JJS",
   );
+  }
+  elseif($lemmatized == TRUE) {
+    $pos_map = array(
+    "JJa" => "JJ",
+    "JJs" => "JJ",
+    "JJRa" => "JJ",
+    "JJRs" => "JJ",
+    "JJSa" => "JJ",
+    "JJSs" => "JJ",
+      );
+  }
   if($pos == NULL) {
     return NULL;
   }
@@ -270,7 +282,7 @@ function lextext_convert_strict_pos($pos = NULL) {
   }
 }
 
-function lextext_lemmatize($word_info, $arguments = NULL) {
+function lextext_lemmatize($word_info, &$lemmatized = FALSE, $arguments = NULL) {
   
   $word = $word_info[0];
   $pos = $word_info[1];
@@ -282,6 +294,7 @@ function lextext_lemmatize($word_info, $arguments = NULL) {
   $result_json = json_decode($result->data);
   watchdog("result json", "<pre>" . print_r($result_json, true) . "</pre>");
   $lemma = $result_json->LemmatizerResult->lemma;
+  $lemmatized = TRUE;
   return array($lemma, $pos);
 }
 
