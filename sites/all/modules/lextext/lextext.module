@@ -275,7 +275,7 @@ function lextext_convert_strict_pos($pos = NULL) {
   }
   else {
     if (in_array($pos, $pos_map)) {
-      $mapped_pos = "JJ";
+      $mapped_pos = $pos_map[$pos];
       return $mapped_pos;
     }
     else {
