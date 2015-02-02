@@ -355,7 +355,7 @@ function lextext_generate($content) {
       $word = $words_replaced[$count][0][0];
     }
     watchdog("word", "<pre>" . print_r($word, true) . "</pre>");
-    preg_replace('/{(' . trim($match) . ')}/', reset($word), $content, 1);
+    $content = preg_replace('/{(' . trim($match) . ')}/', reset($word), $content, 1);
   }
   watchdog("final words replaced", "<pre>" . print_r($content, true) . "</pre>");
       //$content = preg_replace('/{(' . trim($matches[0]) . ')}/', $word, $content, 1);
