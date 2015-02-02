@@ -157,8 +157,18 @@ watchdog("strict pos", "<pre>" . print_r($strict_pos, true) . "</pre>");
   $word_count = wordnet_word_count($words, $strict_pos);
   watchdog("word count", "<pre>" . print_r($word_count, true) . "</pre>");
   $word_replaced = wordnet_weighted($word_count);
+  watchdog("word_replaced", "<pre>" . print_r($word_replaced, true) . "</pre>");
+  variable_set("lemmatized", FALSE);
+  $strict_pos = lextext_convert_strict_pos($pos);
+  $returned_word = wordnet_anc_delemmatize($word_replaced, $pos);
   db_set_active();
-  return array($word_replaced, $pos);
+  return array($returned_word, $pos);
+}
+
+function wordnet_anc_delemmatize($word_replaced) {
+  $returned_word = db_query("SELECT word FROM anc WHERE lemma = :lemma AND pos = :pos", array(":lemma" => $word_replaced, ":pos" => $pos))->fetchCol();
+  watchdog("returned word", "<pre>" . print_r($returned_word, true) . "</pre>");
+  return $returned_word;
 }
 
 function wordnet_weighted($weightedValues) {
