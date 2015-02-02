@@ -327,7 +327,7 @@ function lextext_generate($content) {
 
   preg_match_all('/{(.*?)}/', $content, $matches);
 
-  //watchdog("matches", "<pre>" . print_r($matches, true) . "</pre>");
+  watchdog("matches", "<pre>" . print_r($matches, true) . "</pre>");
   $words = array();
   foreach ($matches[1] as $match) {
     $words[] = explode(",", $match);
@@ -347,6 +347,8 @@ function lextext_generate($content) {
     $words_replaced[] = $word;
   }
   watchdog("final words replaced", "<pre>" . print_r($words_replaced, true) . "</pre>");
+      $content = preg_replace('/{(' . trim($match[0]) . ')}/', $word, $content, 1);
+    //$content = preg_replace('/{(' . $match . ')}/', $word, $content, 1);
 
   //watchdog("word totally replaced", "<pre>" . print_r($words_replaced, true) . "</pre>");
 variable_set("lemmatized", FALSE);
