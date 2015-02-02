@@ -346,13 +346,18 @@ function lextext_generate($content) {
     }
     $words_replaced[] = $word;
   }
-  foreach($words_replaced as &$word_items) {
-    if(isset($word_items[0][0])) {
-      $word_items[0] = $word_items[0][0];
+  $count = 0;
+  foreach($matches[0] as $match) {
+    if(!isset($words_replace[$count][0][0])) {
+      $word = $words_replaced[$count][0];
     }
+    else {
+      $word = $words_replaced[$count][0][0];
+    }
+    preg_replace('/{(' . trim($match) . ')}/', $word, $content, 1);
   }
-  watchdog("final words replaced", "<pre>" . print_r($words_replaced, true) . "</pre>");
-      $content = preg_replace('/{(' . trim($match[0]) . ')}/', $word, $content, 1);
+  watchdog("final words replaced", "<pre>" . print_r($content, true) . "</pre>");
+      //$content = preg_replace('/{(' . trim($matches[0]) . ')}/', $word, $content, 1);
     //$content = preg_replace('/{(' . $match . ')}/', $word, $content, 1);
 
   //watchdog("word totally replaced", "<pre>" . print_r($words_replaced, true) . "</pre>");
