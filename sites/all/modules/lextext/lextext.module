@@ -270,8 +270,6 @@ function lextext_convert_strict_pos($pos = NULL) {
       "JJSs",
     );
   }
-  watchdog("lemmatized map version", "<pre>" . print_r($pos_map, true) . "</pre>");
-  watchdog("what is pos here", "<pre>" . print_r($pos, true) . "</pre>");
   if ($pos == NULL) {
     return NULL;
   }
