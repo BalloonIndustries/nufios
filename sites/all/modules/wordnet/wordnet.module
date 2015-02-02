@@ -50,6 +50,7 @@ function wordnet_get_words_from_synsets($synsets, $pos = NULL) {
 
 function wordnet_word_count($words, $pos = NULL) {
   watchdog("word count before anc active", "<pre>" . print_r($words, true) . "</pre>");
+watchdog("pos stuff crazyness", "<pre>" . print_r($pos, true) . "</pre>");
 
   db_set_active("anc");
   // Grabs each POS and combines them equally. This will eventually be changed to only the POS that is being used
