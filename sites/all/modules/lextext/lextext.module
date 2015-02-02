@@ -346,6 +346,12 @@ function lextext_generate($content) {
     }
     $words_replaced[] = $word;
   }
+  foreach($words_replaced as &$word_items) {
+    if(isset($word_items[0][0])) {
+      $word_items[0] = $word_items[0][0];
+      unset($word_items[0][0]);
+    }
+  }
   watchdog("final words replaced", "<pre>" . print_r($words_replaced, true) . "</pre>");
       $content = preg_replace('/{(' . trim($match[0]) . ')}/', $word, $content, 1);
     //$content = preg_replace('/{(' . $match . ')}/', $word, $content, 1);
