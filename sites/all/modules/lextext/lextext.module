@@ -94,8 +94,8 @@ function lextext_node_save($content) {
 
 function lextext_old_save($form, &$form_state) {
   // switch textfield with machine name when time permits
-  watchdog("form", "<pre>" . print_r($form, true) . "</pre>");
-  watchdog("form state", "<pre>" . print_r($form_state, true) . "</pre>");
+  //watchdog("form", "<pre>" . print_r($form, true) . "</pre>");
+  //watchdog("form state", "<pre>" . print_r($form_state, true) . "</pre>");
   $lextext = $form_state['values']['lextext_lextext'];
   $type = $form_state['values']['lextext_type'];
   $name = $form_state['values']['lextext_name'];
@@ -233,7 +233,7 @@ function _lextext_machine_name($machine_name) {
   } */
 
 function lextext_lemmatize_map($pos) {
-  watchdog("map pos", print_r($pos, true));
+  //watchdog("map pos", print_r($pos, true));
   $pos = trim($pos);
   $map = array(
     "adj" => "adjective",
@@ -241,9 +241,9 @@ function lextext_lemmatize_map($pos) {
     "n" => "noun",
     "v" => "verb",
   );
-  watchdog("true Map", "<pre>" . print_r($map, true) . "</pre>");
+  //watchdog("true Map", "<pre>" . print_r($map, true) . "</pre>");
   $map_pos = $map[$pos];
-  watchdog("Map", "<pre>" . print_r($map_pos, true) . "</pre>");
+  //watchdog("Map", "<pre>" . print_r($map_pos, true) . "</pre>");
   return $map[$pos];
 }
 
@@ -296,7 +296,6 @@ function lextext_lemmatize($word_info, $arguments = NULL) {
   //$url = "http://devadorner.northwestern.edu/maserver/lemmatizer?corpusConfig=ncf&wordClass=$wordClass&media=json&spelling=" . $match;
   $result = drupal_http_request($url);
   $result_json = json_decode($result->data);
-  watchdog("result json", "<pre>" . print_r($result_json, true) . "</pre>");
   $lemma = $result_json->LemmatizerResult->lemma;
   variable_set("lemmatized", TRUE);
   return array($lemma, $pos);
@@ -304,7 +303,6 @@ function lextext_lemmatize($word_info, $arguments = NULL) {
 
 function lextext_process() {
   $lextext_attributes = variable_get("lextext_attributes", NULL);
-  //watchdog("lextext attributes", "<pre>" . print_r($lextext_attributes, true) . "</pre>");
   if(empty($lextext_attributes)) {
   }
   else {
@@ -316,8 +314,6 @@ function lextext_process() {
       }
     }
     ksort($lextext_order);
-    //watchdog("lextext info", "<pre>" . print_r($lextext_info, true) . "</pre>");
-    watchdog("lextext order", "<pre>" . print_r($lextext_order, true) . "</pre>");
     
     
     return $lextext_order;
@@ -329,31 +325,31 @@ return $content;
 
 function lextext_generate($content) {
 
-  watchdog("content", "<pre>" . print_r($content, true) . "</pre>");
+  //watchdog("content", "<pre>" . print_r($content, true) . "</pre>");
   
   preg_match_all('/{(.*?)}/', $content, $matches);
 
-  watchdog("matches", "<pre>" . print_r($matches, true) . "</pre>");
+  //watchdog("matches", "<pre>" . print_r($matches, true) . "</pre>");
   $words = array();
   foreach($matches[1] as $match) {
   $words[] = explode(",", $match);
   }
-  watchdog("words", "<pre>" . print_r($words, true) . "</pre>");
+  //watchdog("words", "<pre>" . print_r($words, true) . "</pre>");
   $words_replaced = array();
   $functions = lextext_process();
   foreach($words as $word) {
-    watchdog("word written", "<pre>" . print_r($word, true) . "</pre>");
+    //watchdog("word written", "<pre>" . print_r($word, true) . "</pre>");
 foreach($functions as $container) {
-  watchdog("container", "<pre>" . print_r($container, true) . "</pre>");
+  //watchdog("container", "<pre>" . print_r($container, true) . "</pre>");
   $function = key($container);
   $container_value = array_shift($container);
   $word = $function($word, $container_value['arguments']);
-  watchdog("word before insertion", "<pre>" . print_r($word, true) . "</pre>");
+  //watchdog("word before insertion", "<pre>" . print_r($word, true) . "</pre>");
 }
 $words_replaced[] = $word;
   }
   
-  watchdog("word totally replaced", "<pre>" . print_r($words_replaced, true) . "</pre>");
+  //watchdog("word totally replaced", "<pre>" . print_r($words_replaced, true) . "</pre>");
 
   return $content;
 }
@@ -383,7 +379,7 @@ function lextext_rules_action_info() {
 }
 
 function lextext_rules_action_create($content) {
-  watchdog("content generated", "<pre>" . print_r($content, true) . "</pre>");
+  //watchdog("content generated", "<pre>" . print_r($content, true) . "</pre>");
   $content_value = lextext_generate($content);
 
   return array(
@@ -582,7 +578,7 @@ function lextext_access($op, $lextext = NULL, $account = NULL) {
   if (user_access('administer lextexts', $account)) {
     return TRUE;
   }
-  watchdog("lextext error", "<pre>" . print_r($lextext, true) . "</pre>");
+  //watchdog("lextext error", "<pre>" . print_r($lextext, true) . "</pre>");
   if (isset($lextext) && $type_name = $lextext) {
     $op = ($op == 'view') ? 'view' : 'edit';
     if (user_access("$op any $type_name lextext", $account)) {
