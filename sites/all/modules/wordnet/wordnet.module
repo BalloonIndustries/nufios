@@ -168,6 +168,7 @@ watchdog("strict pos", "<pre>" . print_r($strict_pos, true) . "</pre>");
 }
 
 function wordnet_anc_delemmatize($word_replaced, $pos) {
+watchdog("pos", "<pre>" . print_r($pos, true) . "</pre>");
   db_set_active("anc");
   $returned_word = db_query("SELECT word FROM anc WHERE lemma = :lemma AND pos = :pos", array(":lemma" => $word_replaced, ":pos" => $pos))->fetchCol();
   if(empty($returned_word)) {
