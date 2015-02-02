@@ -262,13 +262,16 @@ watchdog("lemmatized", "<pre>" . print_r($lemmatized, true) . "</pre>");
   }
   elseif($lemmatized == TRUE) {
     $pos_map = array(
-    "JJa" => "JJ",
-    "JJs" => "JJ",
-    "JJRa" => "JJ",
-    "JJRs" => "JJ",
-    "JJSa" => "JJ",
-    "JJSs" => "JJ",
+    "JJa",
+    "JJs",
+    "JJRa",
+    "JJRs",
+    "JJSa",
+    "JJSs",
       );
+if(in_array($pos, $pos_map) {
+$mapped_pos = "JJ";
+}
   }
 watchdog("lemmatized map version", "<pre>" . print_r($pos_map, true) . "</pre>");
 watchdog("what is pos here", "<pre>" . print_r($pos, true) . "</pre>");
@@ -276,6 +279,10 @@ watchdog("what is pos here", "<pre>" . print_r($pos, true) . "</pre>");
     return NULL;
   }
   else {
+watchdog("pos map!!! with no map", "<pre>" . print_r($pos_map, true) . "</pre>");
+watchdog("pos map!!!", "<pre>" . print_r($pos_map[$pos], true) . "</pre>");
+watchdog("pos map!!! with no pos", "<pre>" . print_r($pos, true) . "</pre>");
+$mapped_pos = $pos_map[$pos];
     if(isset($pos_map[$pos])) {
 $mapped_pos = $pos_map[$pos];
     return $mapped_pos;
