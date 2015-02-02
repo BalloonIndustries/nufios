@@ -163,6 +163,7 @@ watchdog("strict pos", "<pre>" . print_r($strict_pos, true) . "</pre>");
   $strict_pos = lextext_convert_strict_pos($pos);
   $returned_word = wordnet_anc_delemmatize($word_replaced, $strict_pos);
   db_set_active();
+  watchdog("returned word", "<pre>" . print_r($returned_word, true) . "</pre>");
   return array($returned_word, $pos);
 }
 
