@@ -59,7 +59,7 @@ function wordnet_word_count($words, $pos = NULL) {
 
   //$word_count_initial = db_query("SELECT lemma, count FROM {anc} WHERE lemma IN (" . $words . ") $string_pos")->fetchAll();
   $results = db_select("anc", "a")
-      ->fields("a", array("lemma, count"))
+      ->fields("a", array("lemma", "count"))
       ->condition("lemma", $words, "IN");
       if($pos != NULL) {
         $results->condition("pos", $pos, "=");
