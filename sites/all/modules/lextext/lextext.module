@@ -150,9 +150,9 @@ function lextext_info() {
 
 function lextext_lextext_info_alter(&$lextext_info) {
   $lextext_info['lextext_lemmatize'] = array(
-      'label' => t('Lemmatize Text'),
-      'arguments' => array(),
-    );
+    'label' => t('Lemmatize Text'),
+    'arguments' => array(),
+  );
 }
 
 function lextext_admin_settings() {
@@ -249,43 +249,36 @@ function lextext_lemmatize_map($pos) {
 
 function lextext_convert_strict_pos($pos = NULL) {
   $lemmatized = variable_get("lemmatized");
-watchdog("lemmatized", "<pre>" . print_r($lemmatized, true) . "</pre>");
-  if($lemmatized == FALSE) {
+  watchdog("lemmatized", "<pre>" . print_r($lemmatized, true) . "</pre>");
+  if ($lemmatized == FALSE) {
     $pos_map = array(
-    "JJa" => "JJ",
-    "JJs" => "JJ",
-    "JJRa" => "JJR",
-    "JJRs" => "JJR",
-    "JJSa" => "JJS",
-    "JJSs" => "JJS",
-  );
+      "JJa" => "JJ",
+      "JJs" => "JJ",
+      "JJRa" => "JJR",
+      "JJRs" => "JJR",
+      "JJSa" => "JJS",
+      "JJSs" => "JJS",
+    );
   }
-  elseif($lemmatized == TRUE) {
+  elseif ($lemmatized == TRUE) {
     $pos_map = array(
-    "JJa",
-    "JJs",
-    "JJRa",
-    "JJRs",
-    "JJSa",
-    "JJSs",
-      );
-if(in_array($pos, $pos_map) {
-$mapped_pos = "JJ";
-}
+      "JJa",
+      "JJs",
+      "JJRa",
+      "JJRs",
+      "JJSa",
+      "JJSs",
+    );
   }
-watchdog("lemmatized map version", "<pre>" . print_r($pos_map, true) . "</pre>");
-watchdog("what is pos here", "<pre>" . print_r($pos, true) . "</pre>");
-  if($pos == NULL) {
+  watchdog("lemmatized map version", "<pre>" . print_r($pos_map, true) . "</pre>");
+  watchdog("what is pos here", "<pre>" . print_r($pos, true) . "</pre>");
+  if ($pos == NULL) {
     return NULL;
   }
   else {
-watchdog("pos map!!! with no map", "<pre>" . print_r($pos_map, true) . "</pre>");
-watchdog("pos map!!!", "<pre>" . print_r($pos_map[$pos], true) . "</pre>");
-watchdog("pos map!!! with no pos", "<pre>" . print_r($pos, true) . "</pre>");
-$mapped_pos = $pos_map[$pos];
-    if(isset($pos_map[$pos])) {
-$mapped_pos = $pos_map[$pos];
-    return $mapped_pos;
+    if (in_array($pos, $pos_map)) {
+      $mapped_pos = "JJ";
+      return $mapped_pos;
     }
     else {
       return $pos;
@@ -294,10 +287,10 @@ $mapped_pos = $pos_map[$pos];
 }
 
 function lextext_lemmatize($word_info, $arguments = NULL) {
-  
+
   $word = $word_info[0];
   $pos = $word_info[1];
-  
+
   //$wordClass = lextext_lemmatize_map($pos);
   $url = "http://devadorner.northwestern.edu/maserver/lemmatizer?corpusConfig=ncf&media=json&spelling=" . $word;
   //$url = "http://devadorner.northwestern.edu/maserver/lemmatizer?corpusConfig=ncf&wordClass=$wordClass&media=json&spelling=" . $match;
@@ -310,52 +303,52 @@ function lextext_lemmatize($word_info, $arguments = NULL) {
 
 function lextext_process() {
   $lextext_attributes = variable_get("lextext_attributes", NULL);
-  if(empty($lextext_attributes)) {
+  if (empty($lextext_attributes)) {
+    
   }
   else {
     $lextext_info = lextext_info();
     $lextext_order = array();
-    foreach($lextext_info as $key => $value) {
-      if($lextext_attributes[$key]['checkbox'] == 1) {
-      $lextext_order[$lextext_attributes[$key]['weight']] = array($key => $value);
+    foreach ($lextext_info as $key => $value) {
+      if ($lextext_attributes[$key]['checkbox'] == 1) {
+        $lextext_order[$lextext_attributes[$key]['weight']] = array($key => $value);
       }
     }
     ksort($lextext_order);
-    
-    
+
+
     return $lextext_order;
-    
   }
-  
-return $content;
+
+  return $content;
 }
 
 function lextext_generate($content) {
 
   //watchdog("content", "<pre>" . print_r($content, true) . "</pre>");
-  
+
   preg_match_all('/{(.*?)}/', $content, $matches);
 
   //watchdog("matches", "<pre>" . print_r($matches, true) . "</pre>");
   $words = array();
-  foreach($matches[1] as $match) {
-  $words[] = explode(",", $match);
+  foreach ($matches[1] as $match) {
+    $words[] = explode(",", $match);
   }
   //watchdog("words", "<pre>" . print_r($words, true) . "</pre>");
   $words_replaced = array();
   $functions = lextext_process();
-  foreach($words as $word) {
+  foreach ($words as $word) {
     //watchdog("word written", "<pre>" . print_r($word, true) . "</pre>");
-foreach($functions as $container) {
-  //watchdog("container", "<pre>" . print_r($container, true) . "</pre>");
-  $function = key($container);
-  $container_value = array_shift($container);
-  $word = $function($word, $container_value['arguments']);
-  //watchdog("word before insertion", "<pre>" . print_r($word, true) . "</pre>");
-}
-$words_replaced[] = $word;
+    foreach ($functions as $container) {
+      //watchdog("container", "<pre>" . print_r($container, true) . "</pre>");
+      $function = key($container);
+      $container_value = array_shift($container);
+      $word = $function($word, $container_value['arguments']);
+      //watchdog("word before insertion", "<pre>" . print_r($word, true) . "</pre>");
+    }
+    $words_replaced[] = $word;
   }
-  
+
   //watchdog("word totally replaced", "<pre>" . print_r($words_replaced, true) . "</pre>");
 
   return $content;
