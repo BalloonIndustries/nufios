@@ -45,7 +45,7 @@ function wordnet_get_words_from_synsets($synsets, $pos = NULL) {
       foreach ($words as &$word_item) {
         $word_item = "'" . $word_item . "'";
       }
-      $words = implode(",", $words);
+      watchdog("words array probably", "<pre>" . print_r($words, true) . "</pre>");
       return $words;
     }
   }
