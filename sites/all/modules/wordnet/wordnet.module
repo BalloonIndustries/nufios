@@ -53,13 +53,6 @@ function wordnet_get_words_from_synsets($synsets, $pos = NULL) {
 
 function wordnet_word_count($words, $pos = NULL) {
 
-  if (isset($pos)) {
-    $string_pos = "AND pos = '$pos'";
-  }
-  else {
-    $string_pos = "";
-  }
-
   db_set_active("anc");
   // Grabs each POS and combines them equally. This will eventually be changed to only the POS that is being used
   // By the program
@@ -84,6 +77,43 @@ function wordnet_word_count($words, $pos = NULL) {
   return $word_count;
 }
 
+function wordnet_map_pos($pos = NULL) {
+  $pos_map = array(
+    "VBD" => "v",
+    "RBR" => "r",
+    "VBG" => "v",
+    "JJa" => "a",
+    "JJs" => "s",
+    "JJRa" => "a",
+    "JJRs" => "s",
+    "JJSa" => "a",
+    "JJSs" => "s",
+    "WRB" => "r",
+    "VBZ" => "v",
+    "VBP" => "v",
+    "VB" => "v",
+    "VBN" => "v",
+    "RBS" => "r",
+    "RB" => "r",
+    "NN" => "n",
+    "NNS" => "n",
+    "NP" => "n",
+    "NPS" => "n",
+  );
+  if($pos == NULL) {
+    return NULL;
+  }
+  else {
+    if(in_array($pos, $pos_map)) {
+    $mapped_pos = $pos_map[$pos];
+    return $mapped_pos;
+    }
+    else {
+      return NULL;
+    }
+  }
+}
+
 function wordnet_synonym($word_info, $arguments = NULL) {
   /*
    * Uses insecure processing of array data, but for some reason Drupal was choking on it.
@@ -99,8 +129,6 @@ function wordnet_synonym($word_info, $arguments = NULL) {
   else {
     $pos = NULL;
   }
-
-  $mapped_pos = wordnet_anc_pos_map($pos);
 
   db_set_active("wordnet");
   if (($wordid = wordnet_get_wordid_from_word($word)) == FALSE) {
@@ -118,7 +146,7 @@ db_set_active();
     return $word;
   }
 watchdog("words omg not another watchdog", "<pre>" . print_r($words, true) . "</pre>");
-  $word_count = wordnet_word_count($words, $mapped_pos);
+  $word_count = wordnet_word_count($words, $pos);
 watchdog("word count", "<pre>" . print_r($word_count, true) . "</pre>");
 $word_replaced = wordnet_weighted($word_count);
 watchdog("word replaced early", "<pre>" . print_r($word_replaced, true) . "</pre>");
