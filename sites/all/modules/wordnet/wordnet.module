@@ -51,21 +51,25 @@ function wordnet_get_words_from_synsets($synsets, $pos = NULL) {
 function wordnet_word_count($words, $pos = NULL) {
   watchdog("word count before anc active", "<pre>" . print_r($words, true) . "</pre>");
 watchdog("pos stuff crazyness", "<pre>" . print_r($pos, true) . "</pre>");
+$words_imploded = implode(",", $words);
+watchdog("imploded", "<pre>" . print_r($words_imploded, true) . "</pre>");
 
   db_set_active("anc");
   // Grabs each POS and combines them equally. This will eventually be changed to only the POS that is being used
   // By the program
   //$word_count_initial = db_query("SELECT lemma, count FROM {anc} WHERE lemma IN (" . $words . ") $string_pos")->fetchAll();
   $results = db_select("anc", "a")
-      ->fields("a", array("lemma", "count"))
-      ->condition("lemma", $words, "IN");
+      ->fields("a", array("lemma", "count"));
+      //->condition("lemma", array($words_imploded), "IN");
   if ($pos != NULL) {
     $results->condition("pos", $pos, "=");
   }
+  watchdog("query results", "<pre>" . print_r((string) $results, true) . "</pre>");
   $word_count_initial = $results->execute()->fetchAll();
   watchdog("word count initial", "<pre>" . print_r($word_count_initial, true) . "</pre>");
   $word_count = array();
   foreach ($word_count_initial as $word_count_item) {
+watchdog("word count item", "<pre>" . print_r($word_count_item, true) . "</pre>");
     if (array_key_exists($word_count_item->lemma, $word_count)) {
       $word_count[$word_count_item->lemma] = $word_count_item->count + $word_count[$word_count_item->lemma];
     }
