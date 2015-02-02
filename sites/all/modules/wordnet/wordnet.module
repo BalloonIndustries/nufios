@@ -31,8 +31,8 @@ function wordnet_get_words_from_synsets($synsets, $pos = NULL) {
       if($pos != NULL) {
         $wordid_result->condition("pos", $pos, "=");
       }
-      $wordid = implode(",", $wordid_result->execute()->fetchCol());
-      watchdog("wordid", "<pre>" . print_r($wordid, true) . "</pre>");
+      $wordids = implode(",", $wordid_result->execute()->fetchCol());
+      watchdog("wordid", "<pre>" . print_r($wordids, true) . "</pre>");
   if (empty($wordids)) {
     return FALSE;
   }
@@ -114,6 +114,7 @@ watchdog("synset stuff not empty", "<pre>" . print_r($synsets, true) . "</pre>")
 db_set_active();
     return $word;
   }
+watchdog("words omg not another watchdog", "<pre>" . print_r($words, true) . "</pre>");
   $word_count = wordnet_word_count($words, $mapped_pos);
 watchdog("word count", "<pre>" . print_r($word_count, true) . "</pre>");
 $word_replaced = wordnet_weighted($word_count);
