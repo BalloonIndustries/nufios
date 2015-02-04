@@ -332,17 +332,17 @@ function lextext_generate($content) {
   foreach ($matches[1] as $match) {
     $words[] = explode(",", $match);
   }
-  //watchdog("words", "<pre>" . print_r($words, true) . "</pre>");
+  watchdog("words", "<pre>" . print_r($words, true) . "</pre>");
   $words_replaced = array();
   $functions = lextext_process();
   foreach ($words as $word) {
-    //watchdog("word written", "<pre>" . print_r($word, true) . "</pre>");
+    watchdog("word written", "<pre>" . print_r($word, true) . "</pre>");
     foreach ($functions as $container) {
-      //watchdog("container", "<pre>" . print_r($container, true) . "</pre>");
+      watchdog("container", "<pre>" . print_r($container, true) . "</pre>");
       $function = key($container);
       $container_value = array_shift($container);
       $word = $function($word, $container_value['arguments']);
-      //watchdog("word before insertion", "<pre>" . print_r($word, true) . "</pre>");
+      watchdog("word before insertion", "<pre>" . print_r($word, true) . "</pre>");
     }
     $words_replaced[] = $word;
   }
