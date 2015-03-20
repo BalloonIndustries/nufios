@@ -264,7 +264,7 @@ function nufios_stockinfo_save_alter(&$stock) {
   $stock['name'] = str_replace("Semtech Corporati", "Semtech Corporation", $stock['name']);
   $stock['name'] = str_replace("Synchronoss Techn", "Synchonoss Technologies", $stock['name']);
   $stock['name'] = str_replace("Sunesis Pharmarceu", "Sunsesis Pharmaceuticals", $stock['name']);
-  $stock['name'] = str_replace("Synta Pharmaceuti", "Synta Pharmaceuticals", $stock['name'])
+  $stock['name'] = str_replace("Synta Pharmaceuti", "Synta Pharmaceuticals", $stock['name']);
 }
 
 /**
