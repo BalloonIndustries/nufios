@@ -543,13 +543,13 @@ function gov_data_property_info() {
     'type' => 'integer',
     'schema field' => 'gid',
   );
-  $info['template']['properties']['type'] = array(
+  $info['gov_data']['properties']['type'] = array(
     'label' => t('Government Data Type'),
     'description' => t('The bundle of the government data.'),
     'type' => 'text',
     'schema field' => 'type',
   );
-  $info['template']['properties']['bid'] = array(
+  $info['gov_data']['properties']['bid'] = array(
     'label' => t('Bundle ID'),
     'description' => t('The ID of the bundle.'),
     'type' => 'integer',
