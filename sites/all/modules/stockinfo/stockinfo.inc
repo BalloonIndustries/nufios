@@ -47,13 +47,10 @@ function stockinfo_fetch($symbols) {
     $s = implode(',', $s);
     $url = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20IN%20($s)&format=json&env=http://datatables.org/alltables.env";
     $results = drupal_http_request($url);
-    watchdog("results", "<pre>" . print_r($results, true) . "</pre>");
     if (_stockinfo_request_failure($results))
       return FALSE;
     $data = drupal_json_decode($results->data);
-    watchdog("data", "<pre>" . print_r($data, true) . "</pre>");
     $result = $data['query']['results']; 
-    watchdog("result", "<pre>" . print_r($result, true) . "</pre>");
     return $result;
   }
   else {
