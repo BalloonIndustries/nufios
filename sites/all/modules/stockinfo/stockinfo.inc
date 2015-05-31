@@ -19,28 +19,11 @@ function stockinfo_historical_fetch($symbol) {
   return _stockinfo_historical_parse_csv($results->data);
 }
 
-/*
- * Function that deals with stock items that occasionally have problematic values
+/**
+ * Adds quotes to both sides of stock symbol.
  */
-
-function stockinfo_trouble($fields, $s) {
-  $symbols = explode("+", $s);
-  $all_data = array();
-  foreach ($fields as $label => $field) {
-    $url = "http://download.finance.yahoo.com/d/quotes.csvr?s=$s&f=$field&e=.csv";
-    $results = drupal_http_request($url);
-    if (_stockinfo_request_failure($results))
-      return FALSE;
-    $data = str_replace("\n\r", "\n", $results->data);
-    $data = explode("\n", $data);
-    // Removes empty array item at the end of the array
-    array_pop($data);
-    $data = array_combine($symbols, $data);
-    foreach ($data as $key_datum => $datum) {
-      $all_data[$key_datum][$label] = $datum;
-    }
-  }
-  return $all_data;
+function stockinfo_add_quote($s) {
+  return('"' . $s . '"');
 }
 
 /**
@@ -60,27 +43,17 @@ function stockinfo_fetch($symbols) {
   $l = 199;
   if (count($symbols) <= $l) {
     $s = array_map('urlencode', $symbols);
-    $s = implode('+', $s);
-    $fields = stockinfo_get_quotetype();
-    $quotetype = $fields['quotetype'];
-    $url = "http://download.finance.yahoo.com/d/quotes.csvr?s=$s&f=s0n0$quotetype&e=.csv";
+    $s = array_map('stockinfo_add_quote', $s);
+    $s = implode(',', $s);
+    $url = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20IN%20($s)&format=json&env=http://datatables.org/alltables.env";
     $results = drupal_http_request($url);
+    watchdog("results", "<pre>" . print_r($results, true) . "</pre>");
     if (_stockinfo_request_failure($results))
       return FALSE;
-
-    $trouble = stockinfo_trouble($fields['trouble_properties'], $s);
-    $result = _stockinfo_parse_csv($results->data);
-    $trouble_array = array();
-    foreach ($result as &$result_value) {
-      if (!is_array($result_value)) {
-        continue;
-      }
-      $trouble_array = $trouble[$result_value['symbol']];
-      if (!is_array($trouble_array)) {
-        $trouble_array = array();
-      }
-      $result_value = array_merge($trouble_array, $result_value);
-    }
+    $data = drupal_json_decode($results->data);
+    watchdog("data", "<pre>" . print_r($data, true) . "</pre>");
+    $result = $data['query']['results']; 
+    watchdog("result", "<pre>" . print_r($result, true) . "</pre>");
     return $result;
   }
   else {
@@ -111,18 +84,9 @@ function stockinfo_get_quotetype() {
   $properties = variable_get("stockinfo_property");
   $machine_properties = variable_get("stockinfo_field_machine_name");
   $mapped_properties = array("symbol", "name");
-  // properties that cause problems due to not being properly contained from Yahoo
-  $trouble = array("k3", "b6", "a5", "f6", "j1");
-  $trouble_properties = array();
   $quotetype = '';
   foreach ($properties as $key => $value) {
-    if (empty($value)) {
-      
-    }
-    elseif (in_array($value, $trouble)) {
-      $trouble_properties[$machine_properties[$value]] = $value;
-    }
-    else {
+    if (!empty($value)) {
       $quotetype .= $value;
       $mapped_properties[] = $machine_properties[$value];
     }
@@ -158,43 +122,6 @@ function _stockinfo_historical_parse_csv($data) {
 }
 
 /**
- * Helper function to convert a feed from Yahoo! to an array.
- */
-function _stockinfo_parse_csv($data) {
-  $stocks = array();
-  $lines = array();
-  $pre_lines = _stockinfo_str_getcsv($data);
-  // Clean up the data.
-  $quotetype = stockinfo_get_quotetype();
-  $mapped_properties = $quotetype['mapped_properties'];
-  $quote_length = ((drupal_strlen($quotetype['quotetype']) + 4) / 2);
-  foreach ($pre_lines as $key => $stock) {
-    // Checks whether the number of keys in the quote type matches the result, otherwise passes a warning
-    if (count($stock) == $quote_length) {
-      $combine = array_combine($mapped_properties, $stock);
-      $lines[] = $combine;
-    }
-    else {
-      watchdog("Stock Info", "Error parsing stock: " . $stock[0]);
-    }
-  }
-
-  foreach ($lines as $key => $stock) {
-    foreach ($stock as $key => $value) {
-      // Clean up and normalize the data
-      $value = trim($value, '"');
-      if ($value == '0.00')
-        $value = 0;
-      elseif ($value == '0.00%')
-        $value = 0;
-      $stock[$key] = $value;
-    }
-    $stocks[] = $stock;
-  }
-  return $stocks;
-}
-
-/**
  * Internal helper function to deal cleanly with various HTTP response codes.
  */
 function _stockinfo_request_failure($results) {
@@ -207,43 +134,4 @@ function _stockinfo_request_failure($results) {
       return TRUE;
   }
   return FALSE;
-}
-
-/**
- * Internal helper function to change text values returned for float
- * fields to '0'.
- */
-function _stockinfo_fix_floats($stock) {
-  $stock = (array) $stock;
-  $schema = drupal_get_schema('stockinfo');
-
-  foreach ($schema['fields'] as $name => $field) {
-    if ($field['type'] == 'float' && isset($stock[$name]) && !is_numeric($stock[$name])) {
-      $stock[$name] = 0;
-    }
-  }
-
-  return (object) $stock;
-}
-
-/*
- * Helper function to convert CSV string to array for all PHP versions.
- */
-
-function _stockinfo_str_getcsv($input, $delimiter = ',', $enclosure = '"', $escape = NULL, $eol = NULL) {
-  $array = array();
-  $input = trim($input);
-  if (function_exists('str_getcsv')) {
-    $array = array_map('str_getcsv', preg_split('/\r\n?|\n/', $input));
-  }
-  else {
-    $temp = fopen("php://memory", "rw");
-    fwrite($temp, $input);
-    fseek($temp, 0);
-    while (($data = fgetcsv($temp, 4096, $delimiter, $enclosure)) !== FALSE) {
-      $array[] = $data;
-    }
-    fclose($temp);
-  }
-  return $array;
 }
