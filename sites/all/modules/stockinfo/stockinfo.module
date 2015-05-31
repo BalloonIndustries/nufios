@@ -113,9 +113,8 @@ function stockinfo_mapstock($chunk) {
 }
 
 function stockinfo_process_stock($stock) {
-  drupal_alter('stockinfo_save', $stock);
   $sid = db_query("SELECT sid FROM stockinfo WHERE symbol = :symbol", array("symbol" => $stock['symbol']))->fetchCol();
-  $entity = entity_create($type, array('type' => $type));
+  $entity = entity_create("stockinfo", array('type' => "stockinfo"));
   if (isset($sid[0])) {
     unset($entity->is_new);
     $entity->sid = $sid[0];
@@ -126,12 +125,14 @@ function stockinfo_process_stock($stock) {
     $key = preg_split('/(?=[A-Z])/', $key);
     $key = implode($key, "_");
     $key = strtolower($key);
-    if(in_array($key, variable_get('stockinfo_reserved_mysql'))) {
+    if (in_array($key, variable_get('stockinfo_reserved_mysql'))) {
       $key = $key . "_";
     }
     $entity->$key = $value;
   }
   $entity->updated = time();
+  // Allow stock to be modified right before save
+  drupal_alter('stockinfo_save', $stock);
   entity_save("stockinfo", $entity);
 }
 
@@ -176,33 +177,6 @@ function stockinfo_stockinfo_historical_save_alter(&$stock) {
 }
 
 function stockinfo_stockinfo_save_alter(&$stock) {
-  watchdog("it gets here", "<pre>" . print_r("it gets here", true) . "</pre>");
-  // Turn all values into the correct format
-  $float_map = array(
-    'change',
-    'pct_chg',
-    'chg_52_week_low',
-    'days_value_change',
-    'pct_chg_frm_200_day_ma',
-    'pct_chg_frm_50_day_ma',
-    'chg_frm_200_day_ma',
-    'chg_frm_50_day_ma',
-    'pct_chg_from_52_wk_high',
-    'pct_chg_from_52_wk_low',
-    'last_size',
-    "bid_size",
-    "ask_size",
-    "pct_chg_52_wk_low",
-    "pct_chg_52_wk_high",
-    "float_shares",
-  );
-  // Troublesome numeric values here
-  $numeric = array(
-    "holdings_gain_pct",
-    "market_cap",
-    "holdings_gain",
-    "annualized_gain",
-  );
   foreach ($stock as $key => &$value) {
     $value = strip_tags($value);
     $value = trim($value);
@@ -211,81 +185,11 @@ function stockinfo_stockinfo_save_alter(&$stock) {
       $value = NULL;
       continue;
     }
-    if ($key == "market_cap" || $key == "market_cap_rt" || $key == "ebitda") {
-      if (strpos($value, "M")) {
-        $value = str_replace("M", "", $value);
-        $value = $value * 1000000;
-      }
-      elseif (strpos($value, "B")) {
-        $value = str_replace("B", "", $value);
-        $value = $value * 1000000000;
-      }
-      elseif (strpos($value, "K")) {
-        $value = str_replace("K", "", $value);
-        $value = $value * 1000;
-      }
-      watchdog("key multiplied", "<pre>" . print_r($key, true) . "</pre>");
-      watchdog("value multiplied", "<pre>" . print_r($value, true) . "</pre>");
+    
+    if ($key == "market_capitalization" || $key == "e_b_i_t_d_a") {
+      stockinfo_make_numeric($value);
     }
-    if ($key == 'days_value_change') {
-      $stock[$key] = str_replace("- ", "", $value);
-    }
-    if (in_array($key, $float_map)) {
-      $stock[$key] = str_replace(str_split("+%"), "", $value);
-      $stock[$key] = str_replace(",", "", $value);
-      $value = (float) $value;
-      if (empty($value)) {
-        $value = NULL;
-      }
-    }
-    else if ($key == 'last_trade_date') {
-      $timestamp = strtotime($stock['last_trade_date'] . " " . $stock['last_trade_time']);
-      if (isset($timestamp) && is_numeric($timestamp)) {
-        $stock[$key] = $timestamp;
-      }
-      else {
-        $stock[$key] = NULL;
-      }
-    }
-    else if ($key == 'dividend_pay_date') {
-      $timestamp = strtotime($stock['dividend_pay_date'] . "/" . date('Y'));
-      if (isset($timestamp) && is_numeric($timestamp)) {
-        $stock[$key] = $timestamp;
-      }
-      else {
-        $stock[$key] = NULL;
-      }
-    }
-    else if ($key == 'ex_dividend_date') {
-      $timestamp = strtotime($stock['ex_dividend_date'] . "/" . date('Y'));
-      if (isset($timestamp) && is_numeric($timestamp)) {
-        $stock[$key] = $timestamp;
-      }
-      else {
-        $stock[$key] = NULL;
-      }
-    }
-    else if ($key == 'trade_date') {
-      $timestamp = strtotime($stock['trade_date'] . "/" . date('Y'));
-      if (isset($timestamp) && is_numeric($timestamp)) {
-        $stock[$key] = $timestamp;
-      }
-      else {
-        $stock[$key] = NULL;
-      }
-    }
-    else if ($key == 'last_trade_rt') {
-      $timestamp = strtotime($stock['last_trade_rt']);
-      if (isset($timestamp) && is_numeric($timestamp)) {
-        $stock[$key] = $timestamp;
-      }
-      else {
-        $stock[$key] = NULL;
-      }
-    }
-    if (!is_numeric($value) && in_array($key, $numeric)) {
-      unset($stock[$key]);
-    }
+    stockinfo_convert_to_timestamp($stock, $key, $value);
   }
 }
 
@@ -448,7 +352,6 @@ function stockinfo_rules_action_pull_historical_stock_data() {
 function stockinfo_cron_queue_info() {
   $queues['stockinfo'] = array(
     'worker callback' => 'stockinfo_run', // This is the callback function for each queue item.
-    'time' => 180, // This is the max run time per cron run in seconds.
   );
   return $queues;
 }
@@ -461,7 +364,7 @@ function stockinfo_cron() {
   $stocks = stockinfo_fetch($symbols);
   watchdog("stocks", "<pre>" . print_r($stocks, true) . "</pre>");
   $queue = DrupalQueue::get('stockinfo');
-  foreach ($stocks['quote'] as $item) {
+  foreach ($stocks as $item) {
     $queue->createItem($item);
   }
 }

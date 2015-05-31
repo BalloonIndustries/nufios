@@ -19,11 +19,48 @@ function stockinfo_historical_fetch($symbol) {
   return _stockinfo_historical_parse_csv($results->data);
 }
 
+function stockinfo_convert_to_timestamp(&$stock, $key, $value) {
+  if ($key == 'last_trade_date') {
+      $timestamp = strtotime($stock['last_trade_date'] . " " . $stock['last_trade_time']);
+      if (isset($timestamp) && is_numeric($timestamp)) {
+        $stock[$key] = $timestamp;
+      }
+      else {
+        $stock[$key] = NULL;
+      }
+    }
+    else if ($key == 'dividend_pay_date' || $key == "ex_dividend_date" || $key == "trade_date") {
+      $timestamp = strtotime($stock['dividend_pay_date'] . "/" . date('Y'));
+      if (isset($timestamp) && is_numeric($timestamp)) {
+        $stock[$key] = $timestamp;
+      }
+      else {
+        $stock[$key] = NULL;
+      }
+    }
+}
+
 /**
  * Adds quotes to both sides of stock symbol.
  */
 function stockinfo_add_quote($s) {
   return('"' . $s . '"');
+}
+
+function stockinfo_make_numeric(&$value) {
+        if (strpos($value, "M")) {
+        $value = str_replace("M", "", $value);
+        $value = $value * 1000000;
+      }
+      elseif (strpos($value, "B")) {
+        $value = str_replace("B", "", $value);
+        $value = $value * 1000000000;
+      }
+      elseif (strpos($value, "K")) {
+        $value = str_replace("K", "", $value);
+        $value = $value * 1000;
+      }
+      return $value;
 }
 
 /**
@@ -46,11 +83,15 @@ function stockinfo_fetch($symbols) {
     $s = array_map('stockinfo_add_quote', $s);
     $s = implode(',', $s);
     $url = "http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.quotes%20where%20symbol%20IN%20($s)&format=json&env=http://datatables.org/alltables.env";
+    $nameurl = "http://download.finance.yahoo.com/d/quotes.csv?s=$s&f=sn&e=.csv";
+    $name_results = drupal_http_request($nameurl);
+    $name_array = _stockinfo_str_getcsv($name_results->data);
     $results = drupal_http_request($url);
     if (_stockinfo_request_failure($results))
       return FALSE;
     $data = drupal_json_decode($results->data);
-    $result = $data['query']['results']; 
+    $result = $data['query']['results']['quote'];
+    $result = array_map("stockinfo_add_name", $result, $name_array);
     return $result;
   }
   else {
@@ -74,21 +115,11 @@ function stockinfo_property_page() {
   return system_settings_form($form);
 }
 
-/**
- * Return the field parameter string to pull the correct columns from Yahoo!
- */
-function stockinfo_get_quotetype() {
-  $properties = variable_get("stockinfo_property");
-  $machine_properties = variable_get("stockinfo_field_machine_name");
-  $mapped_properties = array("symbol", "name");
-  $quotetype = '';
-  foreach ($properties as $key => $value) {
-    if (!empty($value)) {
-      $quotetype .= $value;
-      $mapped_properties[] = $machine_properties[$value];
-    }
+function stockinfo_add_name($result, $name_array) {
+  if($name_array[0] == $result["symbol"]) {
+    $result["Name"] = $name_array[1];
   }
-  return array("quotetype" => $quotetype, "mapped_properties" => $mapped_properties, "trouble_properties" => $trouble_properties);
+  return $result;
 }
 
 /**
@@ -131,4 +162,25 @@ function _stockinfo_request_failure($results) {
       return TRUE;
   }
   return FALSE;
+}
+/*
+ * Helper function to convert CSV string to array for all PHP versions.
+ */
+
+function _stockinfo_str_getcsv($input, $delimiter = ',', $enclosure = '"', $escape = NULL, $eol = NULL) {
+  $array = array();
+  $input = trim($input);
+  if (function_exists('str_getcsv')) {
+    $array = array_map('str_getcsv', preg_split('/\r\n?|\n/', $input));
+  }
+  else {
+    $temp = fopen("php://memory", "rw");
+    fwrite($temp, $input);
+    fseek($temp, 0);
+    while (($data = fgetcsv($temp, 4096, $delimiter, $enclosure)) !== FALSE) {
+      $array[] = $data;
+    }
+    fclose($temp);
+  }
+  return $array;
 }
