@@ -372,6 +372,5 @@ function stockinfo_cron() {
  * Worker Callback for the stockinfo cron queue.
  */
 function stockinfo_run($item) {
-  watchdog("item", "<pre>" . print_r($item, true) . "</pre>");
   stockinfo_process_stock($item);
 }
