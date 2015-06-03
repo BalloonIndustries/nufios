@@ -362,7 +362,6 @@ function stockinfo_cron_queue_info() {
 function stockinfo_cron() {
   $symbols = explode(" ", variable_get("stockinfo_symbols", variable_get('stockinfo_default_symbols')));
   $stocks = stockinfo_fetch($symbols);
-  watchdog("stocks", "<pre>" . print_r($stocks, true) . "</pre>");
   $queue = DrupalQueue::get('stockinfo');
   foreach ($stocks as $item) {
     $queue->createItem($item);
