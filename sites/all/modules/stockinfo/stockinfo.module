@@ -128,7 +128,7 @@ function stockinfo_process_stock($stock) {
   $sid = db_query("SELECT sid FROM stockinfo WHERE symbol = :symbol", array("symbol" => $stock['symbol']))->fetchCol();
   $entity = entity_create("stockinfo", array('type' => "stockinfo"));
   if (isset($sid[0])) {
-    unset($entity->is_new);
+    //unset($entity->is_new);
     $entity->sid = $sid[0];
   }
 
@@ -142,10 +142,9 @@ function stockinfo_process_stock($stock) {
     }
     $entity->$key = $value;
   }
-  $entity->updated = time();
   // Allow stock to be modified right before save
-  drupal_alter('stockinfo_save', $stock);
-  entity_save("stockinfo", $entity);
+  drupal_alter('stockinfo_save', $entity);
+  stockinfo_save($entity);
 }
 
 function stockinfo_historical_mapstock($chunk, $symbol = NULL) {
@@ -393,7 +392,7 @@ function stockinfo_cron() {
     $date1 = DateTime::createFromFormat('H:i a', $current_time);
     $date2 = DateTime::createFromFormat('H:i a', $open);
     $date3 = DateTime::createFromFormat('H:i a', $close);
-    if ($date1 > $date2 || $date1 < $date3) {
+    if ($date1 > $date2 && $date1 < $date3) {
       stockinfo_queue_it();
     }
   }
@@ -407,4 +406,151 @@ function stockinfo_cron() {
  */
 function stockinfo_run($item) {
   stockinfo_process_stock($item);
+}
+
+/**
+ * Saves stockinfo entity.
+ */
+function stockinfo_save($stockinfo) {
+  if ($stockinfo->is_new) {
+    // Adds the data to the entity table, and returns the new $sid:
+    $sid = db_insert('stockinfo')
+        ->useDefaults(array('sid'))
+        ->fields(array(
+          'symbol' => $stockinfo->symbol,
+          'name' => $stockinfo->name,
+          'last_trade_with_time' => $stockinfo->last_trade_with_time,
+          'last_trade_price_only' => $stockinfo->last_trade_price_only,
+          'last_trade_date' => $stockinfo->last_trade_date,
+          'last_trade_time' => $stockinfo->last_trade_time,
+          'change__percent_change' => $stockinfo->change__percent_change,
+          'change_' => $stockinf->change_,
+          'changein_percent' => $stockinfo->changein_percent,
+          'volume' => $stockinfo->volume,
+          'average_daily_volume' => $stockinfo->average_daily_volume,
+          'bid' => $stockinfo->bid,
+          'ask' => $stockinfo->ask,
+          'previous_close' => $stockinfo->previous_close,
+          'open' => $stockinfo->open,
+          'days_range' => $stockinfo->days_range,
+          'year_range' => $stockinfo->year_range,
+          'change_from_year_low' => $stockinfo->change_from_year_low,
+          'percent_change_from_year_low' => $stockinfo->percent_change_from_year_low,
+          'change_from_year_high' => $stockinfo->change_from_year_high,
+          'percebt_change_from_year_high' => $stockinfo->percebt_change_from_year_high,
+          'earnings_share' => $stockinfo->earnings_share,
+          'p_e_ratio' => $stockinfo->p_e_ratio,
+          'short_ratio' => $stockinfo->short_ratio,
+          'dividend_pay_date' => $stockinfo->dividend_pay_date,
+          'ex_dividend_date' => $stockinfo->ex_dividend_date,
+          'dividend_yield' => $stockinfo->dividend_yield,
+          'market_capitalization' => $stockinfo->market_capitalization,
+          'oneyr_target_price' => $stockinfo->oneyr_target_price,
+          'e_p_s_estimate_current_year' => $stockinfo->e_p_s_estimate_current_year,
+          'e_p_s_estimate_next_year' => $stockinf->e_p_s_estimate_next_year,
+          'e_p_s_estimate_next_quarter' => $stockinfo->e_p_s_estimate_next_quarter,
+          'price_e_p_s_estimate_current_year' => $stockinfo->price_e_p_s_estimate_current_year,
+          'price_e_p_s_estimate_next_year' => $stockinfo->price_e_p_s_estimate_next_year,
+          'p_e_g_ratio' => $stockinfo->p_e_g_ratio,
+          'book_value' => $stockinfo->book_value,
+          'price_book' => $stockinfo->price_book,
+          'price_sales' => $stockinfo->price_sales,
+          'e_b_i_t_d_a' => $stockinfo->ebitda,
+          'fiftyday_moving_average' => $stockinfo->fiftyday_moving_average,
+          'change_from_fiftyday_moving_average' => $stockinfo->change_from_fiftyday_moving_average,
+          'percent_change_from_fiftyday_moving_average' => $stockinfo->percent_change_from_fiftyday_moving_average,
+          'two_hundredday_moving_average' => $stockinfo->two_hundredday_moving_average,
+          'change_from_two_hundredday_moving_average' => $stockinfo->change_from_two_hundredday_moving_average,
+          'percent_change_from_two_hundredday_moving_average' => $stockinfo->percent_change_from_two_hundredday_moving_average,
+          'days_value_change' => $stockinfo->days_value_change,
+          'stock_exchange' => $stockinfo->stock_exchange,
+          'created' => REQUEST_TIME,
+          'changed' => REQUEST_TIME,
+        ))
+        ->execute();
+    // Add the new entity ID back into the entity object
+    $stockinfo->sid = $sid;
+    // Add a revision for all new stocks.
+    $stockinfo->revision = TRUE;
+  }
+  if (!empty($stockinfo->revision)) {
+    // Add the entity data to the revision table, and return the unique revision id.
+    $vid = db_insert('stockinfo_revision')
+        ->useDefaults(array('vid'))
+        ->fields(array(
+          'sid' => $stockinfo->sid,
+          // We don't need to store the creation time
+          'changed' => REQUEST_TIME,
+            // Any other DB columns that you want to store, and for which you
+            // need revisioning.
+        ))
+        ->execute();
+    // Add the revision ID back to the entity
+    $stockinfo->vid = $vid;
+
+    // Update the revision ID on the entity table. 
+    db_update('stockinfo')
+        ->condition('sid', $stockinfo->sid)
+        ->fields(array(
+          'vid' => $stockinfo->vid,
+          'symbol' => $stockinfo->symbol,
+          'name' => $stockinfo->name,
+          'last_trade_with_time' => $stockinfo->last_trade_with_time,
+          'last_trade_price_only' => $stockinfo->last_trade_price_only,
+          'last_trade_date' => $stockinfo->last_trade_date,
+          'last_trade_time' => $stockinfo->last_trade_time,
+          'change__percent_change' => $stockinfo->change__percent_change,
+          'change_' => $stockinf->change_,
+          'changein_percent' => $stockinfo->changein_percent,
+          'volume' => $stockinfo->volume,
+          'average_daily_volume' => $stockinfo->average_daily_volume,
+          'bid' => $stockinfo->bid,
+          'ask' => $stockinfo->ask,
+          'previous_close' => $stockinfo->previous_close,
+          'open' => $stockinfo->open,
+          'days_range' => $stockinfo->days_range,
+          'year_range' => $stockinfo->year_range,
+          'change_from_year_low' => $stockinfo->change_from_year_low,
+          'percent_change_from_year_low' => $stockinfo->percent_change_from_year_low,
+          'change_from_year_high' => $stockinfo->change_from_year_high,
+          'percebt_change_from_year_high' => $stockinfo->percebt_change_from_year_high,
+          'earnings_share' => $stockinfo->earnings_share,
+          'p_e_ratio' => $stockinfo->p_e_ratio,
+          'short_ratio' => $stockinfo->short_ratio,
+          'dividend_pay_date' => $stockinfo->dividend_pay_date,
+          'ex_dividend_date' => $stockinfo->ex_dividend_date,
+          'dividend_yield' => $stockinfo->dividend_yield,
+          'market_capitalization' => $stockinfo->market_capitalization,
+          'oneyr_target_price' => $stockinfo->oneyr_target_price,
+          'e_p_s_estimate_current_year' => $stockinfo->e_p_s_estimate_current_year,
+          'e_p_s_estimate_next_year' => $stockinf->e_p_s_estimate_next_year,
+          'e_p_s_estimate_next_quarter' => $stockinfo->e_p_s_estimate_next_quarter,
+          'price_e_p_s_estimate_current_year' => $stockinfo->price_e_p_s_estimate_current_year,
+          'price_e_p_s_estimate_next_year' => $stockinfo->price_e_p_s_estimate_next_year,
+          'p_e_g_ratio' => $stockinfo->p_e_g_ratio,
+          'book_value' => $stockinfo->book_value,
+          'price_book' => $stockinfo->price_book,
+          'price_sales' => $stockinfo->price_sales,
+          'e_b_i_t_d_a' => $stockinfo->ebitda,
+          'fiftyday_moving_average' => $stockinfo->fiftyday_moving_average,
+          'change_from_fiftyday_moving_average' => $stockinfo->change_from_fiftyday_moving_average,
+          'percent_change_from_fiftyday_moving_average' => $stockinfo->percent_change_from_fiftyday_moving_average,
+          'two_hundredday_moving_average' => $stockinfo->two_hundredday_moving_average,
+          'change_from_two_hundredday_moving_average' => $stockinfo->change_from_two_hundredday_moving_average,
+          'percent_change_from_two_hundredday_moving_average' => $stockinfo->percent_change_from_two_hundredday_moving_average,
+          'days_value_change' => $stockinfo->days_value_change,
+          'stock_exchange' => $stockinfo->stock_exchange,
+        ))
+        ->execute();
+  }
+
+  // let Field UI deal with the fields.
+  if ($stockinfo->is_new) {
+    field_attach_insert('stockinfo', $stockinfo);
+  }
+  else {
+    field_attach_update('stockinfo', $stockinfo);
+  }
+
+  return $stockinfo->sid;
 }
