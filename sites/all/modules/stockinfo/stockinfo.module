@@ -97,14 +97,14 @@ function stockinfo_admin_settings() {
     '#type' => 'textfield',
     '#title' => t('Market Open'),
     '#description' => t('Put the market open time - the earliest time in a day you want to start collecting data (H:i a format). Example: 9:30 am'),
-    '#default_value' => isset(variable_get('stockinfo_market_open')) ? variable_get('stockinfo_market_open') : '9:30 am',
+    '#default_value' => variable_get('stockinfo_market_close', '9:30 am'),
   );
 
   $form['stockinfo_market_close'] = array(
     '#type' => 'textfield',
     '#title' => t('Market Close'),
     '#description' => t('Put the market close time - the latest time in a day you want to collect data (H:i a format). Example: 4:00 pm'),
-    '#default_value' => isset(variable_get('stockinfo_market_open')) ? variable_get('stockinfo_market_open') : '4:00 pm',
+    '#default_value' => variable_get('stockinfo_market_close', '4:00 pm'),
   );
 
   $form['stockinfo_symbols'] = array(
