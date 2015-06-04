@@ -386,7 +386,6 @@ function stockinfo_cron() {
   $restrict_time = variable_get("stockinfo_restrict");
   if ($restrict_time == 1) {
     $current_time = date("H:i a");
-    watchdog("current time", "<pre>" . print_r($current_time, true) . "</pre>");
     $open = variable_get("stockinfo_market_open");
     $close = variable_get("stockinfo_market_close");
     $date1 = DateTime::createFromFormat('H:i a', $current_time);
