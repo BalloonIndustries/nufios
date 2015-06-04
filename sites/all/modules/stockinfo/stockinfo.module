@@ -4,9 +4,6 @@
  * @file
  *  API for retrieving stock information from Yahoo!
  */
-// TODO: Add historical data option.
-// http://help.yahoo.com/l/us/yahoo/finance/quotes/quote-12.html
-// TODO: Updates to default stockinfo symbols
 
 module_load_include('inc', 'stockinfo');
 
@@ -91,11 +88,6 @@ function stockinfo_admin_settings() {
 
   $form = array();
 
-  $form['stockinfo_markup'] = array(
-    '#type' => 'markup',
-    '#title' => 'Troublesome Items',
-    '#markup' => 'Bid Size, Ask Size, Market Cap, Float Shares, and Last Trade Size cause problems and have to be run through a slower process. Using them could slow your system down.',
-  );
   $form['stockinfo_symbols'] = array(
     '#type' => 'textarea',
     '#title' => t('Default symbols'),
