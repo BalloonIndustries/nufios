@@ -195,7 +195,7 @@ function stockinfo_stockinfo_save_alter(&$stock) {
     $value = strip_tags($value);
     $value = trim($value);
     if ($value == 'N/A' || $value === "- " || $value === "-" || $value === "- - -" || !isset($value) || empty($value)) {
-      unset($stock[$key]);
+      unset($stock->$key);
       $value = NULL;
       continue;
     }
