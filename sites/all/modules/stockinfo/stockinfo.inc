@@ -21,21 +21,21 @@ function stockinfo_historical_fetch($symbol) {
 
 function stockinfo_convert_to_timestamp(&$stock, $key, $value) {
   if ($key == 'last_trade_date') {
-      $timestamp = strtotime($stock['last_trade_date'] . " " . $stock['last_trade_time']);
+      $timestamp = strtotime($stock->last_trade_date . " " . $stock->last_trade_time);
       if (isset($timestamp) && is_numeric($timestamp)) {
-        $stock[$key] = $timestamp;
+        $stock->$key = $timestamp;
       }
       else {
-        $stock[$key] = NULL;
+        $stock->$key = NULL;
       }
     }
     else if ($key == 'dividend_pay_date' || $key == "ex_dividend_date" || $key == "trade_date") {
-      $timestamp = strtotime($stock['dividend_pay_date'] . "/" . date('Y'));
+      $timestamp = strtotime($stock->dividend_pay_date . "/" . date('Y'));
       if (isset($timestamp) && is_numeric($timestamp)) {
-        $stock[$key] = $timestamp;
+        $stock->$key = $timestamp;
       }
       else {
-        $stock[$key] = NULL;
+        $stock->$key = NULL;
       }
     }
 }
