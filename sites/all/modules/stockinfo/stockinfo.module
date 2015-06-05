@@ -227,6 +227,10 @@ function stockinfo_import_batch_finished($success, $results, $operations) {
 function stockinfo_fetch_data($batch) {
   $symbols = explode(" ", variable_get("stockinfo_symbols", variable_get('stockinfo_default_symbols')));
   $stocks = stockinfo_fetch($symbols);
+  if($stocks == FALSE) {
+    watchdog("Stockinfo", "Error, symbols are not an array");
+    return;
+  }
   $stock_chunks = array_chunk($stocks, 200);
   foreach ($stock_chunks as $chunk) {
     $batch['operations'][] = array('stockinfo_mapstock', array($chunk));
@@ -376,6 +380,10 @@ function stockinfo_cron_queue_info() {
 function stockinfo_queue_it() {
   $symbols = explode(" ", variable_get("stockinfo_symbols", variable_get('stockinfo_default_symbols')));
   $stocks = stockinfo_fetch($symbols);
+  if($stocks == FALSE) {
+    watchdog("Stockinfo", "Error, symbols are not an array");
+    return;
+  }
   $queue = DrupalQueue::get('stockinfo');
   foreach ($stocks as $item) {
     $queue->createItem($item);

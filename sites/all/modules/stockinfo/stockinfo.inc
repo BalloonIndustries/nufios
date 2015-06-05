@@ -79,6 +79,9 @@ function stockinfo_fetch($symbols) {
   // Step 1: Yahoo! limits stock updates to 200 or less per request. Split up larger arrays.
   $l = 199;
   if (count($symbols) <= $l) {
+  if(!is_array($symbols)) {
+    return FALSE;
+  }
     $s = array_map('urlencode', $symbols);
     $s = array_map('stockinfo_add_quote', $s);
     $s = implode(',', $s);
