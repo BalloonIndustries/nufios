@@ -19,24 +19,24 @@ function stockinfo_historical_fetch($symbol) {
   return _stockinfo_historical_parse_csv($results->data);
 }
 
-function stockinfo_convert_to_timestamp(&$stock, $key, $value) {
+function stockinfo_convert_to_timestamp($stock, $key, $value) {
   if ($key == 'last_trade_date') {
       $timestamp = strtotime($stock->last_trade_date . " " . $stock->last_trade_time);
-      if (isset($timestamp) && is_numeric($timestamp)) {
-        $stock->$key = $timestamp;
+      if(!isset($timestamp)) {
+        $timestamp = NULL;
       }
-      else {
-        $stock->$key = NULL;
-      }
+      return $timestamp;
     }
     else if ($key == 'dividend_pay_date' || $key == "ex_dividend_date" || $key == "trade_date") {
-      $timestamp = strtotime($stock->dividend_pay_date . "/" . date('Y'));
-      if (isset($timestamp) && is_numeric($timestamp)) {
-        $stock->$key = $timestamp;
+      watchdog("stock key value", "<pre>" . print_r($stock->$key, true) . "</pre>");
+      $timestamp = strtotime($stock->$key);
+      if(!isset($timestamp)) {
+        $timestamp = NULL;
       }
-      else {
-        $stock->$key = NULL;
-      }
+      return $timestamp;
+    }
+    else {
+      return $value;
     }
 }
 
@@ -76,7 +76,6 @@ function stockinfo_make_numeric(&$value) {
  */
 function stockinfo_fetch($symbols) {
 
-  // Step 1: Yahoo! limits stock updates to 200 or less per request. Split up larger arrays.
   $l = 199;
   if (count($symbols) <= $l) {
   if(!is_array($symbols)) {
