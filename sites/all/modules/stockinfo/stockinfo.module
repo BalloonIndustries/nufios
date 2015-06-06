@@ -199,6 +199,7 @@ function stockinfo_stockinfo_historical_save_alter(&$stock) {
 }
 
 function stockinfo_stockinfo_save_alter(&$stock) {
+  watchdog("stock", "<pre>" . print_r($stock, true) . "</pre>");
   foreach ($stock as $key => $value) {
     if(!isset($value)) {
       continue;

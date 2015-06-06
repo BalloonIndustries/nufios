@@ -340,7 +340,7 @@ function stockinfo_schema() {
         'not null' => TRUE),
       'sid' => array(
         'description' => 'Stock ID',
-        'type' => 'serial',
+        'type' => 'int',
         'unsigned' => TRUE,
         'not null' => FALSE),
       'vid' => array(
