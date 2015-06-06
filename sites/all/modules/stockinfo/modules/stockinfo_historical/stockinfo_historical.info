@@ -2,4 +2,3 @@ name = Stock Info Historical
 description = Provides historical stock data.
 package = stock info
 core = 7.x
-files[] = stockinfo_historical.inc
