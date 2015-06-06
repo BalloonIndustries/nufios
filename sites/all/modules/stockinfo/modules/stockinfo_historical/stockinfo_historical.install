@@ -65,6 +65,7 @@ function stockinfo_historical_schema() {
  */
 function stockinfo_historical_install() {
   variable_set('stockinfo_historical_from_date_default', array('year' => '2010', 'month' => '1', 'day' => '1'));
+  variable_set('stockinfo_historical_default_symbols', 'IBM AAPL AMZN MSFT DIS GOOG HPQ INTC GE');
 }
 
 /**
