@@ -1,9 +1,9 @@
 <?php
-
 /**
  * @file
- * Contains the schema, install, and uninstall functions for StockAPI.
+ * Contains the schema, install, and uninstall functions for Stockinfo.
  */
+
 /*
  * Implements hook_schema().
  */
@@ -647,56 +647,6 @@ function stockinfo_schema() {
     ),
     'primary key' => array('vid'),
   );
-  $schema['stockinfo_historical'] = array(
-    'description' => 'A table to store historical stock information',
-    'fields' => array(
-      'symbol' => array(
-        'description' => 'Symbol',
-        'type' => 'varchar',
-        'length' => 12,
-        'not null' => TRUE,
-        'default' => '',),
-      'sid' => array(
-        'description' => 'Stock ID',
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => FALSE),
-      'name' => array(
-        'description' => 'Company Name',
-        'type' => 'varchar',
-        'length' => 255,
-        'not null' => FALSE,
-        'default' => '',),
-      'date' => array(
-        'description' => 'Date',
-        'type' => 'int',
-        'length' => 11,
-        'not null' => TRUE),
-      'historical_high' => array(
-        'description' => 'Historical High',
-        'type' => 'float',
-        'not null' => FALSE,
-        'default' => 0,),
-      'historical_low' => array(
-        'description' => 'Historical Low',
-        'type' => 'float',
-        'not null' => FALSE,
-        'default' => 0,),
-      'historical_close' => array(
-        'description' => 'Historical Close',
-        'type' => 'float',
-        'not null' => FALSE,
-        'default' => 0,),
-      'historical_adj_close' => array(
-        'description' => 'Historical Adjusted Close',
-        'type' => 'float',
-        'not null' => FALSE,
-        'default' => 0,),
-    ),
-    'primary key' => array('sid'),
-  );
-
-  return $schema;
 }
 
 function stockinfo_install() {

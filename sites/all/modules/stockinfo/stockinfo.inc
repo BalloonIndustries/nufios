@@ -1,42 +1,30 @@
 <?php
-
 /**
  * @file
  * A wrapper API for the retreiving stock quotes from Yahoo! Finance.
  */
-/*
- * Historical stock fetch - grabs historical data for stocks
+
+/**
+ * Converts stockinfo properties from a date to timestamp.
  */
-function stockinfo_historical_fetch($symbol) {
-  $date = variable_get("stockinfo_historical_from_date", variable_get("stockinfo_historical_from_date_default"));
-  $date['month'] = $date['month'] - 1;
-  $url = "http://ichart.yahoo.com/table.csv?s=" . $symbol . "&a=" . $date['month'] . "&b=" . $date['day'] . "&c=" . $date['year'] . "&d=" . date("m") . "&e=" . date("d") . "&f=" . date("Y") . "&g=w&ignore=.csv";
-  $results = drupal_http_request($url);
-  if (_stockinfo_request_failure($results))
-    return FALSE;
-
-  // Symbols are returned in CSV format.
-  return _stockinfo_historical_parse_csv($results->data);
-}
-
 function stockinfo_convert_to_timestamp($stock, $key, $value) {
   if ($key == 'last_trade_date') {
-      $timestamp = strtotime($stock->last_trade_date . " " . $stock->last_trade_time);
-      if(!isset($timestamp)) {
-        $timestamp = NULL;
-      }
-      return $timestamp;
+    $timestamp = strtotime($stock->last_trade_date . " " . $stock->last_trade_time);
+    if (!isset($timestamp)) {
+      $timestamp = NULL;
     }
-    else if ($key == 'dividend_pay_date' || $key == "ex_dividend_date" || $key == "trade_date") {
-      $timestamp = strtotime($stock->$key);
-      if(!isset($timestamp)) {
-        $timestamp = NULL;
-      }
-      return $timestamp;
+    return $timestamp;
+  }
+  else if ($key == 'dividend_pay_date' || $key == "ex_dividend_date" || $key == "trade_date") {
+    $timestamp = strtotime($stock->$key);
+    if (!isset($timestamp)) {
+      $timestamp = NULL;
     }
-    else {
-      return $value;
-    }
+    return $timestamp;
+  }
+  else {
+    return $value;
+  }
 }
 
 /**
@@ -46,20 +34,23 @@ function stockinfo_add_quote($s) {
   return('"' . $s . '"');
 }
 
+/**
+ * Converts stockinfo properties from string to number.
+ */
 function stockinfo_make_numeric(&$value) {
-        if (strpos($value, "M")) {
-        $value = str_replace("M", "", $value);
-        $value = $value * 1000000;
-      }
-      elseif (strpos($value, "B")) {
-        $value = str_replace("B", "", $value);
-        $value = $value * 1000000000;
-      }
-      elseif (strpos($value, "K")) {
-        $value = str_replace("K", "", $value);
-        $value = $value * 1000;
-      }
-      return $value;
+  if (strpos($value, "M")) {
+    $value = str_replace("M", "", $value);
+    $value = $value * 1000000;
+  }
+  elseif (strpos($value, "B")) {
+    $value = str_replace("B", "", $value);
+    $value = $value * 1000000000;
+  }
+  elseif (strpos($value, "K")) {
+    $value = str_replace("K", "", $value);
+    $value = $value * 1000;
+  }
+  return $value;
 }
 
 /**
@@ -77,9 +68,9 @@ function stockinfo_fetch($symbols) {
 
   $l = 199;
   if (count($symbols) <= $l) {
-  if(!is_array($symbols)) {
-    return FALSE;
-  }
+    if (!is_array($symbols)) {
+      return FALSE;
+    }
     $s = array_map('urlencode', $symbols);
     $s = array_map('stockinfo_add_quote', $s);
     $s = implode(',', $s);
@@ -105,49 +96,11 @@ function stockinfo_fetch($symbols) {
   }
 }
 
-function stockinfo_property_page() {
-  $form = array();
-  $form['stockinfo_property'] = array(
-    '#type' => 'checkboxes',
-    '#options' => variable_get("stockinfo_field_label"),
-    '#title' => t('Stock Properties to Collect'),
-    '#default_value' => variable_get('stockinfo_property', array()),
-  );
-  return system_settings_form($form);
-}
-
 function stockinfo_add_name($result, $name_array) {
-  if($name_array[0] == $result["symbol"]) {
+  if ($name_array[0] == $result["symbol"]) {
     $result["Name"] = $name_array[1];
   }
   return $result;
-}
-
-/**
- * Helper function to convert a historical feed from Yahoo! to an array.
- */
-function _stockinfo_historical_parse_csv($data) {
-  $csv = _stockinfo_str_getcsv($data);
-  foreach ($csv[0] as &$map) {
-    $map = strtolower($map);
-    $map = str_replace(" ", "_", $map);
-    if ($map == "high" || $map == "low" || $map == "close" || $map == "adj_close") {
-      $map = "stockinfo_historical_" . $map;
-    }
-    elseif ($map == "date") {
-      
-    }
-    else {
-      $map = "stockinfo_" . $map;
-    }
-  }
-  foreach ($csv as $row => $value) {
-    if ($row != 0) {
-      $csv[$row] = array_combine($csv[0], $value);
-    }
-  }
-  unset($csv[0]);
-  return $csv;
 }
 
 /**
@@ -164,6 +117,7 @@ function _stockinfo_request_failure($results) {
   }
   return FALSE;
 }
+
 /*
  * Helper function to convert CSV string to array for all PHP versions.
  */

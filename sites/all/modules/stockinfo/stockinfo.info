@@ -2,4 +2,4 @@ name = Stock Info
 description = Provides a platform to build stock applications off of
 package = stock info
 core = 7.x
-
+files[] = stockinfo.inc

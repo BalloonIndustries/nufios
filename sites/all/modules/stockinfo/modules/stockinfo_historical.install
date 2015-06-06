@@ -1,0 +1,76 @@
+<?php
+/**
+ * @file
+ * Contains the schema, install, and uninstall functions for Stockinfo Historical.
+ */
+
+/*
+ * Implements hook_schema().
+ */
+function stockinfo_historical_schema() {
+  $schema['stockinfo_historical'] = array(
+    'description' => 'A table to store historical stock information',
+    'fields' => array(
+      'symbol' => array(
+        'description' => 'Symbol',
+        'type' => 'varchar',
+        'length' => 12,
+        'not null' => TRUE,
+        'default' => '',),
+      'sid' => array(
+        'description' => 'Stock ID',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => FALSE),
+      'name' => array(
+        'description' => 'Company Name',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => FALSE,
+        'default' => '',),
+      'date' => array(
+        'description' => 'Date',
+        'type' => 'int',
+        'length' => 11,
+        'not null' => TRUE),
+      'historical_high' => array(
+        'description' => 'Historical High',
+        'type' => 'float',
+        'not null' => FALSE,
+        'default' => 0,),
+      'historical_low' => array(
+        'description' => 'Historical Low',
+        'type' => 'float',
+        'not null' => FALSE,
+        'default' => 0,),
+      'historical_close' => array(
+        'description' => 'Historical Close',
+        'type' => 'float',
+        'not null' => FALSE,
+        'default' => 0,),
+      'historical_adj_close' => array(
+        'description' => 'Historical Adjusted Close',
+        'type' => 'float',
+        'not null' => FALSE,
+        'default' => 0,),
+    ),
+    'primary key' => array('sid'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implemenets hook_install().
+ */
+function stockinfo_historical_install() {
+  variable_set('stockinfo_historical_from_date_default', array('year' => '2010', 'month' => '1', 'day' => '1'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function stockinfo_historical_uninstall() {
+  variable_del('stockinfo_historical_symbols');
+  variable_del('stockinfo_historical_from_date');
+}
