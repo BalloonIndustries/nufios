@@ -28,7 +28,6 @@ function stockinfo_convert_to_timestamp($stock, $key, $value) {
       return $timestamp;
     }
     else if ($key == 'dividend_pay_date' || $key == "ex_dividend_date" || $key == "trade_date") {
-      watchdog("stock key value", "<pre>" . print_r($stock->$key, true) . "</pre>");
       $timestamp = strtotime($stock->$key);
       if(!isset($timestamp)) {
         $timestamp = NULL;

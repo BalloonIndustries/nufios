@@ -128,11 +128,10 @@ function stockinfo_process_stock($stock) {
   if (!is_array($stock)) {
     return FALSE;
   }
-  watchdog("stock", "<pre>" . print_r($stock, true) . "</pre>");
   $sid = db_query("SELECT sid FROM stockinfo WHERE symbol = :symbol", array("symbol" => $stock['symbol']))->fetchCol();
   $entity = entity_create("stockinfo", array('type' => "stockinfo"));
   if (isset($sid[0])) {
-    unset($entity->is_new);
+    $entity->is_new = 0;
     $entity->sid = $sid[0];
   }
 
@@ -151,10 +150,8 @@ function stockinfo_process_stock($stock) {
       $entity->$key = NULL;
     }
   }
-  watchdog("stockinfo object before save", "<pre>" . print_r($entity, true) . "</pre>");
   // Allow stock to be modified right before save
   drupal_alter('stockinfo_save', $entity);
-  watchdog("entity after save", "<pre>" . print_r($entity, true) . "</pre>");
   stockinfo_save($entity);
 }
 
@@ -199,7 +196,7 @@ function stockinfo_stockinfo_historical_save_alter(&$stock) {
 }
 
 function stockinfo_stockinfo_save_alter(&$stock) {
-  watchdog("stock", "<pre>" . print_r($stock, true) . "</pre>");
+  // Normalize the data and remove data that will break the system.
   foreach ($stock as $key => $value) {
     if(!isset($value)) {
       continue;
@@ -207,6 +204,10 @@ function stockinfo_stockinfo_save_alter(&$stock) {
     $value = strip_tags($value);
     $value = trim($value);
     if ($value == 'N/A' || $value === "- " || $value === "-" || $value === "- - -" || !isset($value) || empty($value)) {
+      $value = NULL;
+      continue;
+    }
+    if(strpos($value, "inf") || strpos($value, "nan")) {
       $value = NULL;
       continue;
     }
@@ -439,7 +440,6 @@ function stockinfo_run($item) {
  * Saves stockinfo entity.
  */
 function stockinfo_save($stockinfo) {
-  watchdog("stockinfo", "<pre>" . print_r($stockinfo, true) . "</pre>");
   if ($stockinfo->is_new) {
     $sid = db_insert('stockinfo')
         ->useDefaults(array('sid'))

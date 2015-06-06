@@ -342,13 +342,14 @@ function stockinfo_schema() {
         'description' => 'Stock ID',
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => FALSE),
+        'not null' => FALSE,
+        'default' => 0,
+        ),
       'vid' => array(
         'description' => 'Stock Revision ID.',
-        'type' => 'int',
+        'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => TRUE,
-        'default' => 0,
       ),
       'name' => array(
         'description' => 'Company Name',
@@ -644,7 +645,7 @@ function stockinfo_schema() {
         'default' => 0,
       ),
     ),
-    'primary key' => array('sid', 'vid'),
+    'primary key' => array('vid'),
   );
   $schema['stockinfo_historical'] = array(
     'description' => 'A table to store historical stock information',
