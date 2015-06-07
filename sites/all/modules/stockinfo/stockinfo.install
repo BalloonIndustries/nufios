@@ -651,7 +651,6 @@ function stockinfo_schema() {
 
 function stockinfo_install() {
 
-  variable_set('stockinfo_historical_from_date_default', array('year' => '2010', 'month' => '1', 'day' => '1'));
   variable_set('stockinfo_default_symbols', 'IBM AAPL AMZN MSFT DIS GOOG HPQ INTC GE');
   variable_set('stockinfo_reserved_mysql', array(
     'change',
@@ -665,6 +664,4 @@ function stockinfo_uninstall() {
   variable_del('stockinfo_fetch');
   variable_del('stockinfo_fetch_last');
   variable_del('stockinfo_default_symbols');
-  variable_del('stockinfo_historical_symbols');
-  variable_del('stockinfo_historical_from_date');
 }

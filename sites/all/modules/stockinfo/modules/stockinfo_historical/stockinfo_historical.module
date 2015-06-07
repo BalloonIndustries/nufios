@@ -58,7 +58,6 @@ function stockinfo_historical_mapstock($chunk, $symbol = NULL) {
 function stockinfo_historical_process_stock($stock) {
   drupal_alter('stockinfo_historical_save', $stock);
   $date = array();
-  foreach ($stock as $previous_stock) {
 
     $sid = db_query("SELECT sid FROM stockinfo_historical WHERE symbol = :symbol AND date = :date", array("symbol" => $symbol, "date" => $previous_stock['date']))->fetchCol();
     if (isset($sid[0])) {
@@ -77,7 +76,6 @@ function stockinfo_historical_process_stock($stock) {
       }
       entity_save("stockinfo_historical", $entity);
     }
-  }
 }
 
 function stockinfo_stockinfo_historical_save_alter(&$stock) {
@@ -181,16 +179,16 @@ function stockinfo_historical_cron_queue_info() {
  * Queues historical stockinfo items.
  */
 function stockinfo_historical_queue_it() {
-  $symbols = explode(" ", variable_get("stockinfo_symbols", variable_get('stockinfo_default_symbols')));
-  $stocks = stockinfo_historical_fetch($symbols);
-  if ($stocks == FALSE) {
-    watchdog("Stockinfo", "Error, symbols are not an array");
+  $symbols = explode(" ", variable_get("stockinfo_historical_symbols", variable_get('stockinfo_historical_default_symbols')));
+  foreach($symbols as $symbol) {
+  $stock = stockinfo_historical_fetch($symbol);
+  }
+  if ($stock == FALSE) {
+    watchdog("Stockinfo", "Error, symbol does not have data");
     return;
   }
   $queue = DrupalQueue::get('stockinfo_historical');
-  foreach ($stocks as $item) {
-    $queue->createItem($item);
-  }
+    $queue->createItem($stock);
 }
 
 /**
@@ -212,13 +210,12 @@ function stockinfo_historical_run($item) {
  */
 function stockinfo_historical_save($stockinfo) {
   if ($stockinfo->is_new) {
-    $sid = db_insert('stockinfo')
+    $sid = db_insert('stockinfo_historical')
         ->useDefaults(array('sid'))
         ->fields(array(
           'symbol' => $stockinfo->symbol,
           'name' => isset($stockinfo->name) ? $stockinfo->name : NULL,
-          'created' => REQUEST_TIME,
-          'changed' => REQUEST_TIME,
+          'date' => isset($stockinfo->date) ? $stockinfo->date : NULL,
         ))
         ->execute();
 
@@ -263,7 +260,9 @@ function stockinfo_historical_save($stockinfo) {
  * Historical stock fetch - grabs historical data for stocks
  */
 function stockinfo_historical_fetch($symbol) {
+    watchdog("symbol", "<pre>" . print_r($symbol, true) . "</pre>");
   $date = variable_get("stockinfo_historical_from_date", variable_get("stockinfo_historical_from_date_default"));
+  watchdog("date", "<pre>" . print_r($date, true) . "</pre>");
   $date['month'] = $date['month'] - 1;
   $url = "http://ichart.yahoo.com/table.csv?s=" . $symbol . "&a=" . $date['month'] . "&b=" . $date['day'] . "&c=" . $date['year'] . "&d=" . date("m") . "&e=" . date("d") . "&f=" . date("Y") . "&g=w&ignore=.csv";
   $results = drupal_http_request($url);
@@ -278,7 +277,7 @@ function stockinfo_historical_fetch($symbol) {
  * Helper function to convert a historical feed from Yahoo! to an array.
  */
 function _stockinfo_historical_parse_csv($data) {
-  $csv = _stockinfo_str_getcsv($data);
+  $csv = _stockinfo_historical_str_getcsv($data);
   foreach ($csv[0] as &$map) {
     $map = strtolower($map);
     $map = str_replace(" ", "_", $map);
@@ -299,6 +298,27 @@ function _stockinfo_historical_parse_csv($data) {
   }
   unset($csv[0]);
   return $csv;
+}
+
+/*
+ * Helper function to convert CSV string to array for all PHP versions.
+ */
+function _stockinfo_historical_str_getcsv($input, $delimiter = ',', $enclosure = '"', $escape = NULL, $eol = NULL) {
+  $array = array();
+  $input = trim($input);
+  if (function_exists('str_getcsv')) {
+    $array = array_map('str_getcsv', preg_split('/\r\n?|\n/', $input));
+  }
+  else {
+    $temp = fopen("php://memory", "rw");
+    fwrite($temp, $input);
+    fseek($temp, 0);
+    while (($data = fgetcsv($temp, 4096, $delimiter, $enclosure)) !== FALSE) {
+      $array[] = $data;
+    }
+    fclose($temp);
+  }
+  return $array;
 }
 
 /**
