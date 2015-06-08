@@ -55,27 +55,20 @@ function stockinfo_historical_mapstock($chunk, $symbol = NULL) {
 /**
  * Implements hook_stockinfo_historical_save().
  */
-function stockinfo_historical_process_stock($stock) {
-  drupal_alter('stockinfo_historical_save', $stock);
+function stockinfo_historical_process_stock($item) {
+    $stock = $item['data'];
+    $symbol = $item['symbol'];
   $date = array();
 
-    $sid = db_query("SELECT sid FROM stockinfo_historical WHERE symbol = :symbol AND date = :date", array("symbol" => $symbol, "date" => $previous_stock['date']))->fetchCol();
+    $sid = db_query("SELECT sid FROM stockinfo_historical WHERE symbol = :symbol AND date = :date", array("symbol" => $symbol, "date" => $stock['date']))->fetchCol();
+    $entity = entity_create("stockinfo_historical", array('type' => "stockinfo_historical"));
     if (isset($sid[0])) {
-      
+          $entity->is_new = 0;
+    $entity->sid = $sid[0];
     }
-    else {
-      $entity = entity_create($type, array('type' => $type));
-      foreach ($previous_stock as $key => $value) {
-        if ($key == "date") {
-          $entity->$key = $value;
-          $entity->symbol = $symbol;
-        }
-        else {
-          $entity->{$key} = $value;
-        }
-      }
+
+drupal_alter('stockinfo_historical_save', $entity);
       entity_save("stockinfo_historical", $entity);
-    }
 }
 
 function stockinfo_stockinfo_historical_save_alter(&$stock) {
@@ -266,18 +259,23 @@ function stockinfo_historical_fetch($symbol) {
   $date['month'] = $date['month'] - 1;
   $url = "http://ichart.yahoo.com/table.csv?s=" . $symbol . "&a=" . $date['month'] . "&b=" . $date['day'] . "&c=" . $date['year'] . "&d=" . date("m") . "&e=" . date("d") . "&f=" . date("Y") . "&g=w&ignore=.csv";
   $results = drupal_http_request($url);
+  $result['data'] = $results->data;
+  $result['symbol'] = $symbol;
+  watchdog("result", "<pre>" . print_r($results, true) . "</pre>");
   if (_stockinfo_historical_request_failure($results))
     return FALSE;
 
   // Symbols are returned in CSV format.
-  return _stockinfo_historical_parse_csv($results->data);
+  return _stockinfo_historical_parse_csv($result);
 }
 
 /**
  * Helper function to convert a historical feed from Yahoo! to an array.
  */
 function _stockinfo_historical_parse_csv($data) {
-  $csv = _stockinfo_historical_str_getcsv($data);
+    watchdog("data report", "<pre>" . print_r($data, true) . "</pre>");
+  $csv = _stockinfo_historical_str_getcsv($data['data']);
+  watchdog("csv", "<pre>" . print_r($csv, true) . "</pre>");
   foreach ($csv[0] as &$map) {
     $map = strtolower($map);
     $map = str_replace(" ", "_", $map);
@@ -297,6 +295,8 @@ function _stockinfo_historical_parse_csv($data) {
     }
   }
   unset($csv[0]);
+  watchdog("csv end", "<pre>" . print_r($csv, true) . "</pre>");
+  $csv['symbol'] = $data['symbol'];
   return $csv;
 }
 
