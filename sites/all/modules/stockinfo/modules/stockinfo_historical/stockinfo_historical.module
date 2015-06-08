@@ -55,7 +55,7 @@ function stockinfo_historical_mapstock($chunk, $symbol = NULL) {
 /**
  * Implements hook_stockinfo_historical_save().
  */
-function stockinfo_historical_process_stock($item) {
+function stockinfo_historical_process_stock($items) {
     $stock = $item['data'];
     $symbol = $item['symbol'];
   $date = array();
