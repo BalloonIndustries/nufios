@@ -1,9 +1,9 @@
 <?php
+
 /**
  * @file
  * Contains the schema, install, and uninstall functions for Stockinfo Historical.
  */
-
 /*
  * Implements hook_schema().
  */
@@ -33,28 +33,33 @@ function stockinfo_historical_schema() {
         'type' => 'int',
         'length' => 11,
         'not null' => TRUE),
-      'historical_high' => array(
+      'stockinfo_historical_high' => array(
         'description' => 'Historical High',
         'type' => 'float',
         'not null' => FALSE,
         'default' => 0,),
-      'historical_low' => array(
+      'stockinfo_historical_low' => array(
         'description' => 'Historical Low',
         'type' => 'float',
         'not null' => FALSE,
         'default' => 0,),
-      'historical_close' => array(
+      'stockinfo_historical_close' => array(
         'description' => 'Historical Close',
         'type' => 'float',
         'not null' => FALSE,
         'default' => 0,),
-      'historical_adj_close' => array(
+      'stockinfo_volume' => array(
+        'description' => 'Volume',
+        'type' => 'float',
+        'not null' => FALSE,
+        'default' => 0,),
+      'stockinfo_historical_adj_close' => array(
         'description' => 'Historical Adjusted Close',
         'type' => 'float',
         'not null' => FALSE,
         'default' => 0,),
     ),
-    'primary key' => array('sid'),
+    'primary key' => array('sid', 'date'),
   );
 
   return $schema;

@@ -47,8 +47,9 @@ function stockinfo_historical_admin_settings() {
 /**
  * Processes chunks into individual stocks for processing.
  */
-function stockinfo_historical_mapstock($chunk, $symbol = NULL) {
+function stockinfo_historical_mapstock($chunk) {
   foreach ($chunk as $stock) {
+    watchdog("batch stock", "<pre>" . print_r($stock, true) . "</pre>");
     stockinfo_historical_process_stock($stock);
   }
 }
@@ -57,29 +58,43 @@ function stockinfo_historical_mapstock($chunk, $symbol = NULL) {
  * Implements hook_stockinfo_historical_save().
  */
 function stockinfo_historical_process_stock($items) {
-  $times = $items['data'];
+  watchdog("items data", "<pre>" . print_r($items, true) . "</pre>");
   $symbol = $items['symbol'];
+  unset($items['symbol']);
   $date = array();
 
-  foreach ($times as $time) {
+  foreach ($items as $time) {
     watchdog("time stuff", "<pre>" . print_r($time, true) . "</pre>");
-    $sid = db_query("SELECT sid FROM stockinfo_historical WHERE symbol = :symbol AND date = :date", array("symbol" => $symbol, "date" => $stock['date']))->fetchCol();
-    if (isset($sid[0])) {
-      $entity->is_new = 0;
-      $entity->sid = $sid[0];
+    $sid = db_query("SELECT sid FROM stockinfo_historical WHERE symbol = :symbol AND date = :date", array("symbol" => $symbol, "date" => $time['date']))->fetchCol();
+    if (!isset($sid[0])) {
       $entity = entity_create("stockinfo_historical", array('type' => "stockinfo_historical"));
+      foreach ($time as $key => $value) {
+        if (in_array($key, variable_get('stockinfo_reserved_mysql'))) {
+          $key = $key . "_";
+        }
+        if (isset($value)) {
+          $entity->$key = $value;
+        }
+        else {
+          $entity->$key = NULL;
+        }
+      }
+      $entity->symbol = $symbol;
+      watchdog("entity", "<pre>" . print_r($entity, true) . "</pre>");
       drupal_alter('stockinfo_historical_save', $entity);
       entity_save("stockinfo_historical", $entity);
     }
   }
 }
 
-function stockinfo_stockinfo_historical_save_alter(&$stock) {
-  foreach ($stock as &$row) {
-    foreach ($row as $property => &$value)
-      if ($property == "date") {
-        $value = strtotime($value);
-      }
+/**
+ * Implements hook_stockinfo_historical_save_alter().
+ */
+function stockinfo_historical_stockinfo_historical_save_alter(&$stock) {
+  foreach ($stock as $row => &$property) {
+    if ($row == "date") {
+      $property = strtotime($property);
+    }
   }
 }
 
@@ -87,15 +102,19 @@ function stockinfo_stockinfo_historical_save_alter(&$stock) {
  * Processes batch of historical stock data.
  */
 function stockinfo_fetch_historical_data($batch) {
-  $symbols = explode(" ", variable_get("stockinfo_historical_symbols", variable_get('stockinfo_default_symbols')));
+  $symbols = explode(" ", variable_get("stockinfo_historical_symbols", variable_get('stockinfo_historical_default_symbols')));
   $stock_array = array();
   foreach ($symbols as $symbol) {
     $stock = stockinfo_historical_fetch($symbol);
+    if(isset($stock)) {
+      watchdog("stock weird", "<pre>" . print_r($stock, true) . "</pre>");
     $stock_array[] = $stock;
+    }
   }
   $stock_chunks = array_chunk($stock_array, 200);
   foreach ($stock_chunks as $chunk) {
-    $batch['operations'][] = array('stockinfo_historical_mapstock', array($chunk, $symbol));
+    watchdog("chunk", "<pre>" . print_r($chunk, true) . "</pre>");
+    $batch['operations'][] = array('stockinfo_historical_mapstock', array($chunk));
   }
   batch_set($batch);
   batch_process("/admin/config/services/stockinfo/historical");
@@ -165,7 +184,7 @@ function stockinfo_historical_rules_action_pull_historical_stock_data() {
  * Implementation of hook_cron_queue_info().
  */
 function stockinfo_historical_cron_queue_info() {
-  $queues['stockinfo'] = array(
+  $queues['stockinfo_historical'] = array(
     'worker callback' => 'stockinfo_historical_run', // This is the callback function for each queue item.
   );
   return $queues;
@@ -176,15 +195,15 @@ function stockinfo_historical_cron_queue_info() {
  */
 function stockinfo_historical_queue_it() {
   $symbols = explode(" ", variable_get("stockinfo_historical_symbols", variable_get('stockinfo_historical_default_symbols')));
+  $queue = DrupalQueue::get('stockinfo_historical');
   foreach ($symbols as $symbol) {
     $stock = stockinfo_historical_fetch($symbol);
+    if ($stock == FALSE) {
+      watchdog("Stockinfo", "Error, symbol does not have data");
+      return;
+    }
+    $queue->createItem($stock);
   }
-  if ($stock == FALSE) {
-    watchdog("Stockinfo", "Error, symbol does not have data");
-    return;
-  }
-  $queue = DrupalQueue::get('stockinfo_historical');
-  $queue->createItem($stock);
 }
 
 /**
@@ -197,59 +216,8 @@ function stockinfo_historical_cron() {
 /**
  * Worker Callback for the historical stockinfo cron queue.
  */
-function stockinfo_historical_run($item) {
-  stockinfo_historical_process_stock($item);
-}
-
-/**
- * Saves stockinfo entity.
- */
-function stockinfo_historical_save($stockinfo) {
-  if ($stockinfo->is_new) {
-    $sid = db_insert('stockinfo_historical')
-        ->useDefaults(array('sid'))
-        ->fields(array(
-          'symbol' => $stockinfo->symbol,
-          'name' => isset($stockinfo->name) ? $stockinfo->name : NULL,
-          'date' => isset($stockinfo->date) ? $stockinfo->date : NULL,
-        ))
-        ->execute();
-
-    $stockinfo->sid = $sid;
-    $stockinfo->revision = TRUE;
-  }
-  if (!empty($stockinfo->revision)) {
-    $vid = db_insert('stockinfo_revision')
-        ->useDefaults(array('vid'))
-        ->fields(array(
-          'sid' => $stockinfo->sid,
-          'symbol' => $stockinfo->symbol,
-          'name' => isset($stockinfo->name) ? $stockinfo->name : NULL,
-          'changed' => REQUEST_TIME,
-        ))
-        ->execute();
-
-    $stockinfo->vid = $vid;
-
-    db_update('stockinfo')
-        ->condition('sid', $stockinfo->sid)
-        ->fields(array(
-          'vid' => $stockinfo->vid,
-          'symbol' => $stockinfo->symbol,
-          'name' => isset($stockinfo->name) ? $stockinfo->name : NULL,
-        ))
-        ->execute();
-  }
-
-  // let Field UI deal with the fields.
-  if ($stockinfo->is_new) {
-    field_attach_insert('stockinfo', $stockinfo);
-  }
-  else {
-    field_attach_update('stockinfo', $stockinfo);
-  }
-
-  return $stockinfo->sid;
+function stockinfo_historical_run($items) {
+  stockinfo_historical_process_stock($items);
 }
 
 /*
@@ -262,6 +230,7 @@ function stockinfo_historical_fetch($symbol) {
   watchdog("date", "<pre>" . print_r($date, true) . "</pre>");
   $date['month'] = $date['month'] - 1;
   $url = "http://ichart.yahoo.com/table.csv?s=" . $symbol . "&a=" . $date['month'] . "&b=" . $date['day'] . "&c=" . $date['year'] . "&d=" . date("m") . "&e=" . date("d") . "&f=" . date("Y") . "&g=w&ignore=.csv";
+  watchdog("url", "<pre>" . print_r($url, true) . "</pre>");
   $results = drupal_http_request($url);
   $result['data'] = $results->data;
   $result['symbol'] = $symbol;
