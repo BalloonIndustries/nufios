@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  *  API for retrieving stock information from Yahoo historical stock data.
@@ -56,19 +57,21 @@ function stockinfo_historical_mapstock($chunk, $symbol = NULL) {
  * Implements hook_stockinfo_historical_save().
  */
 function stockinfo_historical_process_stock($items) {
-    $stock = $item['data'];
-    $symbol = $item['symbol'];
+  $times = $items['data'];
+  $symbol = $items['symbol'];
   $date = array();
 
+  foreach ($times as $time) {
+    watchdog("time stuff", "<pre>" . print_r($time, true) . "</pre>");
     $sid = db_query("SELECT sid FROM stockinfo_historical WHERE symbol = :symbol AND date = :date", array("symbol" => $symbol, "date" => $stock['date']))->fetchCol();
-    $entity = entity_create("stockinfo_historical", array('type' => "stockinfo_historical"));
     if (isset($sid[0])) {
-          $entity->is_new = 0;
-    $entity->sid = $sid[0];
-    }
-
-drupal_alter('stockinfo_historical_save', $entity);
+      $entity->is_new = 0;
+      $entity->sid = $sid[0];
+      $entity = entity_create("stockinfo_historical", array('type' => "stockinfo_historical"));
+      drupal_alter('stockinfo_historical_save', $entity);
       entity_save("stockinfo_historical", $entity);
+    }
+  }
 }
 
 function stockinfo_stockinfo_historical_save_alter(&$stock) {
@@ -173,15 +176,15 @@ function stockinfo_historical_cron_queue_info() {
  */
 function stockinfo_historical_queue_it() {
   $symbols = explode(" ", variable_get("stockinfo_historical_symbols", variable_get('stockinfo_historical_default_symbols')));
-  foreach($symbols as $symbol) {
-  $stock = stockinfo_historical_fetch($symbol);
+  foreach ($symbols as $symbol) {
+    $stock = stockinfo_historical_fetch($symbol);
   }
   if ($stock == FALSE) {
     watchdog("Stockinfo", "Error, symbol does not have data");
     return;
   }
   $queue = DrupalQueue::get('stockinfo_historical');
-    $queue->createItem($stock);
+  $queue->createItem($stock);
 }
 
 /**
@@ -252,8 +255,9 @@ function stockinfo_historical_save($stockinfo) {
 /*
  * Historical stock fetch - grabs historical data for stocks
  */
+
 function stockinfo_historical_fetch($symbol) {
-    watchdog("symbol", "<pre>" . print_r($symbol, true) . "</pre>");
+  watchdog("symbol", "<pre>" . print_r($symbol, true) . "</pre>");
   $date = variable_get("stockinfo_historical_from_date", variable_get("stockinfo_historical_from_date_default"));
   watchdog("date", "<pre>" . print_r($date, true) . "</pre>");
   $date['month'] = $date['month'] - 1;
@@ -273,7 +277,7 @@ function stockinfo_historical_fetch($symbol) {
  * Helper function to convert a historical feed from Yahoo! to an array.
  */
 function _stockinfo_historical_parse_csv($data) {
-    watchdog("data report", "<pre>" . print_r($data, true) . "</pre>");
+  watchdog("data report", "<pre>" . print_r($data, true) . "</pre>");
   $csv = _stockinfo_historical_str_getcsv($data['data']);
   watchdog("csv", "<pre>" . print_r($csv, true) . "</pre>");
   foreach ($csv[0] as &$map) {
@@ -303,6 +307,7 @@ function _stockinfo_historical_parse_csv($data) {
 /*
  * Helper function to convert CSV string to array for all PHP versions.
  */
+
 function _stockinfo_historical_str_getcsv($input, $delimiter = ',', $enclosure = '"', $escape = NULL, $eol = NULL) {
   $array = array();
   $input = trim($input);
