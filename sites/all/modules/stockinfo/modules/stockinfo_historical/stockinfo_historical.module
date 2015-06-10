@@ -1,0 +1,311 @@
+<?php
+
+/**
+ * @file
+ *  API for retrieving stock information from Yahoo historical stock data.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function stockinfo_historical_menu() {
+  $items = array();
+  $items['admin/config/services/stockinfo/historical'] = array(
+    'title' => 'Historical Stock Info settings',
+    'description' => 'Pull historical data for stocks',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('stockinfo_historical_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+  );
+
+  return $items;
+}
+
+/**
+ * Create the form for Stock Info historical data admin settings.
+ */
+function stockinfo_historical_admin_settings() {
+
+  $form = array();
+
+  $form['stockinfo_historical_from_date'] = array(
+    '#type' => 'date',
+    '#title' => t('From Date'),
+    '#default_value' => variable_get("stockinfo_historical_from_date", variable_get("stockinfo_historical_from_date_default")),
+  );
+
+  $form['stockinfo_historical_symbols'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Default symbols'),
+    '#default_value' => variable_get('stockinfo_historical_symbols', variable_get('stockinfo_historical_default_symbols')),
+    '#description' => t('Enter symbols to fetch quotes for, each separated by a space'),
+  );
+
+  return system_settings_form($form);
+}
+
+/**
+ * Processes chunks into individual stocks for processing.
+ */
+function stockinfo_historical_mapstock($chunk) {
+  foreach ($chunk as $stock) {
+    watchdog("batch stock", "<pre>" . print_r($stock, true) . "</pre>");
+    stockinfo_historical_process_stock($stock);
+  }
+}
+
+/**
+ * Implements hook_stockinfo_historical_save().
+ */
+function stockinfo_historical_process_stock($items) {
+  watchdog("items data", "<pre>" . print_r($items, true) . "</pre>");
+  $symbol = $items['symbol'];
+  unset($items['symbol']);
+  $date = array();
+
+  foreach ($items as $time) {
+    watchdog("time stuff", "<pre>" . print_r($time, true) . "</pre>");
+    $sid = db_query("SELECT sid FROM stockinfo_historical WHERE symbol = :symbol AND date = :date", array("symbol" => $symbol, "date" => $time['date']))->fetchCol();
+    if (!isset($sid[0])) {
+      $entity = entity_create("stockinfo_historical", array('type' => "stockinfo_historical"));
+      foreach ($time as $key => $value) {
+        if (in_array($key, variable_get('stockinfo_reserved_mysql'))) {
+          $key = $key . "_";
+        }
+        if (isset($value)) {
+          $entity->$key = $value;
+        }
+        else {
+          $entity->$key = NULL;
+        }
+      }
+      $entity->symbol = $symbol;
+      watchdog("entity", "<pre>" . print_r($entity, true) . "</pre>");
+      drupal_alter('stockinfo_historical_save', $entity);
+      entity_save("stockinfo_historical", $entity);
+    }
+  }
+}
+
+/**
+ * Implements hook_stockinfo_historical_save_alter().
+ */
+function stockinfo_historical_stockinfo_historical_save_alter(&$stock) {
+  foreach ($stock as $row => &$property) {
+    if ($row == "date") {
+      $property = strtotime($property);
+    }
+  }
+}
+
+/**
+ * Processes batch of historical stock data.
+ */
+function stockinfo_fetch_historical_data($batch) {
+  $symbols = explode(" ", variable_get("stockinfo_historical_symbols", variable_get('stockinfo_historical_default_symbols')));
+  $stock_array = array();
+  foreach ($symbols as $symbol) {
+    $stock = stockinfo_historical_fetch($symbol);
+    if(isset($stock)) {
+      watchdog("stock weird", "<pre>" . print_r($stock, true) . "</pre>");
+    $stock_array[] = $stock;
+    }
+  }
+  $stock_chunks = array_chunk($stock_array, 200);
+  foreach ($stock_chunks as $chunk) {
+    watchdog("chunk", "<pre>" . print_r($chunk, true) . "</pre>");
+    $batch['operations'][] = array('stockinfo_historical_mapstock', array($chunk));
+  }
+  batch_set($batch);
+  batch_process("/admin/config/services/stockinfo/historical");
+}
+
+/**
+ * Generates batch, passes it to relevant function.
+ */
+function stockinfo_historical_batch_generate() {
+
+  $batch = array(
+    'operations' => array(),
+    'title' => t('Processing Historical Stock Import'),
+    'finished' => 'stockinfo_import_batch_finished',
+    'init_message' => t('Import is starting.'),
+    'progress_message' => t('Processed @current out of @total.'),
+    'error_message' => t('Import has encountered an error.'),
+  );
+
+  stockinfo_fetch_historical_data($batch);
+}
+
+/**
+ * Implements hook_entity_info().
+ */
+function stockinfo_historical_entity_info() {
+
+  $info = array();
+  $info['stockinfo_historical'] = array(
+    'label' => t('Stock Info Historical'),
+    'plural label' => t('Stock Info Historical'),
+    'base table' => 'stockinfo_historical',
+    'entity keys' => array(
+      'id' => 'sid',
+      'label' => 'symbol',
+    ),
+    'module' => 'stockinfo_historical',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'stock_info_access_callback',
+    'fieldable' => TRUE,
+  );
+
+  return $info;
+}
+
+/**
+ * Implement hook_rules_action_info().
+ */
+function stockinfo_historical_rules_action_info() {
+  return array(
+    'stockinfo_historical_rules_action_pull_historical_stock_data' => array(
+      'label' => t('Pull Historical Stock Data'),
+      'group' => t('Stockinfo'),
+    ),
+  );
+}
+
+/**
+ *  This callback fetches the historical stock data.
+ */
+function stockinfo_historical_rules_action_pull_historical_stock_data() {
+  stockinfo_historical_batch_generate();
+}
+
+/**
+ * Implementation of hook_cron_queue_info().
+ */
+function stockinfo_historical_cron_queue_info() {
+  $queues['stockinfo_historical'] = array(
+    'worker callback' => 'stockinfo_historical_run', // This is the callback function for each queue item.
+  );
+  return $queues;
+}
+
+/**
+ * Queues historical stockinfo items.
+ */
+function stockinfo_historical_queue_it() {
+  $symbols = explode(" ", variable_get("stockinfo_historical_symbols", variable_get('stockinfo_historical_default_symbols')));
+  $queue = DrupalQueue::get('stockinfo_historical');
+  foreach ($symbols as $symbol) {
+    $stock = stockinfo_historical_fetch($symbol);
+    if ($stock == FALSE) {
+      watchdog("Stockinfo", "Error, symbol does not have data");
+      return;
+    }
+    $queue->createItem($stock);
+  }
+}
+
+/**
+ * Implementation of hook_cron().
+ */
+function stockinfo_historical_cron() {
+  stockinfo_historical_queue_it();
+}
+
+/**
+ * Worker Callback for the historical stockinfo cron queue.
+ */
+function stockinfo_historical_run($items) {
+  stockinfo_historical_process_stock($items);
+}
+
+/*
+ * Historical stock fetch - grabs historical data for stocks
+ */
+
+function stockinfo_historical_fetch($symbol) {
+  watchdog("symbol", "<pre>" . print_r($symbol, true) . "</pre>");
+  $date = variable_get("stockinfo_historical_from_date", variable_get("stockinfo_historical_from_date_default"));
+  watchdog("date", "<pre>" . print_r($date, true) . "</pre>");
+  $date['month'] = $date['month'] - 1;
+  $url = "http://ichart.yahoo.com/table.csv?s=" . $symbol . "&a=" . $date['month'] . "&b=" . $date['day'] . "&c=" . $date['year'] . "&d=" . date("m") . "&e=" . date("d") . "&f=" . date("Y") . "&g=w&ignore=.csv";
+  watchdog("url", "<pre>" . print_r($url, true) . "</pre>");
+  $results = drupal_http_request($url);
+  $result['data'] = $results->data;
+  $result['symbol'] = $symbol;
+  watchdog("result", "<pre>" . print_r($results, true) . "</pre>");
+  if (_stockinfo_historical_request_failure($results))
+    return FALSE;
+
+  // Symbols are returned in CSV format.
+  return _stockinfo_historical_parse_csv($result);
+}
+
+/**
+ * Helper function to convert a historical feed from Yahoo! to an array.
+ */
+function _stockinfo_historical_parse_csv($data) {
+  watchdog("data report", "<pre>" . print_r($data, true) . "</pre>");
+  $csv = _stockinfo_historical_str_getcsv($data['data']);
+  watchdog("csv", "<pre>" . print_r($csv, true) . "</pre>");
+  foreach ($csv[0] as &$map) {
+    $map = strtolower($map);
+    $map = str_replace(" ", "_", $map);
+    if ($map == "high" || $map == "low" || $map == "close" || $map == "adj_close") {
+      $map = "stockinfo_historical_" . $map;
+    }
+    elseif ($map == "date") {
+      
+    }
+    else {
+      $map = "stockinfo_" . $map;
+    }
+  }
+  foreach ($csv as $row => $value) {
+    if ($row != 0) {
+      $csv[$row] = array_combine($csv[0], $value);
+    }
+  }
+  unset($csv[0]);
+  watchdog("csv end", "<pre>" . print_r($csv, true) . "</pre>");
+  $csv['symbol'] = $data['symbol'];
+  return $csv;
+}
+
+/*
+ * Helper function to convert CSV string to array for all PHP versions.
+ */
+
+function _stockinfo_historical_str_getcsv($input, $delimiter = ',', $enclosure = '"', $escape = NULL, $eol = NULL) {
+  $array = array();
+  $input = trim($input);
+  if (function_exists('str_getcsv')) {
+    $array = array_map('str_getcsv', preg_split('/\r\n?|\n/', $input));
+  }
+  else {
+    $temp = fopen("php://memory", "rw");
+    fwrite($temp, $input);
+    fseek($temp, 0);
+    while (($data = fgetcsv($temp, 4096, $delimiter, $enclosure)) !== FALSE) {
+      $array[] = $data;
+    }
+    fclose($temp);
+  }
+  return $array;
+}
+
+/**
+ * Internal helper function to deal cleanly with various HTTP response codes.
+ */
+function _stockinfo_historical_request_failure($results) {
+  switch ($results->code) {
+    case '200': // Success!
+    case '304': // Not modified, nothing to do.
+      return FALSE;
+    default:
+      watchdog('stockinfo', 'Failed to retrieve stock quotes with error: %error', array('%error' => $results->error));
+      return TRUE;
+  }
+  return FALSE;
+}
