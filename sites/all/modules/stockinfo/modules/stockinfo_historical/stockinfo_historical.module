@@ -72,7 +72,6 @@ function stockinfo_historical_delete($form, &$form_state) {
  */
 function stockinfo_historical_mapstock($chunk) {
   foreach ($chunk as $stock) {
-    watchdog("batch stock", "<pre>" . print_r($stock, true) . "</pre>");
     stockinfo_historical_process_stock($stock);
   }
 }
@@ -81,7 +80,6 @@ function stockinfo_historical_mapstock($chunk) {
  * Implements hook_stockinfo_historical_save().
  */
 function stockinfo_historical_process_stock($items) {
-  watchdog("items data", "<pre>" . print_r($items, true) . "</pre>");
   $symbol = $items['symbol'];
   $name = $items['name'];
   unset($items['name']);
@@ -131,13 +129,11 @@ function stockinfo_fetch_historical_data($batch) {
   foreach ($symbols as $symbol) {
     $stock = stockinfo_historical_fetch($symbol);
     if (isset($stock)) {
-      watchdog("stock weird", "<pre>" . print_r($stock, true) . "</pre>");
       $stock_array[] = $stock;
     }
   }
   $stock_chunks = array_chunk($stock_array, 200);
   foreach ($stock_chunks as $chunk) {
-    watchdog("chunk", "<pre>" . print_r($chunk, true) . "</pre>");
     $batch['operations'][] = array('stockinfo_historical_mapstock', array($chunk));
   }
   batch_set($batch);
@@ -249,18 +245,14 @@ function stockinfo_historical_run($items) {
  */
 
 function stockinfo_historical_fetch($symbol) {
-  watchdog("symbol", "<pre>" . print_r($symbol, true) . "</pre>");
   $date = variable_get("stockinfo_historical_from_date", variable_get("stockinfo_historical_from_date_default"));
-  watchdog("date", "<pre>" . print_r($date, true) . "</pre>");
   $date['month'] = $date['month'] - 1;
   $url = "http://ichart.yahoo.com/table.csv?s=" . $symbol . "&a=" . $date['month'] . "&b=" . $date['day'] . "&c=" . $date['year'] . "&d=" . date("m") . "&e=" . date("d") . "&f=" . date("Y") . "&g=w&ignore=.csv";
-  watchdog("url", "<pre>" . print_r($url, true) . "</pre>");
   $name = stockinfo_historical_generate_name($symbol);
   $results = drupal_http_request($url);
   $result['data'] = $results->data;
   $result['symbol'] = $symbol;
   $result['name'] = $name;
-  watchdog("result", "<pre>" . print_r($results, true) . "</pre>");
   if (_stockinfo_historical_request_failure($results))
     return FALSE;
 
@@ -282,9 +274,7 @@ function stockinfo_historical_generate_name($symbol) {
  * Helper function to convert a historical feed from Yahoo! to an array.
  */
 function _stockinfo_historical_parse_csv($data) {
-  watchdog("data report", "<pre>" . print_r($data, true) . "</pre>");
   $csv = _stockinfo_historical_str_getcsv($data['data']);
-  watchdog("csv", "<pre>" . print_r($csv, true) . "</pre>");
   foreach ($csv[0] as &$map) {
     $map = strtolower($map);
     $map = str_replace(" ", "_", $map);
@@ -304,7 +294,6 @@ function _stockinfo_historical_parse_csv($data) {
     }
   }
   unset($csv[0]);
-  watchdog("csv end", "<pre>" . print_r($csv, true) . "</pre>");
   $csv['symbol'] = $data['symbol'];
   $csv['name'] = $data['name'];
   return $csv;
