@@ -20,7 +20,8 @@ function stockinfo_schema() {
         'description' => 'Stock ID',
         'type' => 'serial',
         'unsigned' => TRUE,
-        'not null' => FALSE),
+        'not null' => FALSE,
+        ),
       'vid' => array(
         'description' => 'Stock Revision ID.',
         'type' => 'int',
@@ -647,6 +648,7 @@ function stockinfo_schema() {
     ),
     'primary key' => array('vid'),
   );
+  return $schema;
 }
 
 function stockinfo_install() {
