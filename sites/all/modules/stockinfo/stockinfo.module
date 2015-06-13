@@ -110,7 +110,6 @@ function stockinfo_stockinfo_save_alter(&$stock) {
     }
     if (strpos($value, "inf") || strpos($value, "nan")) {
       $value = NULL;
-      continue;
     }
     // Help convert numbers from strings to numeric.
     if (strpos($value, "+") || strpos($value, "%")) {

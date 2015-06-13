@@ -40,14 +40,14 @@ function stockinfo_historical_admin_settings() {
     '#default_value' => variable_get('stockinfo_historical_symbols', variable_get('stockinfo_historical_default_symbols')),
     '#description' => t('Enter symbols to fetch quotes for, each separated by a space'),
   );
-  
+
   $form['stockinfo_historical_submit_button'] = array(
     '#type' => 'submit',
     '#value' => t('Save configuration'),
     '#description' => t('Delete all values - useful for reimporting data'),
     '#submit' => array('system_settings_form_submit'),
   );
-  
+
   $form['stockinfo_historical_delete_button'] = array(
     '#type' => 'submit',
     '#value' => t('Delete Historical Data'),
@@ -55,16 +55,16 @@ function stockinfo_historical_admin_settings() {
     '#submit' => array('stockinfo_historical_delete'),
   );
 
-    $form['#theme'] = 'system_settings_form';
-return $form;
+  $form['#theme'] = 'system_settings_form';
+  return $form;
 }
 
 /**
  * Deletes all historical stock data.
  */
 function stockinfo_historical_delete($form, &$form_state) {
- db_delete("{stockinfo_historical}")
-    ->execute();
+  db_delete("{stockinfo_historical}")
+      ->execute();
 }
 
 /**
