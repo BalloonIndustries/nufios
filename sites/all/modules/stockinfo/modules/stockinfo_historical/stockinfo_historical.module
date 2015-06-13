@@ -42,26 +42,26 @@ function stockinfo_historical_admin_settings() {
   );
   
   $form['stockinfo_historical_submit_button'] = array(
-    '#type' => 'button',
+    '#type' => 'submit',
     '#value' => t('Save configuration'),
     '#description' => t('Delete all values - useful for reimporting data'),
-    '#submit' => 'stockinfo_historical_delete',
+    '#submit' => array('system_settings_form_submit'),
   );
   
   $form['stockinfo_historical_delete_button'] = array(
-    '#type' => 'button',
+    '#type' => 'submit',
     '#value' => t('Delete Historical Data'),
     '#description' => t('Delete all values - useful for reimporting data'),
-    '#submit' => 'stockinfo_historical_delete',
+    '#submit' => array('stockinfo_historical_delete'),
   );
 
     $form['#theme'] = 'system_settings_form';
 return $form;
-  //return system_settings_form($form);
 }
 
 function stockinfo_historical_delete($form, &$form_state) {
-  watchdog("name up", "<pre>" . print_r("what", true) . "</pre>");
+ db_delete("{stockinfo_historical}")
+    ->execute();
 }
 
 /**
