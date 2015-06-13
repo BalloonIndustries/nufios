@@ -41,7 +41,30 @@ function stockinfo_historical_admin_settings() {
     '#description' => t('Enter symbols to fetch quotes for, each separated by a space'),
   );
 
-  return system_settings_form($form);
+  $form['stockinfo_historical_submit_button'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save configuration'),
+    '#description' => t('Delete all values - useful for reimporting data'),
+    '#submit' => array('system_settings_form_submit'),
+  );
+
+  $form['stockinfo_historical_delete_button'] = array(
+    '#type' => 'submit',
+    '#value' => t('Delete Historical Data'),
+    '#description' => t('Delete all values - useful for reimporting data'),
+    '#submit' => array('stockinfo_historical_delete'),
+  );
+
+  $form['#theme'] = 'system_settings_form';
+  return $form;
+}
+
+/**
+ * Deletes all historical stock data.
+ */
+function stockinfo_historical_delete($form, &$form_state) {
+  db_delete("{stockinfo_historical}")
+      ->execute();
 }
 
 /**
@@ -49,7 +72,6 @@ function stockinfo_historical_admin_settings() {
  */
 function stockinfo_historical_mapstock($chunk) {
   foreach ($chunk as $stock) {
-    watchdog("batch stock", "<pre>" . print_r($stock, true) . "</pre>");
     stockinfo_historical_process_stock($stock);
   }
 }
@@ -58,13 +80,13 @@ function stockinfo_historical_mapstock($chunk) {
  * Implements hook_stockinfo_historical_save().
  */
 function stockinfo_historical_process_stock($items) {
-  watchdog("items data", "<pre>" . print_r($items, true) . "</pre>");
   $symbol = $items['symbol'];
+  $name = $items['name'];
+  unset($items['name']);
   unset($items['symbol']);
   $date = array();
 
   foreach ($items as $time) {
-    watchdog("time stuff", "<pre>" . print_r($time, true) . "</pre>");
     $sid = db_query("SELECT sid FROM stockinfo_historical WHERE symbol = :symbol AND date = :date", array("symbol" => $symbol, "date" => $time['date']))->fetchCol();
     if (!isset($sid[0])) {
       $entity = entity_create("stockinfo_historical", array('type' => "stockinfo_historical"));
@@ -80,7 +102,7 @@ function stockinfo_historical_process_stock($items) {
         }
       }
       $entity->symbol = $symbol;
-      watchdog("entity", "<pre>" . print_r($entity, true) . "</pre>");
+      $entity->name = $name;
       drupal_alter('stockinfo_historical_save', $entity);
       entity_save("stockinfo_historical", $entity);
     }
@@ -106,14 +128,12 @@ function stockinfo_fetch_historical_data($batch) {
   $stock_array = array();
   foreach ($symbols as $symbol) {
     $stock = stockinfo_historical_fetch($symbol);
-    if(isset($stock)) {
-      watchdog("stock weird", "<pre>" . print_r($stock, true) . "</pre>");
-    $stock_array[] = $stock;
+    if (isset($stock)) {
+      $stock_array[] = $stock;
     }
   }
   $stock_chunks = array_chunk($stock_array, 200);
   foreach ($stock_chunks as $chunk) {
-    watchdog("chunk", "<pre>" . print_r($chunk, true) . "</pre>");
     $batch['operations'][] = array('stockinfo_historical_mapstock', array($chunk));
   }
   batch_set($batch);
@@ -185,7 +205,7 @@ function stockinfo_historical_rules_action_pull_historical_stock_data() {
  */
 function stockinfo_historical_cron_queue_info() {
   $queues['stockinfo_historical'] = array(
-    'worker callback' => 'stockinfo_historical_run', // This is the callback function for each queue item.
+    'worker callback' => 'stockinfo_historical_run',
   );
   return $queues;
 }
@@ -225,16 +245,14 @@ function stockinfo_historical_run($items) {
  */
 
 function stockinfo_historical_fetch($symbol) {
-  watchdog("symbol", "<pre>" . print_r($symbol, true) . "</pre>");
   $date = variable_get("stockinfo_historical_from_date", variable_get("stockinfo_historical_from_date_default"));
-  watchdog("date", "<pre>" . print_r($date, true) . "</pre>");
   $date['month'] = $date['month'] - 1;
   $url = "http://ichart.yahoo.com/table.csv?s=" . $symbol . "&a=" . $date['month'] . "&b=" . $date['day'] . "&c=" . $date['year'] . "&d=" . date("m") . "&e=" . date("d") . "&f=" . date("Y") . "&g=w&ignore=.csv";
-  watchdog("url", "<pre>" . print_r($url, true) . "</pre>");
+  $name = stockinfo_historical_generate_name($symbol);
   $results = drupal_http_request($url);
   $result['data'] = $results->data;
   $result['symbol'] = $symbol;
-  watchdog("result", "<pre>" . print_r($results, true) . "</pre>");
+  $result['name'] = $name;
   if (_stockinfo_historical_request_failure($results))
     return FALSE;
 
@@ -243,12 +261,20 @@ function stockinfo_historical_fetch($symbol) {
 }
 
 /**
+ * Gets name data from Yahoo Finance.
+ */
+function stockinfo_historical_generate_name($symbol) {
+  $nameurl = "http://download.finance.yahoo.com/d/quotes.csv?s=$symbol&f=n&e=.csv";
+  $name_results = drupal_http_request($nameurl);
+  $name_array = _stockinfo_historical_str_getcsv($name_results->data);
+  return $name_array[0][0];
+}
+
+/**
  * Helper function to convert a historical feed from Yahoo! to an array.
  */
 function _stockinfo_historical_parse_csv($data) {
-  watchdog("data report", "<pre>" . print_r($data, true) . "</pre>");
   $csv = _stockinfo_historical_str_getcsv($data['data']);
-  watchdog("csv", "<pre>" . print_r($csv, true) . "</pre>");
   foreach ($csv[0] as &$map) {
     $map = strtolower($map);
     $map = str_replace(" ", "_", $map);
@@ -268,8 +294,8 @@ function _stockinfo_historical_parse_csv($data) {
     }
   }
   unset($csv[0]);
-  watchdog("csv end", "<pre>" . print_r($csv, true) . "</pre>");
   $csv['symbol'] = $data['symbol'];
+  $csv['name'] = $data['name'];
   return $csv;
 }
 

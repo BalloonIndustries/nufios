@@ -18,34 +18,7 @@ function stockinfo_menu() {
     'access arguments' => array('administer site configuration'),
   );
 
-  $items['admin/config/services/stockinfo/properties'] = array(
-    'title' => 'Stock Info Properties',
-    'description' => 'Configure properties for Stock Info',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('stockinfo_property_page'),
-    'access arguments' => array('administer site configuration'),
-  );
-
-  $items['admin/structure/stocks'] = array(
-    'title' => 'Stock',
-    'description' => 'Stock data from the Stockinfo module',
-    'page callback' => array('stockinfo_display_page'),
-    'access arguments' => array('administer site configuration'),
-  );
-
-  $items['admin/config/services/stockinfo/fake-page'] = array(
-    'title' => 'FAKE PAGE',
-    'description' => 'Do any function I want!!!',
-    'page callback' => 'stockinfo_fetch_data',
-    'access arguments' => array('administer site configuration'),
-  );
-
   return $items;
-}
-
-function stockinfo_display_page() {
-  $output = '';
-  return $output;
 }
 
 /**
@@ -137,7 +110,6 @@ function stockinfo_stockinfo_save_alter(&$stock) {
     }
     if (strpos($value, "inf") || strpos($value, "nan")) {
       $value = NULL;
-      continue;
     }
     // Help convert numbers from strings to numeric.
     if (strpos($value, "+") || strpos($value, "%")) {
@@ -266,7 +238,7 @@ function stockinfo_rules_action_pull_current_stock_data() {
  */
 function stockinfo_cron_queue_info() {
   $queues['stockinfo'] = array(
-    'worker callback' => 'stockinfo_run', // This is the callback function for each queue item.
+    'worker callback' => 'stockinfo_run',
   );
   return $queues;
 }
@@ -501,17 +473,6 @@ function stockinfo_save($stockinfo) {
   }
 
   return $stockinfo->sid;
-}
-
-function stockinfo_property_page() {
-  $form = array();
-  $form['stockinfo_property'] = array(
-    '#type' => 'checkboxes',
-    '#options' => variable_get("stockinfo_field_label"),
-    '#title' => t('Stock Properties to Collect'),
-    '#default_value' => variable_get('stockinfo_property', array()),
-  );
-  return system_settings_form($form);
 }
 
 /**
