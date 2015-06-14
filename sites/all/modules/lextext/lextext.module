@@ -148,6 +148,9 @@ function lextext_info() {
   return $lextext_info;
 }
 
+/**
+ * 
+ */
 function lextext_lextext_info_alter(&$lextext_info) {
   $lextext_info['lextext_lemmatize'] = array(
     'label' => t('Lemmatize Text'),
@@ -155,6 +158,9 @@ function lextext_lextext_info_alter(&$lextext_info) {
   );
 }
 
+/**
+ * Admin settings page for lextext.
+ */
 function lextext_admin_settings() {
   $form = array();
   $lextext_info = lextext_info();
