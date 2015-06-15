@@ -198,7 +198,6 @@ function lextext_admin_settings() {
 // Custom theme output.
 function theme_lextext_components($vars) {
   $element = $vars['element'];
-  //drupal_add_tabledrag('lextext_settings', 'order', 'sibling', 'row-weight');
 
   $header = array(
     'label' => t('Attribute'),
@@ -216,6 +215,8 @@ function theme_lextext_components($vars) {
     }
     $rows[] = $row;
   }
+  
+  drupal_add_tabledrag('lextext_settings', 'order', 'sibling', 'item-row-weight');
 
   return theme('table', array(
     'header' => $header,
@@ -229,8 +230,9 @@ function _lextext_machine_name($machine_name) {
   if (!empty($type)) {
     return TRUE;
   }
-  else
+  else {
     return FALSE;
+  }
 }
 
 /* function lextext_cron() {
