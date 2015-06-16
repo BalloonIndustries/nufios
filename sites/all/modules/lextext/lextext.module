@@ -172,8 +172,10 @@ function lextext_admin_settings() {
   );
   $weight = 0;
   $form_vars = variable_get("lextext_attributes");
-  // Temporary - have to figure out how to fix this to add draggable table
+  watchdog("form vars", "<pre>" . print_r($form_vars, true) . "</pre>");
+  
   foreach ($lextext_info as $lextext_key => $lextext_item) {
+    watchdog("lextext key", "<pre>" . print_r($lextext_key, true) . "</pre>");
     $form['lextext_attributes'][$lextext_key]['label'] = array(
       '#type' => 'markup',
       '#markup' => $lextext_item['label'],
@@ -192,6 +194,7 @@ function lextext_admin_settings() {
     );
     $weight++;
   }
+  watchdog("form", "<pre>" . print_r($form, true) . "</pre>");
   return system_settings_form($form);
 }
 
