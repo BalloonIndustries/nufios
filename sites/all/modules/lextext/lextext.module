@@ -148,6 +148,9 @@ function lextext_info() {
   return $lextext_info;
 }
 
+/**
+ * 
+ */
 function lextext_lextext_info_alter(&$lextext_info) {
   $lextext_info['lextext_lemmatize'] = array(
     'label' => t('Lemmatize Text'),
@@ -155,6 +158,9 @@ function lextext_lextext_info_alter(&$lextext_info) {
   );
 }
 
+/**
+ * Admin settings page for lextext.
+ */
 function lextext_admin_settings() {
   $form = array();
   $lextext_info = lextext_info();
@@ -166,8 +172,10 @@ function lextext_admin_settings() {
   );
   $weight = 0;
   $form_vars = variable_get("lextext_attributes");
-  // Temporary - have to figure out how to fix this to add draggable table
+  watchdog("form vars", "<pre>" . print_r($form_vars, true) . "</pre>");
+  
   foreach ($lextext_info as $lextext_key => $lextext_item) {
+    watchdog("lextext key", "<pre>" . print_r($lextext_key, true) . "</pre>");
     $form['lextext_attributes'][$lextext_key]['label'] = array(
       '#type' => 'markup',
       '#markup' => $lextext_item['label'],
@@ -186,13 +194,13 @@ function lextext_admin_settings() {
     );
     $weight++;
   }
+  watchdog("form", "<pre>" . print_r($form, true) . "</pre>");
   return system_settings_form($form);
 }
 
 // Custom theme output.
 function theme_lextext_components($vars) {
   $element = $vars['element'];
-  //drupal_add_tabledrag('lextext_settings', 'order', 'sibling', 'row-weight');
 
   $header = array(
     'label' => t('Attribute'),
@@ -210,6 +218,8 @@ function theme_lextext_components($vars) {
     }
     $rows[] = $row;
   }
+  
+  drupal_add_tabledrag('lextext_settings', 'order', 'sibling', 'item-row-weight');
 
   return theme('table', array(
     'header' => $header,
@@ -223,8 +233,9 @@ function _lextext_machine_name($machine_name) {
   if (!empty($type)) {
     return TRUE;
   }
-  else
+  else {
     return FALSE;
+  }
 }
 
 /* function lextext_cron() {

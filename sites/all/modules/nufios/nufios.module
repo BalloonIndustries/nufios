@@ -2,7 +2,7 @@
 
 function computed_field_field_volume_percentage_compute(&$entity_field, $entity_type, $entity, $field, $instance, $langcode, $items) {
   $entity_field[0]['value'] = 0;
-  if (is_numeric($entity->volume) && is_numeric($entity->average_daily_volume) || $entity->volume != 0 || $entity->average_daily_volume != 0) {
+  if ((is_numeric($entity->volume) && isset($entity->volume)) && (is_numeric($entity->average_daily_volume) && isset($entity->average_daily_volume))) {
     $entity_field[0]['value'] = round($entity->volume / $entity->average_daily_volume, 10);
   }
 }
