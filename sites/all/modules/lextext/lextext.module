@@ -195,7 +195,17 @@ function lextext_admin_settings() {
     $weight++;
   }
   watchdog("form", "<pre>" . print_r($form, true) . "</pre>");
-  return system_settings_form($form);
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save configuration'),
+    '#submit' => array('system_settings_form_submit', 'lextext_weight_save'),
+  );
+  return $form;
+}
+
+function lextext_weight_save(&$form, &$form_state) {
+    watchdog("form state", "<pre>" . print_r($form_state, true) . "</pre>");
+    
 }
 
 // Custom theme output.
@@ -313,10 +323,7 @@ function lextext_lemmatize($word_info, $arguments = NULL) {
 function lextext_process() {
   variable_set("lemmatized", FALSE);
   $lextext_attributes = variable_get("lextext_attributes", NULL);
-  if (empty($lextext_attributes)) {
-    
-  }
-  else {
+  if (!empty($lextext_attributes)) {
     $lextext_info = lextext_info();
     $lextext_order = array();
     foreach ($lextext_info as $key => $value) {
@@ -329,7 +336,6 @@ function lextext_process() {
 
     return $lextext_order;
   }
-  return $content;
 }
 
 function lextext_generate($content) {
