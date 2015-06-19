@@ -189,7 +189,7 @@ function lextext_admin_settings() {
       '#default_value' => isset($form_vars[$lextext_key]['weight']) ? $form_vars[$lextext_key]['weight'] : $weight,
       '#size' => 3,
       '#title' => t('Weight'),
-      '#title_display' => 'invisible',
+      '#value' => $weight,
       '#attributes' => array('class' => array('item-row-weight')),
     );
     $weight++;
@@ -197,14 +197,14 @@ function lextext_admin_settings() {
   watchdog("form", "<pre>" . print_r($form, true) . "</pre>");
   $form['submit'] = array(
     '#type' => 'submit',
-    '#value' => t('Save configuration'),
+    '#value' => t('Save configurationa'),
     '#submit' => array('system_settings_form_submit', 'lextext_weight_save'),
   );
-  return $form;
+  return system_settings_form($form);
 }
 
 function lextext_weight_save(&$form, &$form_state) {
-    watchdog("form state", "<pre>" . print_r($form_state, true) . "</pre>");
+    watchdog("form state weight", "<pre>" . print_r($form_state, true) . "</pre>");
     
 }
 
@@ -217,6 +217,8 @@ function theme_lextext_components($vars) {
     'checkbox' => t('Enabled/disabled'),
     'weight' => t('Weight'),
   );
+  
+  drupal_add_tabledrag('lextext_settings', 'order', 'sibling', 'item-row-weight');
 
   $rows = array();
   foreach (element_children($element) as $key) {
@@ -229,8 +231,6 @@ function theme_lextext_components($vars) {
     $rows[] = $row;
   }
   
-  drupal_add_tabledrag('lextext_settings', 'order', 'sibling', 'item-row-weight');
-
   return theme('table', array(
     'header' => $header,
     'rows' => $rows,
