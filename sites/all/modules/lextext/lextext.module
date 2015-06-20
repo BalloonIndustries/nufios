@@ -189,13 +189,23 @@ function lextext_admin_settings() {
       '#default_value' => isset($form_vars[$lextext_key]['weight']) ? $form_vars[$lextext_key]['weight'] : $weight,
       '#size' => 3,
       '#title' => t('Weight'),
-      '#title_display' => 'invisible',
+      '#value' => $weight,
       '#attributes' => array('class' => array('item-row-weight')),
     );
     $weight++;
   }
   watchdog("form", "<pre>" . print_r($form, true) . "</pre>");
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save configurationa'),
+    '#submit' => array('system_settings_form_submit', 'lextext_weight_save'),
+  );
   return system_settings_form($form);
+}
+
+function lextext_weight_save(&$form, &$form_state) {
+    watchdog("form state weight", "<pre>" . print_r($form_state, true) . "</pre>");
+    
 }
 
 // Custom theme output.
@@ -207,6 +217,8 @@ function theme_lextext_components($vars) {
     'checkbox' => t('Enabled/disabled'),
     'weight' => t('Weight'),
   );
+  
+  drupal_add_tabledrag('lextext_settings', 'order', 'sibling', 'item-row-weight');
 
   $rows = array();
   foreach (element_children($element) as $key) {
@@ -219,8 +231,6 @@ function theme_lextext_components($vars) {
     $rows[] = $row;
   }
   
-  drupal_add_tabledrag('lextext_settings', 'order', 'sibling', 'item-row-weight');
-
   return theme('table', array(
     'header' => $header,
     'rows' => $rows,
@@ -313,10 +323,7 @@ function lextext_lemmatize($word_info, $arguments = NULL) {
 function lextext_process() {
   variable_set("lemmatized", FALSE);
   $lextext_attributes = variable_get("lextext_attributes", NULL);
-  if (empty($lextext_attributes)) {
-    
-  }
-  else {
+  if (!empty($lextext_attributes)) {
     $lextext_info = lextext_info();
     $lextext_order = array();
     foreach ($lextext_info as $key => $value) {
@@ -329,7 +336,6 @@ function lextext_process() {
 
     return $lextext_order;
   }
-  return $content;
 }
 
 function lextext_generate($content) {
