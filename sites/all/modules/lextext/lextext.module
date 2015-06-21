@@ -34,6 +34,9 @@
   }
  */
 
+/**
+ * Implements hook_menu().
+ */
 function lextext_menu() {
   $items['admin/structure/lextext'] = array(
     'title' => 'Lextext Drag',
@@ -46,7 +49,7 @@ function lextext_menu() {
   return $items;
 }
 
-function lextext_admin_menu() {
+/*function lextext_admin_menu() {
   $output = l("Create new lextext", "admin/structure/lextext/create", array());
   $menu_items = db_query("SELECT * FROM lextext")->fetchAll();
   $header = array('Lextext ID', 'Name', 'Type', 'Title', 'Lextext', "Bundle", "Field", "Operations");
@@ -75,7 +78,7 @@ function lextext_admin_menu() {
       )
   );
   return $output;
-}
+}*/
 
 function lextext_fields_callback($form, $form_state) {
   return $form['lextext_field'];
@@ -142,6 +145,9 @@ function lextext_old_save($form, &$form_state) {
   }
 }
 
+/**
+ * Defines lextexts.
+ */
 function lextext_info() {
   $lextext_info = array();
   drupal_alter("lextext_info", $lextext_info);
@@ -149,7 +155,7 @@ function lextext_info() {
 }
 
 /**
- * 
+ * Implements hook_lextext_info_alter().
  */
 function lextext_lextext_info_alter(&$lextext_info) {
   $lextext_info['lextext_lemmatize'] = array(
@@ -194,12 +200,6 @@ function lextext_admin_settings() {
     );
     $weight++;
   }
-  watchdog("form", "<pre>" . print_r($form, true) . "</pre>");
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save configurationa'),
-    '#submit' => array('system_settings_form_submit', 'lextext_weight_save'),
-  );
   return system_settings_form($form);
 }
 
@@ -208,7 +208,9 @@ function lextext_weight_save(&$form, &$form_state) {
     
 }
 
-// Custom theme output.
+/**
+ *  Custom theme output for lextext components.
+ */
 function theme_lextext_components($vars) {
   $element = $vars['element'];
 
@@ -238,6 +240,9 @@ function theme_lextext_components($vars) {
   ));
 }
 
+/**
+ * Get type from the machine name.
+ */
 function _lextext_machine_name($machine_name) {
   $type = db_query("SELECT type FROM {lextext} WHERE type = :type", array("type" => $machine_name))->fetchField();
   if (!empty($type)) {
@@ -248,11 +253,9 @@ function _lextext_machine_name($machine_name) {
   }
 }
 
-/* function lextext_cron() {
-  $content = lextext_generate("This is the {greatest, adj} {writer, n} ever in the {history, n} of mankind");
-  watchdog("content", print_r($content, true));
-  } */
-
+/**
+ * 
+ */
 function lextext_lemmatize_map($pos) {
   //watchdog("map pos", print_r($pos, true));
   $pos = trim($pos);
