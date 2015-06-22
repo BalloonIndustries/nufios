@@ -621,3 +621,318 @@ function _stockinfo_str_getcsv($input, $delimiter = ',', $enclosure = '"', $esca
   }
   return $array;
 }
+
+/**
+ * Implements hook_entity_property_info().
+ */
+function stockinfo_entity_property_info() {
+    $info = array();
+
+  $info['stockinfo']['properties']['sid'] = array(
+    'label' => t('SID'),
+    'description' => t('The ID of the stockinfo.'),
+    'type' => 'integer',
+    'schema field' => 'sid',
+  );
+  $info['stockinfo']['properties']['symbol'] = array(
+    'label' => t('Symbol'),
+    'description' => t('Symbol of the stockinfo.'),
+    'type' => 'text',
+    'schema field' => 'symbol',
+  );
+  $info['stockinfo']['properties']['vid'] = array(
+    'label' => t('Version ID'),
+    'description' => t('Stockinfo VID.'),
+    'type' => 'integer',
+    'schema field' => 'vid',
+  );
+  $info['stockinfo']['properties']['name'] = array(
+    'label' => t('Company Name'),
+    'description' => t('Name of the company.'),
+    'type' => 'text',
+    'schema field' => 'name',
+  );
+  $info['stockinfo']['properties']['last_trade_with_time'] = array(
+    'label' => t('Last Trade with Time'),
+    'description' => t('The last trade that occurred, with time.'),
+    'type' => 'text',
+    'schema field' => 'last_trade_with_time',
+  );
+  $info['stockinfo']['properties']['last_trade_price_only'] = array(
+    'label' => t('Last Trade Price Only'),
+    'description' => t('The last trade with only the price data.'),
+    'type' => 'float',
+    'schema field' => 'last_trade_price_only',
+  );
+  $info['stockinfo']['properties']['last_trade_date'] = array(
+    'label' => t('Last Trade Date'),
+    'description' => t('The last trade date.'),
+    'type' => 'date',
+    'schema field' => 'last_trade_date',
+  );
+  $info['stockinfo']['properties']['last_trade_time'] = array(
+    'label' => t('Last Trade Time'),
+    'description' => t('The last trade time.'),
+    'type' => 'text',
+    'schema field' => 'last_trade_time',
+  );
+  $info['stockinfo']['properties']['change__percent_change'] = array(
+    'label' => t('Change and Percent Change'),
+    'description' => t('The change and percent change.'),
+    'type' => 'text',
+    'schema field' => 'change__percent_change',
+  );
+  $info['stockinfo']['properties']['change_'] = array(
+    'label' => t('Change'),
+    'description' => t('The change in stock price.'),
+    'type' => 'float',
+    'schema field' => 'change_',
+  );
+  $info['stockinfo']['properties']['changein_percent'] = array(
+    'label' => t('Change in Percent'),
+    'description' => t('The change in person of the stock price.'),
+    'type' => 'float',
+    'schema field' => 'changein_percent',
+  );
+  $info['stockinfo']['properties']['volume'] = array(
+    'label' => t('Volume'),
+    'description' => t('The number of shares.'),
+    'type' => 'float',
+    'schema field' => 'volume',
+  );
+  $info['stockinfo']['properties']['average_daily_volume'] = array(
+    'label' => t('Average Daily Volume'),
+    'description' => t('The average daily volume.'),
+    'type' => 'float',
+    'schema field' => 'average_daily_volume',
+  );
+  $info['stockinfo']['properties']['bid'] = array(
+    'label' => t('Bid'),
+    'description' => t('The bid price.'),
+    'type' => 'float',
+    'schema field' => 'bid',
+  );
+  $info['stockinfo']['properties']['ask'] = array(
+    'label' => t('Ask'),
+    'description' => t('The ask price.'),
+    'type' => 'float',
+    'schema field' => 'ask',
+  );
+  $info['stockinfo']['properties']['previous_close'] = array(
+    'label' => t('Previous Close'),
+    'description' => t('The previous day close.'),
+    'type' => 'float',
+    'schema field' => 'previous_close',
+  );
+  $info['stockinfo']['properties']['open'] = array(
+    'label' => t('Open'),
+    'description' => t('The open price.'),
+    'type' => 'float',
+    'schema field' => 'open',
+  );
+  $info['stockinfo']['properties']['days_range'] = array(
+    'label' => t('Day\'s Range'),
+    'description' => t('The range for the day.'),
+    'type' => 'text',
+    'schema field' => 'days_range',
+  );
+  $info['stockinfo']['properties']['year_range'] = array(
+    'label' => t('Year\'s Range'),
+    'description' => t('The range for the year.'),
+    'type' => 'text',
+    'schema field' => 'year_range',
+  );
+  $info['stockinfo']['properties']['change_from_year_low'] = array(
+    'label' => t('Change from Year Low'),
+    'description' => t('The change from the lowest price of the year.'),
+    'type' => 'float',
+    'schema field' => 'change_from_year_low',
+  );
+  $info['stockinfo']['properties']['percent_change_from_year_low'] = array(
+    'label' => t('Percent Change from Year Low'),
+    'description' => t('The percent change from the year low.'),
+    'type' => 'float',
+    'schema field' => 'percent_change_from_year_low',
+  );
+  $info['stockinfo']['properties']['change_from_year_high'] = array(
+    'label' => t('Change from Year High'),
+    'description' => t('The change from the highest price of the year.'),
+    'type' => 'float',
+    'schema field' => 'change_from_year_high',
+  );
+  $info['stockinfo']['properties']['percebt_change_from_year_high'] = array(
+    'label' => t('Percent Change from Year High'),
+    'description' => t('The percent change from the year high.'),
+    'type' => 'float',
+    'schema field' => 'percent_change_from_year_high',
+  );
+  $info['stockinfo']['properties']['earnings_share'] = array(
+    'label' => t('Earnings/Share'),
+    'description' => t('The earnings per share.'),
+    'type' => 'float',
+    'schema field' => 'earnings_share',
+  );
+  $info['stockinfo']['properties']['p_e_ratio'] = array(
+    'label' => t('Price/Earings Ratio'),
+    'description' => t('The price to earnings ratio.'),
+    'type' => 'float',
+    'schema field' => 'p_e_ratio',
+  );
+  $info['stockinfo']['properties']['short_ratio'] = array(
+    'label' => t('Short Ratio'),
+    'description' => t('The short ratio.'),
+    'type' => 'float',
+    'schema field' => 'short_ratio',
+  );
+  $info['stockinfo']['properties']['dividend_pay_date'] = array(
+    'label' => t('Dividend Pay Date'),
+    'description' => t('The date that dividends will be paid.'),
+    'type' => 'date',
+    'schema field' => 'dividend_pay_date',
+  );
+  $info['stockinfo']['properties']['ex_dividend_date'] = array(
+    'label' => t('Ex-Dividend Date'),
+    'description' => t('The ex-dividend date.'),
+    'type' => 'date',
+    'schema field' => 'ex_dividend_date',
+  );
+  $info['stockinfo']['properties']['dividend_yield'] = array(
+    'label' => t('Dividend Yield'),
+    'description' => t('The yield from the dividends.'),
+    'type' => 'float',
+    'schema field' => 'dividend_yield',
+  );
+  $info['stockinfo']['properties']['market_capitalization'] = array(
+    'label' => t('Market Cap'),
+    'description' => t('The market capitalization of the company.'),
+    'type' => 'float',
+    'schema field' => 'market_capitalization',
+  );
+  $info['stockinfo']['properties']['oneyr_target_price'] = array(
+    'label' => t('One Year Target Price'),
+    'description' => t('The target price for the stock.'),
+    'type' => 'float',
+    'schema field' => 'oneyr_target_price',
+  );
+  $info['stockinfo']['properties']['e_p_s_estimate_current_year'] = array(
+    'label' => t('EPS Estimate Current Year'),
+    'description' => t('The EPS estimate for the current year.'),
+    'type' => 'float',
+    'schema field' => 'e_p_s_estimate_current_year',
+  );
+  $info['stockinfo']['properties']['e_p_s_estimate_next_year'] = array(
+    'label' => t('EPS Estimate Next Year'),
+    'description' => t('The EPS estimate for the next year.'),
+    'type' => 'float',
+    'schema field' => 'e_p_s_estimate_next_year',
+  );
+  $info['stockinfo']['properties']['e_p_s_estimate_next_quarter'] = array(
+    'label' => t('EPS Estimate Next Quarter'),
+    'description' => t('The EPS estimate for the next quarter.'),
+    'type' => 'float',
+    'schema field' => 'e_p_s_estimate_next_quarter',
+  );
+  $info['stockinfo']['properties']['price_e_p_s_estimate_current_year'] = array(
+    'label' => t('Price/EPS Estimate Current Year'),
+    'description' => t('The Price/EPS estimate for the current year.'),
+    'type' => 'float',
+    'schema field' => 'price_e_p_s_estimate_current_year',
+  );
+  $info['stockinfo']['properties']['price_e_p_s_estimate_next_year'] = array(
+    'label' => t('Price/EPS Estimate Next Year'),
+    'description' => t('The Price/EPS estimate for the next year.'),
+    'type' => 'float',
+    'schema field' => 'price_e_p_s_estimate_next_year',
+  );
+  $info['stockinfo']['properties']['p_e_g_ratio'] = array(
+    'label' => t('PEG Ratio'),
+    'description' => t('The PEG ratio.'),
+    'type' => 'float',
+    'schema field' => 'p_e_g_ratio',
+  );
+  $info['stockinfo']['properties']['book_value'] = array(
+    'label' => t('Book Value'),
+    'description' => t('The book value.'),
+    'type' => 'float',
+    'schema field' => 'book_value',
+  );
+  $info['stockinfo']['properties']['price_book'] = array(
+    'label' => t('Price/Book'),
+    'description' => t('The price to book ratio.'),
+    'type' => 'float',
+    'schema field' => 'price_book',
+  );
+  $info['stockinfo']['properties']['price_sales'] = array(
+    'label' => t('Price/Sales'),
+    'description' => t('The price to sales ratio.'),
+    'type' => 'float',
+    'schema field' => 'price_sales',
+  );
+  $info['stockinfo']['properties']['e_b_i_t_d_a'] = array(
+    'label' => t('EBITDA'),
+    'description' => t('The EBITDA.'),
+    'type' => 'text',
+    'schema field' => 'e_b_i_t_d_a',
+  );
+  $info['stockinfo']['properties']['fiftyday_moving_average'] = array(
+    'label' => t('50-day Moving Average'),
+    'description' => t('The 50-day moving average.'),
+    'type' => 'float',
+    'schema field' => 'fiftyday_moving_average',
+  );
+  $info['stockinfo']['properties']['change_from_fiftyday_moving_average'] = array(
+    'label' => t('Change from 50-day Moving Average'),
+    'description' => t('The change from 50-day moving average.'),
+    'type' => 'float',
+    'schema field' => 'change_from_fiftyday_moving_average',
+  );
+  $info['stockinfo']['properties']['percent_change_from_fiftyday_moving_average'] = array(
+    'label' => t('Percent Change from 50-Day Moving Average'),
+    'description' => t('The percent change from the 50-day moving average.'),
+    'type' => 'float',
+    'schema field' => 'percent_change_from_fiftyday_moving_average',
+  );
+  $info['stockinfo']['properties']['two_hundredday_moving_average'] = array(
+    'label' => t('200-Day Moving Average'),
+    'description' => t('The 200-day moving average.'),
+    'type' => 'float',
+    'schema field' => 'two_hundredday_moving_average',
+  );
+  $info['stockinfo']['properties']['change_from_two_hundredday_moving_average'] = array(
+    'label' => t('Change from 200-Day Moving Average'),
+    'description' => t('The change from 200-day moving average.'),
+    'type' => 'float',
+    'schema field' => 'change_from_two_hundredday_moving_average',
+  );
+  $info['stockinfo']['properties']['percent_change_from_two_hundredday_moving_average'] = array(
+    'label' => t('Percent Change from 200-Day Moving Average'),
+    'description' => t('The percent change from 200-day moving average.'),
+    'type' => 'float',
+    'schema field' => 'percent_change_from_two_hundredday_moving_average',
+  );
+  $info['stockinfo']['properties']['days_value_change'] = array(
+    'label' => t('Day\'s Value Change'),
+    'description' => t('The day\'s value change.'),
+    'type' => 'float',
+    'schema field' => 'days_value_change',
+  );
+  $info['stockinfo']['properties']['stock_exchange'] = array(
+    'label' => t('Stock Exchange'),
+    'description' => t('The stock exchange a stock belongs to.'),
+    'type' => 'text',
+    'schema field' => 'stock_exchange',
+  );
+  $info['stockinfo']['properties']['created'] = array(
+    'label' => t('Created'),
+    'description' => t('The created date.'),
+    'type' => 'date',
+    'schema field' => 'created',
+  );
+  $info['stockinfo']['properties']['changed'] = array(
+    'label' => t('Changed'),
+    'description' => t('The last changed date.'),
+    'type' => 'date',
+    'schema field' => 'changed',
+  );
+  return $info;
+}
