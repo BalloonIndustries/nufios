@@ -341,6 +341,9 @@ function lextext_process() {
   }
 }
 
+/**
+ * Main workhorse function.
+ */
 function lextext_generate($content) {
 
   //watchdog("content", "<pre>" . print_r($content, true) . "</pre>");
@@ -353,19 +356,7 @@ function lextext_generate($content) {
     $words[] = explode(",", $match);
   }
   watchdog("words", "<pre>" . print_r($words, true) . "</pre>");
-  $words_replaced = array();
-  $functions = lextext_process();
-  foreach ($words as $word) {
-    watchdog("word written", "<pre>" . print_r($word, true) . "</pre>");
-    foreach ($functions as $container) {
-      watchdog("container", "<pre>" . print_r($container, true) . "</pre>");
-      $function = key($container);
-      $container_value = array_shift($container);
-      $word = $function($word, $container_value['arguments']);
-      watchdog("word before insertion", "<pre>" . print_r($word, true) . "</pre>");
-    }
-    $words_replaced[] = $word;
-  }
+$words_replaced = lextext_execute($words);
   $count = 0;
   foreach($matches[0] as $match) {
     if(!isset($words_replace[$count][0][0])) {
@@ -390,6 +381,26 @@ function lextext_generate($content) {
   //watchdog("word totally replaced", "<pre>" . print_r($words_replaced, true) . "</pre>");
 variable_set("lemmatized", FALSE);
   return $content;
+}
+
+/**
+ * Executes grammar processing functions.
+ */
+function lextext_execute($words) {
+    $words_replaced = array();
+  $functions = lextext_process();
+  foreach ($words as $word_iter) {
+    watchdog("word written", "<pre>" . print_r($word_iter, true) . "</pre>");
+    foreach ($functions as $container) {
+      watchdog("container", "<pre>" . print_r($container, true) . "</pre>");
+      $function = key($container);
+      $container_value = array_shift($container);
+      $word_iter = $function($word_iter, $container_value['arguments']);
+      watchdog("word before insertion", "<pre>" . print_r($word_iter, true) . "</pre>");
+    }
+    $words_replaced[] = $word_iter;
+  }
+  return $words_replaced;
 }
 
 /**

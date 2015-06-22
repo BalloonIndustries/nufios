@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  *  API for retrieving stock information from Yahoo.
@@ -65,6 +66,9 @@ function stockinfo_mapstock($chunk) {
   }
 }
 
+/**
+ * Main stock processing function.
+ */
 function stockinfo_process_stock($stock) {
   if (!is_array($stock)) {
     return FALSE;
@@ -96,10 +100,13 @@ function stockinfo_process_stock($stock) {
   stockinfo_save($entity);
 }
 
+/**
+ * Implements hook_stockinfo_save_alter().
+ */
 function stockinfo_stockinfo_save_alter(&$stock) {
   // Normalize the data and remove data that will break the system.
   foreach ($stock as $key => $value) {
-    if (!isset($value)) {
+    if (!isset($value) && $value == "stockinfo") {
       continue;
     }
     $value = strip_tags($value);
@@ -108,7 +115,8 @@ function stockinfo_stockinfo_save_alter(&$stock) {
       $value = NULL;
       continue;
     }
-    if (strpos($value, "inf") || strpos($value, "nan")) {
+
+    if (strpos($value, "inf")) {
       $value = NULL;
     }
     // Help convert numbers from strings to numeric.
@@ -121,6 +129,9 @@ function stockinfo_stockinfo_save_alter(&$stock) {
       $value = stockinfo_make_numeric($value);
     }
     $value = stockinfo_convert_to_timestamp($stock, $key, $value);
+    if ($value == "nan") {
+      $value = NULL;
+    }
     $stock->$key = $value;
   }
 }
@@ -592,6 +603,7 @@ function _stockinfo_request_failure($results) {
 /*
  * Helper function to convert CSV string to array for all PHP versions.
  */
+
 function _stockinfo_str_getcsv($input, $delimiter = ',', $enclosure = '"', $escape = NULL, $eol = NULL) {
   $array = array();
   $input = trim($input);
