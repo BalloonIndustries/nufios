@@ -18,7 +18,14 @@ function stockinfo_menu() {
     'page arguments' => array('stockinfo_admin_settings'),
     'access arguments' => array('administer site configuration'),
   );
-
+  $items['admin/structure/stocks'] = array(
+    'title' => 'Stock Page',
+    'description' => 'Temporary Page for Stocks',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('stockinfo_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+  );
+  
   return $items;
 }
 
@@ -633,357 +640,357 @@ function stockinfo_entity_property_info() {
     'description' => t('The ID of the stockinfo.'),
     'type' => 'integer',
     'schema field' => 'sid',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['symbol'] = array(
     'label' => t('Symbol'),
     'description' => t('Symbol of the stockinfo.'),
     'type' => 'text',
     'schema field' => 'symbol',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['vid'] = array(
     'label' => t('Version ID'),
     'description' => t('Stockinfo VID.'),
     'type' => 'integer',
     'schema field' => 'vid',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['name'] = array(
     'label' => t('Company Name'),
     'description' => t('Name of the company.'),
     'type' => 'text',
     'schema field' => 'name',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['last_trade_with_time'] = array(
     'label' => t('Last Trade with Time'),
     'description' => t('The last trade that occurred, with time.'),
     'type' => 'text',
     'schema field' => 'last_trade_with_time',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['last_trade_price_only'] = array(
     'label' => t('Last Trade Price Only'),
     'description' => t('The last trade with only the price data.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'last_trade_price_only',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['last_trade_date'] = array(
     'label' => t('Last Trade Date'),
     'description' => t('The last trade date.'),
     'type' => 'date',
     'schema field' => 'last_trade_date',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['last_trade_time'] = array(
     'label' => t('Last Trade Time'),
     'description' => t('The last trade time.'),
     'type' => 'text',
     'schema field' => 'last_trade_time',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['change__percent_change'] = array(
     'label' => t('Change and Percent Change'),
     'description' => t('The change and percent change.'),
     'type' => 'text',
     'schema field' => 'change__percent_change',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['change_'] = array(
     'label' => t('Change'),
     'description' => t('The change in stock price.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'change_',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['changein_percent'] = array(
     'label' => t('Change in Percent'),
     'description' => t('The change in percent of the stock price.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'changein_percent',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['volume'] = array(
     'label' => t('Volume'),
     'description' => t('The number of shares.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'volume',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['average_daily_volume'] = array(
     'label' => t('Average Daily Volume'),
     'description' => t('The average daily volume.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'average_daily_volume',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['bid'] = array(
     'label' => t('Bid'),
     'description' => t('The bid price.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'bid',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['ask'] = array(
     'label' => t('Ask'),
     'description' => t('The ask price.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'ask',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['previous_close'] = array(
     'label' => t('Previous Close'),
     'description' => t('The previous day close.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'previous_close',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['open'] = array(
     'label' => t('Open'),
     'description' => t('The open price.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'open',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['days_range'] = array(
     'label' => t('Day\'s Range'),
     'description' => t('The range for the day.'),
     'type' => 'text',
     'schema field' => 'days_range',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['year_range'] = array(
     'label' => t('Year\'s Range'),
     'description' => t('The range for the year.'),
     'type' => 'text',
     'schema field' => 'year_range',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['change_from_year_low'] = array(
     'label' => t('Change from Year Low'),
     'description' => t('The change from the lowest price of the year.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'change_from_year_low',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['percent_change_from_year_low'] = array(
     'label' => t('Percent Change from Year Low'),
     'description' => t('The percent change from the year low.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'percent_change_from_year_low',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['change_from_year_high'] = array(
     'label' => t('Change from Year High'),
     'description' => t('The change from the highest price of the year.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'change_from_year_high',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['percebt_change_from_year_high'] = array(
     'label' => t('Percent Change from Year High'),
     'description' => t('The percent change from the year high.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'percent_change_from_year_high',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['earnings_share'] = array(
     'label' => t('Earnings/Share'),
     'description' => t('The earnings per share.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'earnings_share',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['p_e_ratio'] = array(
     'label' => t('Price/Earings Ratio'),
     'description' => t('The price to earnings ratio.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'p_e_ratio',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['short_ratio'] = array(
     'label' => t('Short Ratio'),
     'description' => t('The short ratio.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'short_ratio',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['dividend_pay_date'] = array(
     'label' => t('Dividend Pay Date'),
     'description' => t('The date that dividends will be paid.'),
     'type' => 'date',
     'schema field' => 'dividend_pay_date',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['ex_dividend_date'] = array(
     'label' => t('Ex-Dividend Date'),
     'description' => t('The ex-dividend date.'),
     'type' => 'date',
     'schema field' => 'ex_dividend_date',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['dividend_yield'] = array(
     'label' => t('Dividend Yield'),
     'description' => t('The yield from the dividends.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'dividend_yield',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['market_capitalization'] = array(
     'label' => t('Market Cap'),
     'description' => t('The market capitalization of the company.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'market_capitalization',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['oneyr_target_price'] = array(
     'label' => t('One Year Target Price'),
     'description' => t('The target price for the stock.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'oneyr_target_price',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['e_p_s_estimate_current_year'] = array(
     'label' => t('EPS Estimate Current Year'),
     'description' => t('The EPS estimate for the current year.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'e_p_s_estimate_current_year',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['e_p_s_estimate_next_year'] = array(
     'label' => t('EPS Estimate Next Year'),
     'description' => t('The EPS estimate for the next year.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'e_p_s_estimate_next_year',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['e_p_s_estimate_next_quarter'] = array(
     'label' => t('EPS Estimate Next Quarter'),
     'description' => t('The EPS estimate for the next quarter.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'e_p_s_estimate_next_quarter',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['price_e_p_s_estimate_current_year'] = array(
     'label' => t('Price/EPS Estimate Current Year'),
     'description' => t('The Price/EPS estimate for the current year.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'price_e_p_s_estimate_current_year',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['price_e_p_s_estimate_next_year'] = array(
     'label' => t('Price/EPS Estimate Next Year'),
     'description' => t('The Price/EPS estimate for the next year.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'price_e_p_s_estimate_next_year',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['p_e_g_ratio'] = array(
     'label' => t('PEG Ratio'),
     'description' => t('The PEG ratio.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'p_e_g_ratio',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['book_value'] = array(
     'label' => t('Book Value'),
     'description' => t('The book value.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'book_value',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['price_book'] = array(
     'label' => t('Price/Book'),
     'description' => t('The price to book ratio.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'price_book',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['price_sales'] = array(
     'label' => t('Price/Sales'),
     'description' => t('The price to sales ratio.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'price_sales',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['e_b_i_t_d_a'] = array(
     'label' => t('EBITDA'),
     'description' => t('The EBITDA.'),
     'type' => 'text',
     'schema field' => 'e_b_i_t_d_a',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['fiftyday_moving_average'] = array(
     'label' => t('50-day Moving Average'),
     'description' => t('The 50-day moving average.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'fiftyday_moving_average',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['change_from_fiftyday_moving_average'] = array(
     'label' => t('Change from 50-day Moving Average'),
     'description' => t('The change from 50-day moving average.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'change_from_fiftyday_moving_average',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['percent_change_from_fiftyday_moving_average'] = array(
     'label' => t('Percent Change from 50-Day Moving Average'),
     'description' => t('The percent change from the 50-day moving average.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'percent_change_from_fiftyday_moving_average',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['two_hundredday_moving_average'] = array(
     'label' => t('200-Day Moving Average'),
     'description' => t('The 200-day moving average.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'two_hundredday_moving_average',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['change_from_two_hundredday_moving_average'] = array(
     'label' => t('Change from 200-Day Moving Average'),
     'description' => t('The change from 200-day moving average.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'change_from_two_hundredday_moving_average',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['percent_change_from_two_hundredday_moving_average'] = array(
     'label' => t('Percent Change from 200-Day Moving Average'),
     'description' => t('The percent change from 200-day moving average.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'percent_change_from_two_hundredday_moving_average',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['days_value_change'] = array(
     'label' => t('Day\'s Value Change'),
     'description' => t('The day\'s value change.'),
-    'type' => 'float',
+    'type' => 'decimal',
     'schema field' => 'days_value_change',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['stock_exchange'] = array(
     'label' => t('Stock Exchange'),
     'description' => t('The stock exchange a stock belongs to.'),
     'type' => 'text',
     'schema field' => 'stock_exchange',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['created'] = array(
     'label' => t('Created'),
     'description' => t('The created date.'),
     'type' => 'date',
     'schema field' => 'created',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   $info['stockinfo']['properties']['changed'] = array(
     'label' => t('Changed'),
     'description' => t('The last changed date.'),
     'type' => 'date',
     'schema field' => 'changed',
-     'entity views field' => TRUE, 
+    'entity views field' => TRUE,
   );
   return $info;
 }
