@@ -626,7 +626,7 @@ function _stockinfo_str_getcsv($input, $delimiter = ',', $enclosure = '"', $esca
  * Implements hook_entity_property_info().
  */
 function stockinfo_entity_property_info() {
-    $info = array();
+  $info = array();
 
   $info['stockinfo']['properties']['sid'] = array(
     'label' => t('SID'),
@@ -690,7 +690,7 @@ function stockinfo_entity_property_info() {
   );
   $info['stockinfo']['properties']['changein_percent'] = array(
     'label' => t('Change in Percent'),
-    'description' => t('The change in person of the stock price.'),
+    'description' => t('The change in percent of the stock price.'),
     'type' => 'float',
     'schema field' => 'changein_percent',
   );
