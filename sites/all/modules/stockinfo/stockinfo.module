@@ -83,7 +83,7 @@ function stockinfo_process_stock($stock) {
   $sid = db_query("SELECT sid FROM stockinfo WHERE symbol = :symbol", array("symbol" => $stock['symbol']))->fetchCol();
   $entity = entity_create("stockinfo", array('type' => "stockinfo"));
   if (isset($sid[0])) {
-    $entity->is_new = 0;
+    unset($entity->is_new);
     $entity->sid = $sid[0];
   }
 
