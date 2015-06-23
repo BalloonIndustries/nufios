@@ -309,7 +309,7 @@ function stockinfo_run($item) {
  * Saves stockinfo entity.
  */
 function stockinfo_save($stockinfo) {
-  if ($stockinfo->is_new) {
+  if (isset($stockinfo->is_new)) {
     $sid = db_insert('stockinfo')
         ->useDefaults(array('sid'))
         ->fields(array(
