@@ -273,6 +273,7 @@ function stockinfo_queue_it() {
   }
   $queue = DrupalQueue::get('stockinfo');
   foreach ($stocks as $item) {
+    watchdog("stockinfo item", "<pre>" . print_r($item, true) . "</pre>");
     $queue->createItem($item);
   }
 }
@@ -368,7 +369,7 @@ function stockinfo_save($stockinfo) {
     $stockinfo->sid = $sid;
     $stockinfo->revision = TRUE;
   }
-  if (!empty($stockinfo->revision)) {
+  
     $vid = db_insert('stockinfo_revision')
         ->useDefaults(array('vid'))
         ->fields(array(
@@ -425,7 +426,7 @@ function stockinfo_save($stockinfo) {
         ->execute();
 
     $stockinfo->vid = $vid;
-
+if(!isset($stockinfo->is_new)) {
     db_update('stockinfo')
         ->condition('sid', $stockinfo->sid)
         ->fields(array(
