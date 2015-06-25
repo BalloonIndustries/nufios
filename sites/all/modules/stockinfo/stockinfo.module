@@ -273,7 +273,6 @@ function stockinfo_queue_it() {
   }
   $queue = DrupalQueue::get('stockinfo');
   foreach ($stocks as $item) {
-    watchdog("stockinfo item", "<pre>" . print_r($item, true) . "</pre>");
     $queue->createItem($item);
   }
 }
