@@ -398,7 +398,7 @@ display: none;
 
 /*Footer Changes*/
 #footer-wrapper, #footer {
-min-height: 130px;
+min-height: 200px;
 }
 #footer ul li {
 text-decoration: none;
