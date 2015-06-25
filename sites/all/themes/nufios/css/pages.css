@@ -359,11 +359,15 @@ margin: 10px 20px 10px 0px;
 /*Front Page View Changes*/
 
 .views-field-title a {
-margin-bottom: 10px;
 display: block;
 text-decoration: none;
 color: #000;
 font-size: 1.2em;
+font-weight: bold;
+}
+
+.byline {
+font-size: .8em;
 font-weight: bold;
 }
 
