@@ -12,46 +12,46 @@
  * Body
  */
 body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Open Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    font-family: 'Open Sans', sans-serif;
 }
 
 #header-wrapper, #footer-wrapper {
-width: 100%;
-background-color: #686868;
-height: 95px;
+    width: 100%;
+    background-color: #686868;
+    height: 95px;
 }
 
 @media(min-width:1200px) {
-#header, #footer {
-width: 80%;
-}
+    #header, #footer {
+        width: 80%;
+    }
 }
 @media(max-width:1200px) {
-#header, #footer {
-width: 90%;
-}
+    #header, #footer {
+        width: 90%;
+    }
 }
 
 
 
 #header {
-background-color: #45719E;
-margin: 0 auto;
-padding: 0 2em 2em 2em;
-position: relative;
-z-index: 10;
-height: 100px;
+    background-color: #45719E;
+    margin: 0 auto;
+    padding: 0 2em 2em 2em;
+    position: relative;
+    z-index: 10;
+    height: 100px;
 }
 
- #footer {
-background-color: #45719E;
-margin: 0 auto;
-position: relative;
-z-index: 10;
-height: 95px;
- }
+#footer {
+    background-color: #45719E;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+    height: 95px;
+}
 
 #page-wrapper {
 }
@@ -65,12 +65,12 @@ height: 95px;
  */
 #skip-link a,
 #skip-link a:visited {
-  display: block;
-  width: 100%;
-  padding: 2px 0 3px 0;
-  text-align: center;
-  background-color: #666;
-  color: #fff;
+    display: block;
+    width: 100%;
+    padding: 2px 0 3px 0;
+    text-align: center;
+    background-color: #666;
+    color: #fff;
 }
 
 
@@ -78,73 +78,73 @@ height: 95px;
 }
 
 #logo /* Wrapping link for logo */ {
-  float: left; /* LTR */
-  margin: 0;
-  padding: 0;
+    float: left; /* LTR */
+    margin: 0;
+    padding: 0;
 }
 
 #logo img {
-  vertical-align: bottom;
+    vertical-align: bottom;
 }
 
 #name-and-slogan /* Wrapper for website name and slogan */ {
-  float: left;
+    float: left;
 }
 
 h1#site-name,
 div#site-name /* The name of the website */ {
-  margin: 0;
-  font-size: 2em;
-  line-height: 1.5em;
+    margin: 0;
+    font-size: 2em;
+    line-height: 1.5em;
 }
 
 #site-name a:link,
 #site-name a:visited {
-  color: #000;
-  text-decoration: none;
+    color: #000;
+    text-decoration: none;
 }
 
 #site-name a:hover,
 #site-name a:focus {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 #site-slogan /* The slogan (or tagline) of a website */ {
 }
 
 .region-header /* Wrapper for any blocks placed in the header region */ {
-  clear: both; /* Clear the logo */
+    clear: both; /* Clear the logo */
 }
 
 /*
  * Main (container for everything else)
  */
- @media(min-width:1200px) {
- #main-wrapper {
-width: 80%; 
- }
- }
- 
-  @media(max-width:1200px) {
- #main-wrapper {
-width: 90%; 
- }
- }
- 
+@media(min-width:1200px) {
+    #main-wrapper {
+        width: 80%; 
+    }
+}
+
+@media(max-width:1200px) {
+    #main-wrapper {
+        width: 90%; 
+    }
+}
+
 #main-wrapper {
-margin: 0 auto;
-min-height: 800px;
+    margin: 0 auto;
+    min-height: 800px;
 }
 
 #messages {
-margin-top: 60px;
+    margin-top: 60px;
 }
 
 
 
 
 #main {
-margin-top: -40px;
+    margin-top: -40px;
 }
 
 /*
@@ -160,7 +160,7 @@ margin-top: -40px;
 }
 
 .breadcrumb /* The path to the current page in the form of a list of links */ {
-  padding-bottom: 0; /* Undo system.css */
+    padding-bottom: 0; /* Undo system.css */
 }
 
 h1.title, /* The title of the page */
@@ -169,32 +169,32 @@ h2.block-title, /* Block title */
 h2.title, /* Comment section heading */
 h2.comment-form, /* Comment form heading */
 h3.title /* Comment title */ {
-  margin: 0;
+    margin: 0;
 }
 
 tr.even /* Some tables have rows marked even or odd. */ {
-  /* background-color: #eee; */ /* Drupal core uses a #eee background */
+    /* background-color: #eee; */ /* Drupal core uses a #eee background */
 }
 
 tr.odd {
-  /* background-color: #eee; */ /* Drupal core uses a #eee background */
+    /* background-color: #eee; */ /* Drupal core uses a #eee background */
 }
 
 /* Styling for table rows */
 
 table.views-table tbody tr {
-margin-top: 15px;
-margin-bottom: 15px;
-display: block;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    display: block;
 }
 
 div.messages /* Important messages (status, warning, and error) for the user. See also the declarations in messages.css. */ {
-  margin: 1.5em 0; /* Drupal core uses "6px 0" margin */
+    margin: 1.5em 0; /* Drupal core uses "6px 0" margin */
 }
 
 div.messages ul {
-  margin-top: 0;
-  margin-bottom: 0;
+    margin-top: 0;
+    margin-bottom: 0;
 }
 
 div.status /* Normal priority messages */ {
@@ -202,7 +202,7 @@ div.status /* Normal priority messages */ {
 
 div.warning,
 tr.warning /* Medium priority messages */ {
-  /* border: 1px solid #f0c020; */ /* Drupal core uses: 1px solid #f0c020 */
+    /* border: 1px solid #f0c020; */ /* Drupal core uses: 1px solid #f0c020 */
 }
 
 div.error,
@@ -210,11 +210,11 @@ tr.error /* High priority messages. See also the .error declaration below. */ {
 }
 
 .error /* Errors that are separate from div.messages status messages. */ {
-  /* color: #e55; */ /* Drupal core uses a #e55 background */
+    /* color: #e55; */ /* Drupal core uses a #e55 background */
 }
 
 .warning /* Warnings that are separate from div.messages status messages. */ {
-  /* color: #e09010; */ /* Drupal core uses a #e09010 background */
+    /* color: #e09010; */ /* Drupal core uses a #e09010 background */
 }
 
 div.tabs /* See also the tabs.css file. */ {
@@ -233,19 +233,19 @@ ul.links /* List of links */ {
 }
 
 ul.links.inline {
-  display: block; /* Let the links be inline, but the container be a block. */
+    display: block; /* Let the links be inline, but the container be a block. */
 }
 
 ul.links li {
-  padding: 0 1em 0 0; /* LTR */
+    padding: 0 1em 0 0; /* LTR */
 }
 
 .item-list .pager /* A list of page numbers when more than 1 page of content is available */ {
-  padding: 0;
+    padding: 0;
 }
 
 .item-list .pager li /* Each page number in the pager list */ {
-  padding: 0 0.5em;
+    padding: 0 0.5em;
 }
 
 .feed-icon /* The link to the RSS or Atom feed for the current list of content */ {
@@ -267,9 +267,9 @@ ul.links li {
 }
 
 @media(max-width:1024px) {
-.region-sidebar-first, .region-sidebar-second {
-display: none;
-}
+    .region-sidebar-first, .region-sidebar-second {
+        display: none;
+    }
 }
 
 /*
@@ -296,35 +296,35 @@ display: none;
 /*Header Modifications */
 
 #header ul li.leaf {
-list-style-type: none;
-list-style-image: none;
-display: inline;
+    list-style-type: none;
+    list-style-image: none;
+    display: inline;
 }
 
 #header ul a {
-text-decoration: none;
-color: #FFF;
-padding:10px 20px 15px 20px;
-overflow: none;
+    text-decoration: none;
+    color: #FFF;
+    padding:10px 20px 15px 20px;
+    overflow: none;
 
 }
 
 #header ul a:hover {
-background-color: #FFF;
-color: #000;
+    background-color: #FFF;
+    color: #000;
 }
 #header ul {
-padding-top: 32px;
+    padding-top: 32px;
 }
 #site-name a span {
-color: #FFF;
-text-decoration:none;
+    color: #FFF;
+    text-decoration:none;
 }
 #site-name a:hover {
-text-decoration:none;
+    text-decoration:none;
 }
 #site-slogan{
-color: #FFF;
+    color: #FFF;
 }
 
 .author {
@@ -334,124 +334,130 @@ color: #FFF;
     color: #000;
 }
 
+.user-picture {
+    padding:1px;
+    border:1px solid #021a40;
+    background-color:#ff0;
+}
+
 .qtip-content {
-padding: 0px 0px 0px 0px !important;
+    padding: 0px 0px 0px 0px !important;
 }
 .qtip {
-margin-left: -1px !important;
-overflow: visible !important;
+    margin-left: -1px !important;
+    overflow: visible !important;
 }
 
 .menu-minipanels a {
-text-decoration: none;
-color: #000;
+    text-decoration: none;
+    color: #000;
 
 }
 .menu-minipanels a:hover {
-color: #000;
-font-weight: bold;
+    color: #000;
+    font-weight: bold;
 }
 
 .menu-minipanels {
-border-bottom: 1px solid #686868 ;
-border-left: 1px solid #686868 ;
-border-right: 1px solid #686868;
+    border-bottom: 1px solid #686868 ;
+    border-left: 1px solid #686868 ;
+    border-right: 1px solid #686868;
 }
 
 .menu-minipanels ul li.leaf {
-list-style: none;
-margin: 10px 20px 10px 0px;
+    list-style: none;
+    margin: 10px 20px 10px 0px;
 }
 
 /*Front Page View Changes*/
 
 .views-field-title a {
-margin-bottom: 10px;
-display: block;
-text-decoration: none;
-color: #000;
-font-size: 1.2em;
-font-weight: bold;
+    margin-bottom: 10px;
+    display: block;
+    text-decoration: none;
+    color: #000;
+    font-size: 1.2em;
+    font-weight: bold;
 }
 
 .view-nodequeue-2 td {
-vertical-align: top;
+    vertical-align: top;
 }
 .view-field-ticker {
-margin-top: 5px;
-font-weight: bold;
+    margin-top: 5px;
+    font-weight: bold;
 }
 .views-id-other_news tr {
-margin-top: 5px;
+    margin-top: 5px;
 }
 h2 {
-font-size: 2.5em;
-margin: 0 0 1em;
+    font-size: 2.5em;
+    margin: 0 0 1em;
 }
 .view-big-story-nodequeue img {
     display: block;
     margin: 0 auto;
 }
 .view-big-story-nodequeue .views-field-title {
-text-align: center;
+    text-align: center;
 }
 #block-poll-recent .links {
-display: none;
+    display: none;
 }
 
 /*Footer Changes*/
 #footer-wrapper, #footer {
-min-height: 170px;
+    min-height: 170px;
 }
 #footer ul li {
-text-decoration: none;
-list-style: none;
+    text-decoration: none;
+    list-style: none;
 }
 #footer ul li a {
-text-decoration: none;
-color: #FFF;
-font-size: 90%;
+    text-decoration: none;
+    color: #FFF;
+    font-size: 90%;
 }
 #footer ul {
-margin: 0 0 0 25%;
+    margin: 0 0 0 25%;
 }
 #footer h2 {
-font-size: 1em;
-color: #FFF;
-margin: 0% 0 0 26%;
-padding: 2% 0 0 0;
+    font-size: 1em;
+    color: #FFF;
+    margin: 0% 0 0 26%;
+    padding: 2% 0 0 0;
 }
 
 
 /*Social Media*/
 #socialmedia {
-float: right;
-margin-right: 150px;
-margin-top: -105px;
+    float: right;
+    margin-right: 150px;
+    margin-top: -105px;
 }
 
 .sharethis {
-margin-top: 5px;
+    margin-top: 5px;
 }
 
 .sharethis-wrapper {
-margin-top: 10px;
+    margin-top: 10px;
 }
 
 #footer .block-title {
-margin-top: -80px;
+    margin-top: -80px;
 }
 #socmediatitle {
-font-weight: bold;
-color: #FFF;
-font-size: 1.5em;
+    font-weight: bold;
+    color: #FFF;
+    font-size: 1.5em;
 }
 
 /* Views rows changes for other pages */
 
 .views-row {
-margin-top: 15px;
-margin-bottom: 15px;
+    margin-top: 15px;
+    margin-bottom: 15px;
 }
 
 #edit-actions {
