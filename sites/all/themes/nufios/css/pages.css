@@ -391,7 +391,7 @@ ul.links li {
 
 /*Override views row because either views or template is stupid*/
 .view-nodequeue-2 .views-field-title a {
-    margin-bottom: 5px;
+    margin-bottom: 0px;
 }
 
 .view-nodequeue-2 td {
