@@ -380,9 +380,18 @@ ul.links li {
     font-weight: bold;
 }
 
-.byline {
-font-size: .8em;
-font-weight: bold;
+.views-field-title a.username {
+    margin-bottom: 10px;
+    display: block;
+    text-decoration: none;
+    color: #000;
+    font-size: .8em;
+    font-weight: bold;
+}
+
+/*Override views row because either views or template is stupid*/
+.view-nodequeue-2 .views-field-title:first-child {
+    margin-bottom: 5px;
 }
 
 .view-nodequeue-2 td {
