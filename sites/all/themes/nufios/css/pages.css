@@ -327,6 +327,13 @@ text-decoration:none;
 color: #FFF;
 }
 
+.author {
+    font-width: bold;
+    font-size: .8em;
+    text-decoration: none;
+    color: #000;
+}
+
 .qtip-content {
 padding: 0px 0px 0px 0px !important;
 }
