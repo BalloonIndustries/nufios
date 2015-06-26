@@ -189,7 +189,7 @@ function stockinfo_batch_generate($type = "stockinfo") {
     'error_message' => t('Import has encountered an error.'),
   );
 
-  stockinfo_fetch_current_data($batch);
+  stockinfo_fetch_data($batch);
 }
 
 /**
