@@ -328,7 +328,7 @@ ul.links li {
 }
 
 .username {
-    font-width: bold;
+    font-weight: bold;
     font-size: .8em;
     text-decoration: none;
     color: #000;
