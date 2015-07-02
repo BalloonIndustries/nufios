@@ -67,7 +67,7 @@ function stockinfo_admin_settings() {
 
   $form['stockinfo_symbols'] = array(
     '#type' => 'textarea',
-    '#title' => t('Default symbols'),
+    '#title' => t('Symbols'),
     '#default_value' => variable_get('stockinfo_symbols', variable_get('stockinfo_default_symbols')),
     '#description' => t('Enter symbols to fetch quotes for, each separated by a space'),
   );
