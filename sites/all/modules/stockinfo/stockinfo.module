@@ -59,10 +59,10 @@ function stockinfo_admin_settings() {
 
   $form['stockinfo_days'] = array(
     '#type' => 'checkboxes',
-    '#title' => 'Days of the Week',
-    '#description' => 'Select the days of the week Stockinfo should collect data.',
-    '#default_value' => variable_get('stockinfo_days', array('monday', 'tuesday', 'wednesday', 'thursday', 'friday')),
-    '#options' => 'stockinfo_days',
+    '#title' => t('Days of the Week'),
+    '#description' => t('Select the days of the week Stockinfo should collect data.'),
+    '#default_value' => variable_get('stockinfo_days', array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')),
+    '#options' => stockinfo_days(),
   );
 
   $form['stockinfo_symbols'] = array(
@@ -77,13 +77,13 @@ function stockinfo_admin_settings() {
 
 function stockinfo_days() {
   return array(
-    "sunday" => "Sunday",
-    "monday" => "Monday",
-    "tuesday" => "Tuesday",
-    "wednesday" => "Wednesday",
-    "thursday" => "Thursday",
-    "friday" => "Friday",
-    "saturday" => "Saturday",
+    "Sunday" => t("Sunday"),
+    "Monday" => t("Monday"),
+    "Tuesday" => t("Tuesday"),
+    "Wednesday" => t("Wednesday"),
+    "Thursday" => t("Thursday"),
+    "Friday" => t("Friday"),
+    "Saturday" => t("Saturday"),
   );
 }
 
@@ -301,8 +301,7 @@ function stockinfo_cron() {
   if ($restrict_time == 1) {
     // Check if day is even correct, first.
     $day = date('l', time());
-    watchdog("stockinfo_day", "<pre>" . print_r(variable_get("stockinfo_day"), true) . "</pre>");
-    if (in_array($day, variable_get("stockinfo_day", array('monday', 'tuesday', 'wednesday', 'thursday', 'friday')))) {
+    if (in_array($day, variable_get("stockinfo_days", array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')))) {
       // Now check if the time is correct.
       $current_time = date("h:i a", time());
       $open = variable_get("stockinfo_market_open");
