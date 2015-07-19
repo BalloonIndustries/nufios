@@ -179,7 +179,9 @@ function entity_hash_shutdown($entity, $entity_type) {
   $info = entity_get_info($entity_type);
   if (isset($info['hash']) && $info['hash'] == TRUE && !empty($info['entity keys']['hash'])) {
     $hash_key = $info['entity keys']['hash'];
+    if(isset($entity->vid)) {
     $vid = $entity->vid;
+    }
     $result_revision = db_update('node_revision')
       ->fields(array('hash' => entity_hash_hash_item($entity, $entity_type)))
       ->condition('vid', $vid, "=")
