@@ -1,0 +1,738 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
+  "http://www.w3.org/MarkUp/DTD/xhtml-rdfa-1.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" version="XHTML+RDFa 1.0" dir="ltr"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:dc="http://purl.org/dc/terms/"
+  xmlns:foaf="http://xmlns.com/foaf/0.1/"
+  xmlns:og="http://ogp.me/ns#"
+  xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xmlns:sioc="http://rdfs.org/sioc/ns#"
+  xmlns:sioct="http://rdfs.org/sioc/types#"
+  xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema#">
+
+<head profile="http://www.w3.org/1999/xhtml/vocab">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="https://www.nufios.com/sites/default/files/favicon.ico" type="image/vnd.microsoft.icon" />
+<meta name="Generator" content="Drupal 7 (http://drupal.org)" />
+<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,800|Roboto:400,900' rel='stylesheet' type='text/css'>
+  <title>Nufios | News and Finance</title>
+  <style type="text/css" media="all">
+@import url("https://www.nufios.com/modules/system/system.base.css?nrqslc");
+@import url("https://www.nufios.com/modules/system/system.menus.css?nrqslc");
+@import url("https://www.nufios.com/modules/system/system.messages.css?nrqslc");
+@import url("https://www.nufios.com/modules/system/system.theme.css?nrqslc");
+</style>
+<style type="text/css" media="all">
+@import url("https://www.nufios.com/sites/all/modules/simplenews/simplenews.css?nrqslc");
+@import url("https://www.nufios.com/modules/comment/comment.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/modules/date/date_api/date.css?nrqslc");
+@import url("https://www.nufios.com/modules/field/theme/field.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/modules/google_cse/google_cse.css?nrqslc");
+@import url("https://www.nufios.com/modules/node/node.css?nrqslc");
+@import url("https://www.nufios.com/modules/poll/poll.css?nrqslc");
+@import url("https://www.nufios.com/modules/search/search.css?nrqslc");
+@import url("https://www.nufios.com/modules/user/user.css?nrqslc");
+@import url("https://www.nufios.com/modules/forum/forum.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/modules/views/css/views.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/modules/ckeditor/css/ckeditor.css?nrqslc");
+</style>
+<style type="text/css" media="all">
+@import url("https://www.nufios.com/sites/all/modules/ctools/css/ctools.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/modules/panels/css/panels.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/modules/panels/plugins/layouts/flexible/flexible.css?nrqslc");
+@import url("https://www.nufios.com/sites/default/files/ctools/css/64d7d0a3c55866afec0187d45d6e1cfe.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/modules/panels/plugins/layouts/twocol/twocol.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/modules/menu_minipanels/css/menu_minipanels.css?nrqslc");
+</style>
+<style type="text/css" media="all">
+@import url("https://www.nufios.com/sites/all/themes/nufios/css/html-reset.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/themes/nufios/css/wireframes.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/themes/nufios/css/layout-liquid.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/themes/nufios/css/page-backgrounds.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/themes/nufios/css/tabs.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/themes/nufios/css/pages.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/themes/nufios/css/blocks.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/themes/nufios/css/navigation.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/themes/nufios/css/views-styles.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/themes/nufios/css/nodes.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/themes/nufios/css/comments.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/themes/nufios/css/forms.css?nrqslc");
+@import url("https://www.nufios.com/sites/all/themes/nufios/css/fields.css?nrqslc");
+</style>
+<style type="text/css" media="print">
+@import url("https://www.nufios.com/sites/all/themes/nufios/css/print.css?nrqslc");
+</style>
+
+<!--[if lte IE 7]>
+<style type="text/css" media="all">
+@import url("https://www.nufios.com/sites/all/themes/nufios/css/ie7.css?nrqslc");
+</style>
+<![endif]-->
+
+<!--[if lte IE 6]>
+<style type="text/css" media="all">
+@import url("https://www.nufios.com/sites/all/themes/nufios/css/ie6.css?nrqslc");
+</style>
+<![endif]-->
+  <script type="text/javascript" src="https://www.nufios.com/misc/jquery.js?v=1.4.4"></script>
+<script type="text/javascript" src="https://www.nufios.com/misc/jquery.once.js?v=1.2"></script>
+<script type="text/javascript" src="https://www.nufios.com/misc/drupal.js?nrqslc"></script>
+<script type="text/javascript" src="https://www.nufios.com/sites/all/modules/google_cse/google_cse.js?nrqslc"></script>
+<script type="text/javascript" src="https://www.nufios.com/sites/all/modules/adsense/contrib/adsense_click/adsense_click.js?nrqslc"></script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+var switchTo5x = true;
+//--><!]]>
+</script>
+<script type="text/javascript" src="https://ws.sharethis.com/button/buttons.js"></script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+if (stLight !== undefined) { stLight.options({"publisher":"dr-f9f7231f-8ce8-31ff-db5b-54fc871d57e","version":"5x"}); }
+//--><!]]>
+</script>
+<script type="text/javascript" src="https://www.nufios.com/sites/all/modules/google_analytics/googleanalytics.js?nrqslc"></script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+var _gaq = _gaq || [];_gaq.push(["_setAccount", "UA-47451244-3"]);_gaq.push(["_trackPageview"]);(function() {var ga = document.createElement("script");ga.type = "text/javascript";ga.async = true;ga.src = ("https:" == document.location.protocol ? "https://ssl" : "http://www") + ".google-analytics.com/ga.js";var s = document.getElementsByTagName("script")[0];s.parentNode.insertBefore(ga, s);})();
+//--><!]]>
+</script>
+<script type="text/javascript" src="https://www.nufios.com/sites/all/modules/menu_minipanels/js/menu_minipanels.callbacks.js?nrqslc"></script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+jQuery.extend(Drupal.settings, {"basePath":"\/","pathPrefix":"","ajaxPageState":{"theme":"nufios","theme_token":"Pe81rvWh4GRIzCKSqEq5nD3mbsVbdtcPm_SA5U9J7WM","js":{"sites\/all\/modules\/menu_minipanels\/js\/menu_minipanels.js":1,"sites\/all\/libraries\/qtip\/jquery.qtip-1.0.0-rc3.min.js":1,"misc\/jquery.js":1,"misc\/jquery.once.js":1,"misc\/drupal.js":1,"sites\/all\/modules\/google_cse\/google_cse.js":1,"sites\/all\/modules\/adsense\/contrib\/adsense_click\/adsense_click.js":1,"0":1,"https:\/\/ws.sharethis.com\/button\/buttons.js":1,"1":1,"sites\/all\/modules\/google_analytics\/googleanalytics.js":1,"2":1,"sites\/all\/modules\/menu_minipanels\/js\/menu_minipanels.callbacks.js":1},"css":{"modules\/system\/system.base.css":1,"modules\/system\/system.menus.css":1,"modules\/system\/system.messages.css":1,"modules\/system\/system.theme.css":1,"sites\/all\/modules\/simplenews\/simplenews.css":1,"modules\/comment\/comment.css":1,"sites\/all\/modules\/date\/date_api\/date.css":1,"modules\/field\/theme\/field.css":1,"sites\/all\/modules\/google_cse\/google_cse.css":1,"modules\/node\/node.css":1,"modules\/poll\/poll.css":1,"modules\/search\/search.css":1,"modules\/user\/user.css":1,"modules\/forum\/forum.css":1,"sites\/all\/modules\/views\/css\/views.css":1,"sites\/all\/modules\/ckeditor\/css\/ckeditor.css":1,"sites\/all\/modules\/ctools\/css\/ctools.css":1,"sites\/all\/modules\/panels\/css\/panels.css":1,"sites\/all\/modules\/panels\/plugins\/layouts\/flexible\/flexible.css":1,"public:\/\/ctools\/css\/64d7d0a3c55866afec0187d45d6e1cfe.css":1,"sites\/all\/modules\/panels\/plugins\/layouts\/twocol\/twocol.css":1,"sites\/all\/modules\/menu_minipanels\/css\/menu_minipanels.css":1,"sites\/all\/themes\/nufios\/css\/html-reset.css":1,"sites\/all\/themes\/nufios\/css\/wireframes.css":1,"sites\/all\/themes\/nufios\/css\/layout-liquid.css":1,"sites\/all\/themes\/nufios\/css\/page-backgrounds.css":1,"sites\/all\/themes\/nufios\/css\/tabs.css":1,"sites\/all\/themes\/nufios\/css\/pages.css":1,"sites\/all\/themes\/nufios\/css\/blocks.css":1,"sites\/all\/themes\/nufios\/css\/navigation.css":1,"sites\/all\/themes\/nufios\/css\/views-styles.css":1,"sites\/all\/themes\/nufios\/css\/nodes.css":1,"sites\/all\/themes\/nufios\/css\/comments.css":1,"sites\/all\/themes\/nufios\/css\/forms.css":1,"sites\/all\/themes\/nufios\/css\/fields.css":1,"sites\/all\/themes\/nufios\/css\/print.css":1,"sites\/all\/themes\/nufios\/css\/ie7.css":1,"sites\/all\/themes\/nufios\/css\/ie6.css":1}},"googleCSE":{"cx":"","language":"","resultsWidth":600,"domain":"www.google.com"},"googleanalytics":{"trackOutbound":1,"trackMailto":1,"trackDownload":1,"trackDownloadExtensions":"7z|aac|arc|arj|asf|asx|avi|bin|csv|doc|exe|flv|gif|gz|gzip|hqx|jar|jpe?g|js|mp(2|3|4|e?g)|mov(ie)?|msi|msp|pdf|phps|png|ppt|qtm?|ra(m|r)?|sea|sit|tar|tgz|torrent|txt|wav|wma|wmv|wpd|xls|xml|z|zip"},"menuMinipanels":{"panels":{"panel_688":{"position":{"target":"false","target_custom":"","type":"absolute","corner":{"target":"bottomLeft","tooltip":"topLeft"}},"show":{"delay":"140","when":{"event":"mouseover"},"effect":{"type":"slide","length":"100"}},"hide":{"delay":"0","effect":{"type":"slide","length":"100"}},"style":{"name":"light","width":{"min":"0"},"border":{"width":"0","radius":"0"}},"mlid":"688"},"panel_648":{"position":{"target":"false","target_custom":"","type":"absolute","corner":{"target":"bottomLeft","tooltip":"topLeft"}},"show":{"delay":"140","when":{"event":"mouseover"},"effect":{"type":"slide","length":"100"}},"hide":{"delay":"0","effect":{"type":"slide","length":"100"}},"style":{"name":"light","width":{"min":"400"},"border":{"width":"0"}},"mlid":"648"},"panel_693":{"position":{"target":"false","target_custom":"","type":"absolute","corner":{"target":"bottomLeft","tooltip":"topLeft"}},"show":{"delay":"140","when":{"event":"mouseover"},"effect":{"type":"slide","length":"100"}},"hide":{"delay":"0","effect":{"type":"slide","length":"100"}},"style":{"name":"light","width":{"min":"0"},"border":{"width":"0","radius":"0"}},"mlid":"693"},"panel_649":{"position":{"target":"false","target_custom":"","type":"absolute","corner":{"target":"bottomLeft","tooltip":"topLeft"}},"show":{"delay":"140","when":{"event":"mouseover"},"effect":{"type":"slide","length":"100"}},"hide":{"delay":"0","effect":{"type":"slide","length":"100"}},"style":{"name":"light","width":{"min":"0"},"border":{"width":"0","radius":"0"}},"mlid":"649"},"panel_647":{"position":{"target":"false","target_custom":"","type":"absolute","corner":{"target":"bottomLeft","tooltip":"topLeft"}},"show":{"delay":"140","when":{"event":"mouseover"},"effect":{"type":"slide","length":"100"}},"hide":{"delay":"0","effect":{"type":"slide","length":"100"}},"style":{"name":"light","width":{"min":"0"},"border":{"width":"0","radius":"0"}},"mlid":"647"},"panel_689":{"position":{"target":"false","target_custom":"","type":"absolute","corner":{"target":"bottomLeft","tooltip":"topLeft"}},"show":{"delay":"140","when":{"event":"mouseover"},"effect":{"type":"slide","length":"100"}},"hide":{"delay":"0","effect":{"type":"slide","length":"100"}},"style":{"name":"light","width":{"min":"0"},"border":{"width":"0","radius":"0"}},"mlid":"689"},"panel_0":{"position":{"target":"false","target_custom":"","type":"absolute","corner":{"target":"bottomLeft","tooltip":"topLeft"}},"show":{"delay":"140","when":{"event":"mouseover"},"effect":{"type":"slide","length":"100"}},"hide":{"delay":"0","effect":{"type":"slide","length":"100"}},"style":{"name":"light","width":{"min":"0"},"border":{"width":"0","radius":"0"}},"mlid":0}}}});
+//--><!]]>
+</script>
+  <meta name="google-site-verification" content="Nr9lNLgcidLAlLfyAX8ULSg6LwO0_SEbRXkPrSD37LU" />
+</head>
+<body class="html front not-logged-in two-sidebars page-home page-panels" >
+      <div id="skip-link">
+      <a href="#main-menu" class="element-invisible element-focusable">Jump to navigation</a>
+    </div>
+      
+
+
+<div id="page-wrapper"><div id="page">
+
+<div id="header-wrapper">
+
+  <div id="header"><div class="section clearfix">
+
+    
+          <div id="name-and-slogan">
+                              <h1 id="site-name">
+              <a href="/" title="Home" rel="home"><span>Nufios</span></a>
+            </h1>
+                  
+                  <div id="site-slogan">News and Finance</div>
+              </div><!-- /#name-and-slogan -->
+    
+      <div class="region region-header">
+    <div id="block-system-main-menu" class="block block-system block-menu first last odd">
+
+      
+  <div class="content">
+    <ul class="menu"><li class="first leaf"><a href="/news/all" title="" class="menu-minipanel menu-minipanel-688">News</a></li>
+<li class="leaf"><a href="/business/all" title="" class="menu-minipanel menu-minipanel-648">Business</a></li>
+<li class="leaf"><a href="/politics/all" title="" class="menu-minipanel menu-minipanel-693">Politics</a></li>
+<li class="leaf"><a href="/market/all" title="" class="menu-minipanel menu-minipanel-649">Market</a></li>
+<li class="leaf"><a href="/tech/all" title="" class="menu-minipanel menu-minipanel-647">Tech</a></li>
+<li class="leaf"><a href="/behavior/all" title="" class="menu-minipanel menu-minipanel-689">Behavior</a></li>
+<li class="last leaf"><a href="/culture/all" title="" class="menu-minipanel menu-minipanel-0">Culture</a></li>
+</ul>  </div>
+
+</div><!-- /.block -->
+  </div><!-- /.region -->
+
+  </div></div><!-- /.section, /#header -->
+  
+  </div> <!-- /#header-wrapper -->
+
+  <div id="main-wrapper">
+  
+        <div id='messages'></div>  <div id="main" class="clearfix with-navigation">
+
+    <div id="content" class="column"><div class="section">
+                  <a id="main-content"></a>
+                  
+                          <div class="region region-content">
+    <div id="block-system-main" class="block block-system first last odd">
+
+      
+  <div class="content">
+    <div class="panel-flexible panels-flexible-1 clearfix" >
+<div class="panel-flexible-inside panels-flexible-1-inside">
+<div class="panels-flexible-region panels-flexible-region-1-center panels-flexible-region-first panels-flexible-region-last">
+  <div class="inside panels-flexible-region-inside panels-flexible-region-1-center-inside panels-flexible-region-inside-first panels-flexible-region-inside-last">
+<div class="panel-pane pane-views pane-big-story-nodequeue"  >
+  
+      
+  
+  <div class="pane-content">
+    <div class="view view-big-story-nodequeue view-id-big_story_nodequeue view-display-id-default view-dom-id-65107d3239a9e392f2f84e4633724b63">
+        
+  
+  
+      <div class="view-content">
+      <table class="views-view-grid cols-4">
+  
+  <tbody>
+          <tr class="row-1 row-first row-last">
+                  <td class="col-1 col-first">
+              
+  <div class="views-field views-field-field-image">        <div class="field-content"><a href="/nasas-new-horizon-speeds-past-pluto"><img typeof="foaf:Image" src="https://www.nufios.com/sites/default/files/styles/big_story/public/field/image/pluto.png?itok=5BC0jKYn" width="440" height="300" alt="" /></a></div>  </div>  
+  <div class="views-field views-field-title">        <span class="field-content"><a href="/nasas-new-horizon-speeds-past-pluto">NASA&#039;S New Horizon Speeds past Pluto</a></span>  </div>  
+  <div class="views-field views-field-body">        <span class="field-content"> After 9 years, and billions of miles, the long awaited New Horizons spacecraft approached Pluto and its five moons last night to take close-up images and study them....</span>  </div>          </td>
+              </tr>
+      </tbody>
+</table>
+    </div>
+  
+  
+  
+  
+  
+  
+</div>  </div>
+
+  
+  </div>
+<div class="panel-separator"></div><div class="panel-pane pane-block pane-adsense-managed-2"  >
+  
+      
+  
+  <div class="pane-content">
+    <div style='text-align:center'><div class='adsense' style='display:inline-block;width:468px;height:60px;'>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 468x60 -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:468px;height:60px"
+     data-ad-client="ca-pub-6324601946483025"
+     data-ad-slot="4099289798"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div></div>  </div>
+
+  
+  </div>
+<div class="panel-separator"></div><div class="panel-pane pane-views-panes pane-nodequeue-2-panel-pane-1"  >
+  
+        <h2 class="pane-title">
+      Top Stories    </h2>
+    
+  
+  <div class="pane-content">
+    <div class="view view-nodequeue-2 view-id-nodequeue_2 view-display-id-panel_pane_1 view-dom-id-f94845d0df185a3f6e8622a780d74a11">
+        
+  
+  
+      <div class="view-content">
+      <table class="views-table cols-0" >
+      <tbody>
+          <tr class="" >
+                  <td class="views-field views-field-field-image views-align-left" >
+            <a href="/amazon-and-walmart-battle-online-sales"><img typeof="foaf:Image" src="https://www.nufios.com/sites/default/files/styles/article_image/public/field/image/amazon.png?itok=44iiQMT0" width="220" height="150" alt="" /></a>          </td>
+                  <td class="views-field views-field-title" >
+            <a href="/amazon-and-walmart-battle-online-sales">Amazon and Walmart Battle for Online Sales</a><div><a href="/users/alison-butkowski" title="View user profile." class="username" xml:lang="" about="/users/alison-butkowski" typeof="sioc:UserAccount" property="foaf:name" datatype="">Alison Butkowski</a></div> Today is looking like a great day to do some online shopping and save a lot of money. At least, that is...<div class="sharethis-wrapper"><span st_url="https://www.nufios.com/amazon-and-walmart-battle-online-sales" st_title="Amazon and Walmart Battle for Online Sales" class="st_linkedin_large" displayText="linkedin"></span>
+<span st_url="https://www.nufios.com/amazon-and-walmart-battle-online-sales" st_title="Amazon and Walmart Battle for Online Sales" class="st_googleplus_large" displayText="googleplus"></span>
+<span st_url="https://www.nufios.com/amazon-and-walmart-battle-online-sales" st_title="Amazon and Walmart Battle for Online Sales" class="st_twitter_large" displayText="twitter"></span>
+<span st_url="https://www.nufios.com/amazon-and-walmart-battle-online-sales" st_title="Amazon and Walmart Battle for Online Sales" class="st_facebook_large" displayText="facebook"></span>
+</div>          </td>
+              </tr>
+          <tr class="" >
+                  <td class="views-field views-field-field-image views-align-left" >
+            <a href="/nintendo-president-and-ceo-satoru-iwata-dies-cancer-aged-55"><img typeof="foaf:Image" src="https://www.nufios.com/sites/default/files/styles/article_image/public/field/image/nintendo.jpg?itok=jNpTg14W" width="220" height="150" alt="" /></a>          </td>
+                  <td class="views-field views-field-title" >
+            <a href="/nintendo-president-and-ceo-satoru-iwata-dies-cancer-aged-55">Nintendo President and CEO Satoru Iwata Dies of Cancer aged 55</a><div><a href="/users/alison-butkowski" title="View user profile." class="username" xml:lang="" about="/users/alison-butkowski" typeof="sioc:UserAccount" property="foaf:name" datatype="">Alison Butkowski</a></div> After 13 years as the president and CEO of Nintendo, Satoru Iwata, passed away Saturday at the age of...<div class="sharethis-wrapper"><span st_url="https://www.nufios.com/nintendo-president-and-ceo-satoru-iwata-dies-cancer-aged-55" st_title="Nintendo President and CEO Satoru Iwata Dies of Cancer aged 55" class="st_linkedin_large" displayText="linkedin"></span>
+<span st_url="https://www.nufios.com/nintendo-president-and-ceo-satoru-iwata-dies-cancer-aged-55" st_title="Nintendo President and CEO Satoru Iwata Dies of Cancer aged 55" class="st_googleplus_large" displayText="googleplus"></span>
+<span st_url="https://www.nufios.com/nintendo-president-and-ceo-satoru-iwata-dies-cancer-aged-55" st_title="Nintendo President and CEO Satoru Iwata Dies of Cancer aged 55" class="st_twitter_large" displayText="twitter"></span>
+<span st_url="https://www.nufios.com/nintendo-president-and-ceo-satoru-iwata-dies-cancer-aged-55" st_title="Nintendo President and CEO Satoru Iwata Dies of Cancer aged 55" class="st_facebook_large" displayText="facebook"></span>
+</div>          </td>
+              </tr>
+          <tr class="" >
+                  <td class="views-field views-field-field-image views-align-left" >
+            <a href="/greece-accepts-bailout"><img typeof="foaf:Image" src="https://www.nufios.com/sites/default/files/styles/article_image/public/field/image/greece_0.jpg?itok=u8qpsCKa" width="220" height="150" alt="" /></a>          </td>
+                  <td class="views-field views-field-title" >
+            <a href="/greece-accepts-bailout">Greece Accepts Bailout</a><div><a href="/users/alison-butkowski" title="View user profile." class="username" xml:lang="" about="/users/alison-butkowski" typeof="sioc:UserAccount" property="foaf:name" datatype="">Alison Butkowski</a></div> The world has been tentatively watching as the future of Greece hangs in a precarious balance after an...<div class="sharethis-wrapper"><span st_url="https://www.nufios.com/greece-accepts-bailout" st_title="Greece Accepts Bailout" class="st_linkedin_large" displayText="linkedin"></span>
+<span st_url="https://www.nufios.com/greece-accepts-bailout" st_title="Greece Accepts Bailout" class="st_googleplus_large" displayText="googleplus"></span>
+<span st_url="https://www.nufios.com/greece-accepts-bailout" st_title="Greece Accepts Bailout" class="st_twitter_large" displayText="twitter"></span>
+<span st_url="https://www.nufios.com/greece-accepts-bailout" st_title="Greece Accepts Bailout" class="st_facebook_large" displayText="facebook"></span>
+</div>          </td>
+              </tr>
+          <tr class="" >
+                  <td class="views-field views-field-field-image views-align-left" >
+            <a href="/nyse-resumes-after-temporary-glitch"><img typeof="foaf:Image" src="https://www.nufios.com/sites/default/files/styles/article_image/public/field/image/NYSE_0.jpg?itok=8cxwdM56" width="220" height="150" alt="" /></a>          </td>
+                  <td class="views-field views-field-title" >
+            <a href="/nyse-resumes-after-temporary-glitch">NYSE Resumes After Temporary Glitch</a><div><a href="/users/alison-butkowski" title="View user profile." class="username" xml:lang="" about="/users/alison-butkowski" typeof="sioc:UserAccount" property="foaf:name" datatype="">Alison Butkowski</a></div> The NYSE came to a screeching halt for nearly four hours on Wednesday due to a glitch.  The outage...<div class="sharethis-wrapper"><span st_url="https://www.nufios.com/nyse-resumes-after-temporary-glitch" st_title="NYSE Resumes After Temporary Glitch" class="st_linkedin_large" displayText="linkedin"></span>
+<span st_url="https://www.nufios.com/nyse-resumes-after-temporary-glitch" st_title="NYSE Resumes After Temporary Glitch" class="st_googleplus_large" displayText="googleplus"></span>
+<span st_url="https://www.nufios.com/nyse-resumes-after-temporary-glitch" st_title="NYSE Resumes After Temporary Glitch" class="st_twitter_large" displayText="twitter"></span>
+<span st_url="https://www.nufios.com/nyse-resumes-after-temporary-glitch" st_title="NYSE Resumes After Temporary Glitch" class="st_facebook_large" displayText="facebook"></span>
+</div>          </td>
+              </tr>
+          <tr class="" >
+                  <td class="views-field views-field-field-image views-align-left" >
+            <a href="/deepdream-shows-us-what-happens-when-computers-dream"><img typeof="foaf:Image" src="https://www.nufios.com/sites/default/files/styles/article_image/public/field/image/18726592113_95545aef64_o.jpg?itok=pXa9_mr4" width="220" height="150" alt="" /></a>          </td>
+                  <td class="views-field views-field-title" >
+            <a href="/deepdream-shows-us-what-happens-when-computers-dream">#DeepDream Shows Us What Happens When Computers Dream</a><div><a href="/users/alison-butkowski" title="View user profile." class="username" xml:lang="" about="/users/alison-butkowski" typeof="sioc:UserAccount" property="foaf:name" datatype="">Alison Butkowski</a></div> Google recently opened the source code called “DeepDream” to developers that allows users to see how...<div class="sharethis-wrapper"><span st_url="https://www.nufios.com/deepdream-shows-us-what-happens-when-computers-dream" st_title="#DeepDream Shows Us What Happens When Computers Dream" class="st_linkedin_large" displayText="linkedin"></span>
+<span st_url="https://www.nufios.com/deepdream-shows-us-what-happens-when-computers-dream" st_title="#DeepDream Shows Us What Happens When Computers Dream" class="st_googleplus_large" displayText="googleplus"></span>
+<span st_url="https://www.nufios.com/deepdream-shows-us-what-happens-when-computers-dream" st_title="#DeepDream Shows Us What Happens When Computers Dream" class="st_twitter_large" displayText="twitter"></span>
+<span st_url="https://www.nufios.com/deepdream-shows-us-what-happens-when-computers-dream" st_title="#DeepDream Shows Us What Happens When Computers Dream" class="st_facebook_large" displayText="facebook"></span>
+</div>          </td>
+              </tr>
+      </tbody>
+</table>
+    </div>
+  
+  
+  
+  
+  
+  
+</div>  </div>
+
+  
+  </div>
+<div class="panel-separator"></div><div class="panel-pane pane-views pane-other-news"  >
+  
+        <h2 class="pane-title">
+      Other News    </h2>
+    
+  
+  <div class="pane-content">
+    <div class="view view-other-news view-id-other_news view-display-id-default view-dom-id-61d2bc493a1bd0489b7edd1108d3c9dc">
+        
+  
+  
+      <div class="view-content">
+      <table class="views-table cols-0" >
+      <tbody>
+          <tr class="" >
+                  <td class="views-field views-field-title" >
+            <a href="/supreme-court-declare-same-sex-marriage-legal">Supreme Court declare Same-Sex Marriage Legal</a> On June 26th, 2015 the Supreme Court ruled 5-4 that the States can’t stop same-sex couples from...<div class="sharethis-wrapper"><span st_url="https://www.nufios.com/supreme-court-declare-same-sex-marriage-legal" st_title="Supreme Court declare Same-Sex Marriage Legal" class="st_linkedin_large" displayText="linkedin"></span>
+<span st_url="https://www.nufios.com/supreme-court-declare-same-sex-marriage-legal" st_title="Supreme Court declare Same-Sex Marriage Legal" class="st_googleplus_large" displayText="googleplus"></span>
+<span st_url="https://www.nufios.com/supreme-court-declare-same-sex-marriage-legal" st_title="Supreme Court declare Same-Sex Marriage Legal" class="st_twitter_large" displayText="twitter"></span>
+<span st_url="https://www.nufios.com/supreme-court-declare-same-sex-marriage-legal" st_title="Supreme Court declare Same-Sex Marriage Legal" class="st_facebook_large" displayText="facebook"></span>
+</div>          </td>
+              </tr>
+          <tr class="" >
+                  <td class="views-field views-field-title" >
+            <a href="/will-video-games-save-movie-theaters">Will video games save movie theaters?</a> Despite many big ticket movies like Jurassic World and Avengers bringing in money, movie theaters have...<div class="sharethis-wrapper"><span st_url="https://www.nufios.com/will-video-games-save-movie-theaters" st_title="Will video games save movie theaters?" class="st_linkedin_large" displayText="linkedin"></span>
+<span st_url="https://www.nufios.com/will-video-games-save-movie-theaters" st_title="Will video games save movie theaters?" class="st_googleplus_large" displayText="googleplus"></span>
+<span st_url="https://www.nufios.com/will-video-games-save-movie-theaters" st_title="Will video games save movie theaters?" class="st_twitter_large" displayText="twitter"></span>
+<span st_url="https://www.nufios.com/will-video-games-save-movie-theaters" st_title="Will video games save movie theaters?" class="st_facebook_large" displayText="facebook"></span>
+</div>          </td>
+              </tr>
+          <tr class="" >
+                  <td class="views-field views-field-title" >
+            <a href="/confederate-flag-debate">The Confederate flag debate</a> Major U.S... retailers usually try to stay out of hot button social issues for fear of losing customers...<div class="sharethis-wrapper"><span st_url="https://www.nufios.com/confederate-flag-debate" st_title="The Confederate flag debate" class="st_linkedin_large" displayText="linkedin"></span>
+<span st_url="https://www.nufios.com/confederate-flag-debate" st_title="The Confederate flag debate" class="st_googleplus_large" displayText="googleplus"></span>
+<span st_url="https://www.nufios.com/confederate-flag-debate" st_title="The Confederate flag debate" class="st_twitter_large" displayText="twitter"></span>
+<span st_url="https://www.nufios.com/confederate-flag-debate" st_title="The Confederate flag debate" class="st_facebook_large" displayText="facebook"></span>
+</div>          </td>
+              </tr>
+          <tr class="" >
+                  <td class="views-field views-field-title" >
+            <a href="/2016-year-snapchat-election">2016: Year of the Snapchat Election</a> Snapchat isn’t the first company that comes to most people’s minds when it comes to getting kids...<div class="sharethis-wrapper"><span st_url="https://www.nufios.com/2016-year-snapchat-election" st_title="2016: Year of the Snapchat Election" class="st_linkedin_large" displayText="linkedin"></span>
+<span st_url="https://www.nufios.com/2016-year-snapchat-election" st_title="2016: Year of the Snapchat Election" class="st_googleplus_large" displayText="googleplus"></span>
+<span st_url="https://www.nufios.com/2016-year-snapchat-election" st_title="2016: Year of the Snapchat Election" class="st_twitter_large" displayText="twitter"></span>
+<span st_url="https://www.nufios.com/2016-year-snapchat-election" st_title="2016: Year of the Snapchat Election" class="st_facebook_large" displayText="facebook"></span>
+</div>          </td>
+              </tr>
+          <tr class="" >
+                  <td class="views-field views-field-title" >
+            <a href="/apple-caves-taylor-swift">Apple caves in to Taylor Swift</a> Apple announced they will be paying artists during the free first three months of their new streaming...<div class="sharethis-wrapper"><span st_url="https://www.nufios.com/apple-caves-taylor-swift" st_title="Apple caves in to Taylor Swift" class="st_linkedin_large" displayText="linkedin"></span>
+<span st_url="https://www.nufios.com/apple-caves-taylor-swift" st_title="Apple caves in to Taylor Swift" class="st_googleplus_large" displayText="googleplus"></span>
+<span st_url="https://www.nufios.com/apple-caves-taylor-swift" st_title="Apple caves in to Taylor Swift" class="st_twitter_large" displayText="twitter"></span>
+<span st_url="https://www.nufios.com/apple-caves-taylor-swift" st_title="Apple caves in to Taylor Swift" class="st_facebook_large" displayText="facebook"></span>
+</div>          </td>
+              </tr>
+          <tr class="" >
+                  <td class="views-field views-field-title" >
+            <a href="/googles-latest-project-news-labs">Google&#039;s latest project - News Labs</a> Snapchat, Facebook, Twitter, and Apple are all trying to shape the future of online news creation....<div class="view-field-ticker">GOOG</div><div class="sharethis-wrapper"><span st_url="https://www.nufios.com/googles-latest-project-news-labs" st_title="Google&#039;s latest project - News Labs" class="st_linkedin_large" displayText="linkedin"></span>
+<span st_url="https://www.nufios.com/googles-latest-project-news-labs" st_title="Google&#039;s latest project - News Labs" class="st_googleplus_large" displayText="googleplus"></span>
+<span st_url="https://www.nufios.com/googles-latest-project-news-labs" st_title="Google&#039;s latest project - News Labs" class="st_twitter_large" displayText="twitter"></span>
+<span st_url="https://www.nufios.com/googles-latest-project-news-labs" st_title="Google&#039;s latest project - News Labs" class="st_facebook_large" displayText="facebook"></span>
+</div>          </td>
+              </tr>
+          <tr class="" >
+                  <td class="views-field views-field-title" >
+            <a href="/ceo-startup-founder-why-i-had-hide-my-pregnancy">CEO startup founder: Why I had to hide my pregnancy</a> Talia Goldstein, CEO of the online dating startup Three Day Rule, recently revealed to Fortune Magazine...<div class="sharethis-wrapper"><span st_url="https://www.nufios.com/ceo-startup-founder-why-i-had-hide-my-pregnancy" st_title="CEO startup founder: Why I had to hide my pregnancy" class="st_linkedin_large" displayText="linkedin"></span>
+<span st_url="https://www.nufios.com/ceo-startup-founder-why-i-had-hide-my-pregnancy" st_title="CEO startup founder: Why I had to hide my pregnancy" class="st_googleplus_large" displayText="googleplus"></span>
+<span st_url="https://www.nufios.com/ceo-startup-founder-why-i-had-hide-my-pregnancy" st_title="CEO startup founder: Why I had to hide my pregnancy" class="st_twitter_large" displayText="twitter"></span>
+<span st_url="https://www.nufios.com/ceo-startup-founder-why-i-had-hide-my-pregnancy" st_title="CEO startup founder: Why I had to hide my pregnancy" class="st_facebook_large" displayText="facebook"></span>
+</div>          </td>
+              </tr>
+          <tr class="" >
+                  <td class="views-field views-field-title" >
+            <a href="/twitter-changing-direct-message-character-limits">Twitter Changing Direct Message Character Limits</a> In a move to stay competitive, Twitter recently revealed that they will be removing the 140 character...<div class="sharethis-wrapper"><span st_url="https://www.nufios.com/twitter-changing-direct-message-character-limits" st_title="Twitter Changing Direct Message Character Limits" class="st_linkedin_large" displayText="linkedin"></span>
+<span st_url="https://www.nufios.com/twitter-changing-direct-message-character-limits" st_title="Twitter Changing Direct Message Character Limits" class="st_googleplus_large" displayText="googleplus"></span>
+<span st_url="https://www.nufios.com/twitter-changing-direct-message-character-limits" st_title="Twitter Changing Direct Message Character Limits" class="st_twitter_large" displayText="twitter"></span>
+<span st_url="https://www.nufios.com/twitter-changing-direct-message-character-limits" st_title="Twitter Changing Direct Message Character Limits" class="st_facebook_large" displayText="facebook"></span>
+</div>          </td>
+              </tr>
+          <tr class="" >
+                  <td class="views-field views-field-title" >
+            <a href="/richard-branson-ignites-entrepreneurial-interest-detroit">Richard Branson Ignites Entrepreneurial Interest in Detroit</a> Detroit is quickly becoming known as an up-and-coming city and example of the hidden opportunity for...<div class="sharethis-wrapper"><span st_url="https://www.nufios.com/richard-branson-ignites-entrepreneurial-interest-detroit" st_title="Richard Branson Ignites Entrepreneurial Interest in Detroit" class="st_linkedin_large" displayText="linkedin"></span>
+<span st_url="https://www.nufios.com/richard-branson-ignites-entrepreneurial-interest-detroit" st_title="Richard Branson Ignites Entrepreneurial Interest in Detroit" class="st_googleplus_large" displayText="googleplus"></span>
+<span st_url="https://www.nufios.com/richard-branson-ignites-entrepreneurial-interest-detroit" st_title="Richard Branson Ignites Entrepreneurial Interest in Detroit" class="st_twitter_large" displayText="twitter"></span>
+<span st_url="https://www.nufios.com/richard-branson-ignites-entrepreneurial-interest-detroit" st_title="Richard Branson Ignites Entrepreneurial Interest in Detroit" class="st_facebook_large" displayText="facebook"></span>
+</div>          </td>
+              </tr>
+          <tr class="" >
+                  <td class="views-field views-field-title" >
+            <a href="/earthquake-southeast-michigan">Earthquake in Southeast Michigan</a> Early reports of an earthquake in southeast Michigan are pouring in.
+Update: Earthquake happened 8km...<div class="sharethis-wrapper"><span st_url="https://www.nufios.com/earthquake-southeast-michigan" st_title="Earthquake in Southeast Michigan" class="st_linkedin_large" displayText="linkedin"></span>
+<span st_url="https://www.nufios.com/earthquake-southeast-michigan" st_title="Earthquake in Southeast Michigan" class="st_googleplus_large" displayText="googleplus"></span>
+<span st_url="https://www.nufios.com/earthquake-southeast-michigan" st_title="Earthquake in Southeast Michigan" class="st_twitter_large" displayText="twitter"></span>
+<span st_url="https://www.nufios.com/earthquake-southeast-michigan" st_title="Earthquake in Southeast Michigan" class="st_facebook_large" displayText="facebook"></span>
+</div>          </td>
+              </tr>
+      </tbody>
+</table>
+    </div>
+  
+  
+  
+  
+  
+  
+</div>  </div>
+
+  
+  </div>
+  </div>
+</div>
+</div>
+</div>
+  </div>
+
+</div><!-- /.block -->
+  </div><!-- /.region -->
+          </div></div><!-- /.section, /#content -->
+
+
+      <div class="region region-sidebar-first column sidebar"><div class="section">
+    <div id="block-block-2" class="block block-block first odd">
+
+      
+  <div class="content">
+    <!-- Start FreeStockCharts.com WatchList Widget --><p width="100%" align="center">
+<iframe width="160" height="137" scrolling="no" frameborder="0" style="border:none;" src="http://widgets.freestockcharts.com/WidgetServer/WatchListWidget.aspx?sym=EUR/USD,USD/JPY,GBP/USD,USD/CAD,AUD/USD&amp;style=WLBlueStyle&amp;w=160"></iframe></p>
+<!-- End FreeStockCharts.com WatchList Widget -->  </div>
+
+</div><!-- /.block -->
+<div id="block--managed-0" class="block block--managed last even">
+
+    
+  <div class="content">
+    <div style='text-align:center'><div class='adsense' style='display:inline-block;width:120px;height:600px;'>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 120x600 -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:120px;height:600px"
+     data-ad-client="ca-pub-6324601946483025"
+     data-ad-slot="3071711792"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div></div>  </div>
+</div>
+  </div></div><!-- /.section, /.region -->
+
+      <div class="region region-sidebar-second column sidebar"><div class="section">
+    <div id="block-search-form" class="block block-search first odd">
+
+      
+  <div class="content">
+    <form action="/" method="post" id="search-block-form" accept-charset="UTF-8"><div><div class="container-inline">
+      <h2 class="element-invisible">Search form</h2>
+    <div class="form-item form-type-textfield form-item-search-block-form">
+  <label class="element-invisible" for="edit-search-block-form--2">Search </label>
+ <input title="Enter the terms you wish to search for." type="text" id="edit-search-block-form--2" name="search_block_form" value="" size="15" maxlength="128" class="form-text" />
+</div>
+<div class="form-actions form-wrapper" id="edit-actions"><input type="submit" id="edit-submit" name="op" value="Search" class="form-submit" /></div><input type="hidden" name="form_build_id" value="form-d2zpTUSU1hNFv5t3UsMUpboyIP4Yn06EjiFVN9B2aiU" />
+<input type="hidden" name="form_id" value="search_block_form" />
+</div>
+</div></form>  </div>
+
+</div><!-- /.block -->
+<div id="block-poll-recent" class="block block-poll even">
+
+      
+  <div class="content">
+    
+<div class="poll">
+  <div class="title">How Should Nufios Improve?</div>
+  
+<div class="text">More content</div>
+<div class="bar">
+  <div style="width: 0%;" class="foreground"></div>
+</div>
+<div class="percent">
+  0%
+</div>
+
+<div class="text">Better user interface</div>
+<div class="bar">
+  <div style="width: 0%;" class="foreground"></div>
+</div>
+<div class="percent">
+  0%
+</div>
+
+<div class="text">New financial products</div>
+<div class="bar">
+  <div style="width: 0%;" class="foreground"></div>
+</div>
+<div class="percent">
+  0%
+</div>
+
+<div class="text">Fewer ads</div>
+<div class="bar">
+  <div style="width: 0%;" class="foreground"></div>
+</div>
+<div class="percent">
+  0%
+</div>
+
+<div class="text">Greater variety</div>
+<div class="bar">
+  <div style="width: 0%;" class="foreground"></div>
+</div>
+<div class="percent">
+  0%
+</div>
+
+<div class="text">Other</div>
+<div class="bar">
+  <div style="width: 0%;" class="foreground"></div>
+</div>
+<div class="percent">
+  0%
+</div>
+  <div class="total">
+    Total votes: 0  </div>
+</div>
+<div class="links"><ul class="links"><li class="0 first last"><a href="/poll" title="View the list of polls on this site.">Older polls</a></li>
+</ul></div>
+  </div>
+
+</div><!-- /.block -->
+<div id="block--managed-1" class="block block--managed last odd">
+
+    
+  <div class="content">
+    <div style='text-align:left'><div class='adsense' style='display:inline-block;width:120px;height:240px;'>
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<!-- 120x240 -->
+<ins class="adsbygoogle"
+     style="display:inline-block;width:120px;height:240px"
+     data-ad-client="ca-pub-6324601946483025"
+     data-ad-slot="6025178199"></ins>
+<script>
+(adsbygoogle = window.adsbygoogle || []).push({});
+</script>
+</div></div>  </div>
+</div>
+  </div></div><!-- /.section, /.region -->
+
+  </div></div><!-- /#main, /#main-wrapper -->
+  
+  <div id="footer-wrapper"><div id="footer">
+
+    <div class="region region-footer">
+    <div id="block-menu-menu-footer" class="block block-menu first odd">
+
+        <h2 class="block-title">Information</h2>
+    
+  <div class="content">
+    <ul class="menu"><li class="first leaf"><a href="/about" title="">About</a></li>
+<li class="leaf"><a href="/disclaimer" title="">Disclaimer</a></li>
+<li class="last leaf"><a href="/contact" title="">Contact</a></li>
+</ul>  </div>
+
+</div><!-- /.block -->
+<div id="block-block-3" class="block block-block last even">
+
+      
+  <div class="content">
+    <div id="socialmedia">
+<div id="socmediatitle">
+		Nufios</div>
+<p>	<a href="https://www.facebook.com/nufios"><img src="/ckfinder/userfiles/images/facebook.png" /></a> <a href="https://twitter.com/NufiosNews"><img src="/ckfinder/userfiles/images/twitter.png" /></a></p></div>
+  </div>
+
+</div><!-- /.block -->
+  </div><!-- /.region -->
+  
+    </div></div>
+
+</div></div><!-- /#page, /#page-wrapper -->
+
+    <div class="region region-page-bottom">
+    <div class="menu-minipanels menu-minipanel-688"><div class="panel-display panel-2col clearfix" id="mini-panel-news">
+  <div class="panel-panel panel-col-first">
+    <div class="inside"><div class="panel-pane pane-block pane-menu-menu-news"  >
+  
+      
+  
+  <div class="pane-content">
+    <ul class="menu"><li class="first leaf"><a href="/news/breaking" title="">Breaking</a></li>
+<li class="leaf"><a href="/news/press-releases" title="">Press Releases</a></li>
+<li class="last leaf"><a href="/news/rumors" title="">Rumors</a></li>
+</ul>  </div>
+
+  
+  </div>
+</div>
+  </div>
+
+  <div class="panel-panel panel-col-last">
+    <div class="inside"></div>
+  </div>
+</div>
+</div><div class="menu-minipanels menu-minipanel-648"><div class="panel-display panel-2col clearfix" id="mini-panel-business">
+  <div class="panel-panel panel-col-first">
+    <div class="inside"><div class="panel-pane pane-block pane-menu-menu-business"  >
+  
+      
+  
+  <div class="pane-content">
+    <ul class="menu"><li class="first leaf"><a href="/business/economy" title="">Economy</a></li>
+<li class="leaf"><a href="/business/management" title="">Management</a></li>
+<li class="last leaf"><a href="/business/small-business" title="">Small Business</a></li>
+</ul>  </div>
+
+  
+  </div>
+</div>
+  </div>
+
+  <div class="panel-panel panel-col-last">
+    <div class="inside"></div>
+  </div>
+</div>
+</div><div class="menu-minipanels menu-minipanel-693"><div class="panel-display panel-2col clearfix" id="mini-panel-politics">
+  <div class="panel-panel panel-col-first">
+    <div class="inside"><div class="panel-pane pane-block pane-menu-menu-politics"  >
+  
+      
+  
+  <div class="pane-content">
+    <ul class="menu"><li class="first leaf"><a href="/politics/us" title="">US</a></li>
+<li class="leaf"><a href="/politics/world" title="">World</a></li>
+<li class="leaf"><a href="/politics/law" title="">Law</a></li>
+<li class="leaf"><a href="/politics/russia" title="">Russia</a></li>
+<li class="leaf"><a href="/politics/china" title="">China</a></li>
+<li class="last leaf"><a href="/politics/europe" title="">Europe</a></li>
+</ul>  </div>
+
+  
+  </div>
+</div>
+  </div>
+
+  <div class="panel-panel panel-col-last">
+    <div class="inside"></div>
+  </div>
+</div>
+</div><div class="menu-minipanels menu-minipanel-649"><div class="panel-display panel-2col clearfix" id="mini-panel-market">
+  <div class="panel-panel panel-col-first">
+    <div class="inside"><div class="panel-pane pane-block pane-menu-menu-market"  >
+  
+      
+  
+  <div class="pane-content">
+    <ul class="menu"><li class="first leaf"><a href="/market/stocks" title="">Stocks</a></li>
+<li class="leaf"><a href="/market/bonds" title="">Bonds</a></li>
+<li class="leaf"><a href="/market/etf" title="">ETFs</a></li>
+<li class="leaf"><a href="/market/options" title="">Options</a></li>
+<li class="leaf"><a href="/market/commodities" title="">Commodities</a></li>
+<li class="leaf"><a href="/market/forex" title="">Forex</a></li>
+<li class="leaf"><a href="/market/investing" title="">Investing</a></li>
+<li class="last leaf"><a href="/market/ratings" title="">Ratings</a></li>
+</ul>  </div>
+
+  
+  </div>
+</div>
+  </div>
+
+  <div class="panel-panel panel-col-last">
+    <div class="inside"></div>
+  </div>
+</div>
+</div><div class="menu-minipanels menu-minipanel-647"><div class="panel-display panel-2col clearfix" id="mini-panel-tech">
+  <div class="panel-panel panel-col-first">
+    <div class="inside"><div class="panel-pane pane-block pane-menu-menu-tech"  >
+  
+      
+  
+  <div class="pane-content">
+    <ul class="menu"><li class="first leaf"><a href="/tech/apple" title="">Apple</a></li>
+<li class="leaf"><a href="/tech/science" title="">Science</a></li>
+<li class="leaf"><a href="/tech/silicon-valley" title="">Silicon Valley</a></li>
+<li class="last leaf"><a href="/tech/startups" title="">Startups</a></li>
+</ul>  </div>
+
+  
+  </div>
+</div>
+  </div>
+
+  <div class="panel-panel panel-col-last">
+    <div class="inside"></div>
+  </div>
+</div>
+</div><div class="menu-minipanels menu-minipanel-689"><div class="panel-display panel-2col clearfix" id="mini-panel-behavior">
+  <div class="panel-panel panel-col-first">
+    <div class="inside"><div class="panel-pane pane-block pane-menu-menu-behavior"  >
+  
+      
+  
+  <div class="pane-content">
+    <ul class="menu"><li class="first leaf"><a href="/behavior/behavioral-finance" title="">Behavioral Finance</a></li>
+<li class="leaf"><a href="/behavior/political-personalities" title="">Political Personalities</a></li>
+<li class="last leaf"><a href="/behavior/irrational-behavior" title="">Irrational Behavior</a></li>
+</ul>  </div>
+
+  
+  </div>
+</div>
+  </div>
+
+  <div class="panel-panel panel-col-last">
+    <div class="inside"></div>
+  </div>
+</div>
+</div><div class="menu-minipanels menu-minipanel-0"><div class="panel-display panel-2col clearfix" id="mini-panel-culture">
+  <div class="panel-panel panel-col-first">
+    <div class="inside"><div class="panel-pane pane-block pane-menu-menu-culture"  >
+  
+      
+  
+  <div class="pane-content">
+    <ul class="menu"><li class="first leaf"><a href="/culture/lifestyle" title="">Lifestyle</a></li>
+<li class="leaf"><a href="/culture/movies" title="">Movies</a></li>
+<li class="leaf"><a href="/culture/music" title="">Music</a></li>
+<li class="last leaf"><a href="/culture/sports" title="">Sports</a></li>
+</ul>  </div>
+
+  
+  </div>
+</div>
+  </div>
+
+  <div class="panel-panel panel-col-last">
+    <div class="inside"></div>
+  </div>
+</div>
+</div>  </div><!-- /.region -->
+<script type="text/javascript" src="https://www.nufios.com/sites/all/modules/menu_minipanels/js/menu_minipanels.js?nrqslc"></script>
+<script type="text/javascript" src="https://www.nufios.com/sites/all/libraries/qtip/jquery.qtip-1.0.0-rc3.min.js?nrqslc"></script>
+</body>
+</html>
+
+<!-- Page cached by Boost @ 2015-07-19 12:07:06, expires @ 2015-07-19 12:22:06, lifetime 15 min -->
