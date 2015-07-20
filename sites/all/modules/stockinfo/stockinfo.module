@@ -232,6 +232,7 @@ function stockinfo_entity_info() {
     'label' => t('Stock Info'),
     'plural label' => t('Stock Info'),
     'base table' => 'stockinfo',
+    'revision table' => 'stockinfo_revision',
     'entity keys' => array(
       'id' => 'sid',
       'label' => 'name',
