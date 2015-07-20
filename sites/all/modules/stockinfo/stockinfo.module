@@ -236,6 +236,7 @@ function stockinfo_entity_info() {
     'entity keys' => array(
       'id' => 'sid',
       'label' => 'name',
+      'revision' => 'vid',
     ),
     'module' => 'stockinfo',
     'views controller class' => 'EntityDefaultViewsController',
