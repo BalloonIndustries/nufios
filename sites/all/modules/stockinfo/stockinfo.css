@@ -1,7 +1,11 @@
-.plus {
+.stockinfo-plus {
  color: green;
 }
 
-.minus {
+.stockinfo-minus {
  color: red;
+}
+
+.stockinfo-header {
+    font-weight: bold;
 }

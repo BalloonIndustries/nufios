@@ -26,6 +26,15 @@ function stockinfo_menu() {
     'access arguments' => array('administer site configuration'),
   );
 
+  $items['stockinfo'] = array(
+    'title callback' => 'Stock Information',
+    'title arguments' => array(1),
+    'page callback' => 'stockinfo_page_view',
+    'page arguments' => array(1),
+    'access arguments' => array('view content'),
+    'type' => MENU_CALLBACK,
+  );
+
   return $items;
 }
 
@@ -1014,4 +1023,60 @@ function stockinfo_entity_property_info() {
     'entity views field' => TRUE,
   );
   return $info;
+}
+
+function stockinfo_page_view($entity, $view_mode = 'full') {
+  $entity_type = "stockinfo";
+  $sid = db_query("SELECT sid FROM {stockinfo} WHERE symbol = :symbol", array("symbol" => $entity))->fetchField();
+  $entity = entity_load_single($entity_type, $sid);
+
+  $entity_id = entity_id($entity_type, $entity);
+
+  $entity->content = array();
+
+  $entity->name = filter_xss($entity->name);
+
+  field_attach_prepare_view($entity_type, array($entity_id => $entity), $view_mode);
+  entity_prepare_view($entity_type, array($entity_id => $entity));
+
+  $entity->content += field_attach_view($entity_type, $entity, $view_mode);
+
+  $entity->content += array(
+    '#theme' => $entity_type,
+    '#element' => $entity,
+    '#view_mode' => $view_mode,
+    '#language' => LANGUAGE_NONE,
+  );
+
+  return $entity->content;
+}
+
+/**
+ * Adds our theme specifications to the Theme Registry.
+ */
+function stockinfo_theme($existing, $type, $theme, $path) {
+  return array(
+    'stockinfo' => array(
+      'variables' => array('element' => null),
+      'template' => 'stockinfo'
+    ),
+  );
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function stockinfo_preprocess_stockinfo(&$variables) {
+  $element = $variables['element'];
+  $element->last_trade_date = format_date($element->last_trade_date);
+  $element->changed = format_date($element->changed);
+  $element->changein_percent = $element->changein_percent . "%";
+  $element->percent_change_from_year_low = $element->percent_change_from_year_low . "%";
+  $element->percebt_change_from_year_high = $element->percebt_change_from_year_high . "%";
+  $element->percent_change_from_fiftyday_moving_average = $element->percent_change_from_fiftyday_moving_average . "%";
+  $element->percent_change_from_two_hundredday_moving_average = $element->percent_change_from_two_hundredday_moving_average . "%";
+  $element->volume = number_format($element->volume);
+  $element->market_capitalization = number_format($element->market_capitalization);
+  $element->average_daily_volume = number_format($element->average_daily_volume);
+  
 }
