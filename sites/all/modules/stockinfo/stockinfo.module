@@ -252,10 +252,19 @@ function stockinfo_entity_info() {
     ),
     'controller class' => 'EntityAPIController',
     'fieldable' => TRUE,
-    'uri callback' => 'entity_class_uri',
+    'uri callback' => 'stockinfo_uri',
   );
 
   return $info;
+}
+
+/**
+ * Defines URI for stockinfo
+ */
+function stockinfo_uri($stock) {
+  return array(
+    'path' => 'stock/' . $stock->symbol,
+  );
 }
 
 /**
