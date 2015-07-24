@@ -437,5 +437,8 @@ function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $label_a
 */
 
 function nufios_chart_alter(&$chart, $chart_id) {
-  watchdog("chart id", "<pre>" . print_r($chart_id, true) . "</pre>");
+if($chart_id == "single_stock_chart_historical__panel_pane_1") {
+$chart['xaxis']['#labels'] = array_reverse($chart['xaxis']['#labels']);
+$chart['panel_pane_1__last_trade_price_only_2']['#data'] = array_reverse($chart['panel_pane_1__last_trade_price_only_2']['#data']);
+}
 }
