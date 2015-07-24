@@ -263,7 +263,7 @@ function stockinfo_entity_info() {
  */
 function stockinfo_uri($stock) {
   return array(
-    'path' => 'stock/' . $stock->symbol,
+    'path' => 'stockinfo/' . $stock->symbol,
   );
 }
 
