@@ -460,6 +460,6 @@ function nufios_entity_info_alter(&$entity_info) {
  */
 function nufios_uri($stock) {
     return array(
-    'path' => 'stockinfo/' . $stock->symbol,
+    'path' => 'stock/' . $stock->symbol,
   );
 }
