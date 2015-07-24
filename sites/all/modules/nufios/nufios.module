@@ -452,5 +452,14 @@ function nufios_chart_alter(&$chart, $chart_id) {
  * Implements hook_entity_info_alter().
  */
 function nufios_entity_info_alter(&$entity_info) {
-  $entity_info['stockinfo']['uri callback'] = 'stock';
+  $entity_info['stockinfo']['uri callback'] = 'nufios_uri';
+}
+
+/**
+ * Defines URI for stockinfo
+ */
+function nufios_uri($stock) {
+    return array(
+    'path' => 'stockinfo/' . $stock->symbol,
+  );
 }
