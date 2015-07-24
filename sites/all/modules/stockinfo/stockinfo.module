@@ -246,17 +246,33 @@ function stockinfo_entity_info() {
         'admin' => array(
           'path' => 'admin/structure/stocks',
           'real path' => 'admin/structure/stocks',
-          'access arguments' => array('administer site configuration'),
+          'access arguments' => array('view stockinfo'),
         ),
       ),
     ),
     'controller class' => 'EntityAPIController',
-    'access callback' => 'stockinfo_access_callback',
     'fieldable' => TRUE,
     'uri callback' => 'entity_class_uri',
   );
 
   return $info;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function stockinfo_permission() {
+  return array(
+    'administer stockinfo' => array(
+      'title' => t('Administer Stockinfo'),
+      'description' => t('Perform administration tasks for my module.'),
+      'restrict access' => TRUE,
+    ),
+    'view stockinfo' => array(
+      'title' => t('View Stockinfo Stocks'),
+      'description' => t('View stocks created by stockinfo.'),
+    )
+  );
 }
 
 /**
@@ -670,7 +686,7 @@ function stockinfo_entity_property_info() {
   $info['stockinfo']['properties']['sid'] = array(
     'label' => t('SID'),
     'description' => t('The ID of the stockinfo.'),
-    'type' => 'integer',
+    'type' => 'stockinfo',
     'schema field' => 'sid',
     'entity views field' => TRUE,
   );
