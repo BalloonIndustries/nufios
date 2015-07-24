@@ -10,7 +10,6 @@ function computed_field_field_volume_percentage_compute(&$entity_field, $entity_
 /*
  * Normalizes data from YAHOO!, intended to resolve typos, etc. Conditions are added as they pop up.
  */
-
 function nufios_stockinfo_save_alter(&$stock) {
   if (isset($stock->name)) {
     // replace with regular expressions soonish
@@ -436,3 +435,7 @@ function nufios_pull_stock_property_recursive($symbol, $stockinfo_keys, $label_a
   return $property;
 }
 */
+
+function nufios_chart_alter(&$chart, $chart_id) {
+  watchdog("chart id", "<pre>" . print_r($chart_id, true) . "</pre>");
+}
