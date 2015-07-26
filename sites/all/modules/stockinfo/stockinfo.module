@@ -667,7 +667,6 @@ function _stockinfo_request_failure($results) {
 /*
  * Helper function to convert CSV string to array for all PHP versions.
  */
-
 function _stockinfo_str_getcsv($input, $delimiter = ',', $enclosure = '"', $escape = NULL, $eol = NULL) {
   $array = array();
   $input = trim($input);
@@ -1105,5 +1104,4 @@ function stockinfo_preprocess_stockinfo(&$variables) {
   $element->volume = number_format($element->volume);
   $element->market_capitalization = number_format($element->market_capitalization);
   $element->average_daily_volume = number_format($element->average_daily_volume);
-  
 }
