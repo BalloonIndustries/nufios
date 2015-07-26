@@ -84,6 +84,9 @@ function stockinfo_admin_settings() {
   return system_settings_form($form);
 }
 
+/**
+ * List of days with translation.
+ */
 function stockinfo_days() {
   return array(
     "Sunday" => t("Sunday"),
@@ -96,6 +99,9 @@ function stockinfo_days() {
   );
 }
 
+/**
+ * Maps the stock correctly for batching.
+ */
 function stockinfo_mapstock($chunk) {
   foreach ($chunk as $stock) {
     stockinfo_process_stock($stock);
@@ -172,6 +178,9 @@ function stockinfo_stockinfo_save_alter(&$stock) {
   }
 }
 
+/**
+ * Function for when the batch is finished.
+ */
 function stockinfo_import_batch_finished($success, $results, $operations) {
   if ($success) {
     drupal_set_message('Import is complete');
@@ -338,6 +347,7 @@ function stockinfo_cron() {
     // Check if day is even correct, first.
     $day = date('l', time());
     if (in_array($day, array_values(variable_get("stockinfo_days", array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'))))) {
+      watchdog("DO NOT EXECUTE", "<pre>" . print_r("SHOULD NOT EXEXCUTE", true) . "</pre>");
       // Now check if the time is correct.
       $current_time = date("h:i a", time());
       $open = variable_get("stockinfo_market_open");
@@ -426,67 +436,18 @@ function stockinfo_save($stockinfo) {
     $stockinfo->revision = TRUE;
   }
 
-  $vid = db_insert('stockinfo_revision')
-      ->useDefaults(array('vid'))
-      ->fields(array(
-        'sid' => $stockinfo->sid,
-        'symbol' => $stockinfo->symbol,
-        'name' => isset($stockinfo->name) ? $stockinfo->name : NULL,
-        'last_trade_with_time' => isset($stockinfo->last_trade_with_time) ? $stockinfo->last_trade_with_time : NULL,
-        'last_trade_price_only' => isset($stockinfo->last_trade_price_only) ? $stockinfo->last_trade_price_only : NULL,
-        'last_trade_date' => isset($stockinfo->last_trade_date) ? $stockinfo->last_trade_date : NULL,
-        'last_trade_time' => isset($stockinfo->last_trade_time) ? $stockinfo->last_trade_time : NULL,
-        'change__percent_change' => isset($stockinfo->change__percent_change) ? $stockinfo->change__percent_change : NULL,
-        'change_' => isset($stockinfo->change_) ? $stockinfo->change_ : NULL,
-        'changein_percent' => isset($stockinfo->changein_percent) ? $stockinfo->changein_percent : NULL,
-        'volume' => isset($stockinfo->volume) ? $stockinfo->volume : NULL,
-        'average_daily_volume' => isset($stockinfo->average_daily_volume) ? $stockinfo->average_daily_volume : NULL,
-        'bid' => isset($stockinfo->bid) ? $stockinfo->bid : NULL,
-        'ask' => isset($stockinfo->ask) ? $stockinfo->ask : NULL,
-        'previous_close' => isset($stockinfo->previous_close) ? $stockinfo->previous_close : NULL,
-        'open' => isset($stockinfo->open) ? $stockinfo->open : NULL,
-        'days_range' => isset($stockinfo->days_range) ? $stockinfo->days_range : NULL,
-        'year_range' => isset($stockinfo->year_range) ? $stockinfo->year_range : NULL,
-        'change_from_year_low' => isset($stockinfo->change_from_year_low) ? $stockinfo->change_from_year_low : NULL,
-        'percent_change_from_year_low' => isset($stockinfo->percent_change_from_year_low) ? $stockinfo->percent_change_from_year_low : NULL,
-        'change_from_year_high' => isset($stockinfo->change_from_year_high) ? $stockinfo->change_from_year_high : NULL,
-        'percebt_change_from_year_high' => isset($stockinfo->percebt_change_from_year_high) ? $stockinfo->percebt_change_from_year_high : NULL,
-        'earnings_share' => isset($stockinfo->earnings_share) ? $stockinfo->earnings_share : NULL,
-        'p_e_ratio' => isset($stockinfo->p_e_ratio) ? $stockinfo->p_e_ratio : NULL,
-        'short_ratio' => isset($stockinfo->short_ratio) ? $stockinfo->short_ratio : NULL,
-        'dividend_pay_date' => isset($stockinfo->dividend_pay_date) ? $stockinfo->dividend_pay_date : NULL,
-        'ex_dividend_date' => isset($stockinfo->ex_dividend_date) ? $stockinfo->ex_dividend_date : NULL,
-        'dividend_yield' => isset($stockinfo->dividend_yield) ? $stockinfo->dividend_yield : NULL,
-        'market_capitalization' => isset($stockinfo->market_capitalization) ? $stockinfo->market_capitalization : NULL,
-        'oneyr_target_price' => isset($stockinfo->oneyr_target_price) ? $stockinfo->oneyr_target_price : NULL,
-        'e_p_s_estimate_current_year' => isset($stockinfo->e_p_s_estimate_current_year) ? $stockinfo->e_p_s_estimate_current_year : NULL,
-        'e_p_s_estimate_next_year' => isset($stockinfo->e_p_s_estimate_next_year) ? $stockinfo->e_p_s_estimate_next_year : NULL,
-        'e_p_s_estimate_next_quarter' => isset($stockinfo->e_p_s_estimate_next_quarter) ? $stockinfo->e_p_s_estimate_next_quarter : NULL,
-        'price_e_p_s_estimate_current_year' => isset($stockinfo->price_e_p_s_estimate_current_year) ? $stockinfo->price_e_p_s_estimate_current_year : NULL,
-        'price_e_p_s_estimate_next_year' => isset($stockinfo->price_e_p_s_estimate_next_year) ? $stockinfo->price_e_p_s_estimate_next_year : NULL,
-        'p_e_g_ratio' => isset($stockinfo->p_e_g_ratio) ? $stockinfo->p_e_g_ratio : NULL,
-        'book_value' => isset($stockinfo->book_value) ? $stockinfo->book_value : NULL,
-        'price_book' => isset($stockinfo->price_book) ? $stockinfo->price_book : NULL,
-        'price_sales' => isset($stockinfo->price_sales) ? $stockinfo->price_sales : NULL,
-        'e_b_i_t_d_a' => isset($stockinfo->ebitda) ? $stockinfo->ebitda : NULL,
-        'fiftyday_moving_average' => isset($stockinfo->fiftyday_moving_average) ? $stockinfo->fiftyday_moving_average : NULL,
-        'change_from_fiftyday_moving_average' => isset($stockinfo->change_from_fiftyday_moving_average) ? $stockinfo->change_from_fiftyday_moving_average : NULL,
-        'percent_change_from_fiftyday_moving_average' => isset($stockinfo->percent_change_from_fiftyday_moving_average) ? $stockinfo->percent_change_from_fiftyday_moving_average : NULL,
-        'two_hundredday_moving_average' => isset($stockinfo->two_hundredday_moving_average) ? $stockinfo->two_hundredday_moving_average : NULL,
-        'change_from_two_hundredday_moving_average' => isset($stockinfo->change_from_two_hundredday_moving_average) ? $stockinfo->change_from_two_hundredday_moving_average : NULL,
-        'percent_change_from_two_hundredday_moving_average' => isset($stockinfo->percent_change_from_two_hundredday_moving_average) ? $stockinfo->percent_change_from_two_hundredday_moving_average : NULL,
-        'days_value_change' => isset($stockinfo->days_value_change) ? $stockinfo->days_value_change : NULL,
-        'stock_exchange' => isset($stockinfo->stock_exchange) ? $stockinfo->stock_exchange : NULL,
-        'changed' => REQUEST_TIME,
-      ))
-      ->execute();
+  $exists = db_query("SELECT sid from stockinfo_revision WHERE sid = :sid AND last_trade_date = :ltd", array(
+    "sid" => $stockinfo->sid,
+    "ltd" => $stockinfo->last_trade_date
+      )
+      )->fetchField();
 
-  $stockinfo->vid = $vid;
-  if (!isset($stockinfo->is_new)) {
-    db_update('stockinfo')
-        ->condition('sid', $stockinfo->sid)
+  if (empty($exists)) {
+
+    $vid = db_insert('stockinfo_revision')
+        ->useDefaults(array('vid'))
         ->fields(array(
-          'vid' => $stockinfo->vid,
+          'sid' => $stockinfo->sid,
           'symbol' => $stockinfo->symbol,
           'name' => isset($stockinfo->name) ? $stockinfo->name : NULL,
           'last_trade_with_time' => isset($stockinfo->last_trade_with_time) ? $stockinfo->last_trade_with_time : NULL,
@@ -537,6 +498,66 @@ function stockinfo_save($stockinfo) {
           'changed' => REQUEST_TIME,
         ))
         ->execute();
+    $stockinfo->vid = $vid;
+
+
+    if (!isset($stockinfo->is_new)) {
+      db_update('stockinfo')
+          ->condition('sid', $stockinfo->sid)
+          ->condition("last_trade_date", $stockinfo->last_trade_date, "!=")
+          ->fields(array(
+            'vid' => $stockinfo->vid,
+            'symbol' => $stockinfo->symbol,
+            'name' => isset($stockinfo->name) ? $stockinfo->name : NULL,
+            'last_trade_with_time' => isset($stockinfo->last_trade_with_time) ? $stockinfo->last_trade_with_time : NULL,
+            'last_trade_price_only' => isset($stockinfo->last_trade_price_only) ? $stockinfo->last_trade_price_only : NULL,
+            'last_trade_date' => isset($stockinfo->last_trade_date) ? $stockinfo->last_trade_date : NULL,
+            'last_trade_time' => isset($stockinfo->last_trade_time) ? $stockinfo->last_trade_time : NULL,
+            'change__percent_change' => isset($stockinfo->change__percent_change) ? $stockinfo->change__percent_change : NULL,
+            'change_' => isset($stockinfo->change_) ? $stockinfo->change_ : NULL,
+            'changein_percent' => isset($stockinfo->changein_percent) ? $stockinfo->changein_percent : NULL,
+            'volume' => isset($stockinfo->volume) ? $stockinfo->volume : NULL,
+            'average_daily_volume' => isset($stockinfo->average_daily_volume) ? $stockinfo->average_daily_volume : NULL,
+            'bid' => isset($stockinfo->bid) ? $stockinfo->bid : NULL,
+            'ask' => isset($stockinfo->ask) ? $stockinfo->ask : NULL,
+            'previous_close' => isset($stockinfo->previous_close) ? $stockinfo->previous_close : NULL,
+            'open' => isset($stockinfo->open) ? $stockinfo->open : NULL,
+            'days_range' => isset($stockinfo->days_range) ? $stockinfo->days_range : NULL,
+            'year_range' => isset($stockinfo->year_range) ? $stockinfo->year_range : NULL,
+            'change_from_year_low' => isset($stockinfo->change_from_year_low) ? $stockinfo->change_from_year_low : NULL,
+            'percent_change_from_year_low' => isset($stockinfo->percent_change_from_year_low) ? $stockinfo->percent_change_from_year_low : NULL,
+            'change_from_year_high' => isset($stockinfo->change_from_year_high) ? $stockinfo->change_from_year_high : NULL,
+            'percebt_change_from_year_high' => isset($stockinfo->percebt_change_from_year_high) ? $stockinfo->percebt_change_from_year_high : NULL,
+            'earnings_share' => isset($stockinfo->earnings_share) ? $stockinfo->earnings_share : NULL,
+            'p_e_ratio' => isset($stockinfo->p_e_ratio) ? $stockinfo->p_e_ratio : NULL,
+            'short_ratio' => isset($stockinfo->short_ratio) ? $stockinfo->short_ratio : NULL,
+            'dividend_pay_date' => isset($stockinfo->dividend_pay_date) ? $stockinfo->dividend_pay_date : NULL,
+            'ex_dividend_date' => isset($stockinfo->ex_dividend_date) ? $stockinfo->ex_dividend_date : NULL,
+            'dividend_yield' => isset($stockinfo->dividend_yield) ? $stockinfo->dividend_yield : NULL,
+            'market_capitalization' => isset($stockinfo->market_capitalization) ? $stockinfo->market_capitalization : NULL,
+            'oneyr_target_price' => isset($stockinfo->oneyr_target_price) ? $stockinfo->oneyr_target_price : NULL,
+            'e_p_s_estimate_current_year' => isset($stockinfo->e_p_s_estimate_current_year) ? $stockinfo->e_p_s_estimate_current_year : NULL,
+            'e_p_s_estimate_next_year' => isset($stockinfo->e_p_s_estimate_next_year) ? $stockinfo->e_p_s_estimate_next_year : NULL,
+            'e_p_s_estimate_next_quarter' => isset($stockinfo->e_p_s_estimate_next_quarter) ? $stockinfo->e_p_s_estimate_next_quarter : NULL,
+            'price_e_p_s_estimate_current_year' => isset($stockinfo->price_e_p_s_estimate_current_year) ? $stockinfo->price_e_p_s_estimate_current_year : NULL,
+            'price_e_p_s_estimate_next_year' => isset($stockinfo->price_e_p_s_estimate_next_year) ? $stockinfo->price_e_p_s_estimate_next_year : NULL,
+            'p_e_g_ratio' => isset($stockinfo->p_e_g_ratio) ? $stockinfo->p_e_g_ratio : NULL,
+            'book_value' => isset($stockinfo->book_value) ? $stockinfo->book_value : NULL,
+            'price_book' => isset($stockinfo->price_book) ? $stockinfo->price_book : NULL,
+            'price_sales' => isset($stockinfo->price_sales) ? $stockinfo->price_sales : NULL,
+            'e_b_i_t_d_a' => isset($stockinfo->ebitda) ? $stockinfo->ebitda : NULL,
+            'fiftyday_moving_average' => isset($stockinfo->fiftyday_moving_average) ? $stockinfo->fiftyday_moving_average : NULL,
+            'change_from_fiftyday_moving_average' => isset($stockinfo->change_from_fiftyday_moving_average) ? $stockinfo->change_from_fiftyday_moving_average : NULL,
+            'percent_change_from_fiftyday_moving_average' => isset($stockinfo->percent_change_from_fiftyday_moving_average) ? $stockinfo->percent_change_from_fiftyday_moving_average : NULL,
+            'two_hundredday_moving_average' => isset($stockinfo->two_hundredday_moving_average) ? $stockinfo->two_hundredday_moving_average : NULL,
+            'change_from_two_hundredday_moving_average' => isset($stockinfo->change_from_two_hundredday_moving_average) ? $stockinfo->change_from_two_hundredday_moving_average : NULL,
+            'percent_change_from_two_hundredday_moving_average' => isset($stockinfo->percent_change_from_two_hundredday_moving_average) ? $stockinfo->percent_change_from_two_hundredday_moving_average : NULL,
+            'days_value_change' => isset($stockinfo->days_value_change) ? $stockinfo->days_value_change : NULL,
+            'stock_exchange' => isset($stockinfo->stock_exchange) ? $stockinfo->stock_exchange : NULL,
+            'changed' => REQUEST_TIME,
+          ))
+          ->execute();
+    }
   }
 
   // let Field UI deal with the fields.
@@ -642,6 +663,9 @@ function stockinfo_fetch($symbols) {
   }
 }
 
+/**
+ * Adds the name to a stock item.
+ */
 function stockinfo_add_name($result, $name_array) {
   if ($name_array[0] == $result["symbol"]) {
     $result["Name"] = $name_array[1];
@@ -1051,6 +1075,9 @@ function stockinfo_entity_property_info() {
   return $info;
 }
 
+/**
+ * Creates the page view.
+ */
 function stockinfo_page_view($entity, $view_mode = 'full') {
   $entity_type = "stockinfo";
   $sid = db_query("SELECT sid FROM {stockinfo} WHERE symbol = :symbol", array("symbol" => $entity))->fetchField();
