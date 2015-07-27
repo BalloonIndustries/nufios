@@ -62,7 +62,7 @@ function stockinfo_historical_admin_settings() {
 /**
  * Deletes all historical stock data.
  */
-function stockinfo_historical_delete($form, &$form_state) {
+function stockinfo_historical_delete() {
   db_delete("{stockinfo_historical}")
       ->execute();
 }
