@@ -20,7 +20,7 @@ function stockinfo_menu() {
   );
   $items['admin/structure/stocks'] = array(
     'title' => 'Stock Page',
-    'description' => 'Temporary Page for Stocks',
+    'description' => 'Page for Stocks',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('stockinfo_admin_settings'),
     'access arguments' => array('administer site configuration'),
