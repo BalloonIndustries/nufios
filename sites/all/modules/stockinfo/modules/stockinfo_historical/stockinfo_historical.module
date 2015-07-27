@@ -87,7 +87,7 @@ function stockinfo_historical_process_stock($items) {
   $date = array();
 
   foreach ($items as $time) {
-    $sid = db_query("SELECT sid FROM stockinfo_historical WHERE symbol = :symbol AND date = :date", array("symbol" => $symbol, "date" => $time['date']))->fetchCol();
+    $sid = db_query("SELECT sid FROM stockinfo_historical WHERE symbol = :symbol AND date = :date", array("symbol" => $symbol, "date" => strtotime($time['date'])))->fetchCol();
     if (!isset($sid[0])) {
       $entity = entity_create("stockinfo_historical", array('type' => "stockinfo_historical"));
       foreach ($time as $key => $value) {
