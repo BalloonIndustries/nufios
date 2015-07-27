@@ -77,7 +77,7 @@ function stockinfo_historical_mapstock($chunk) {
 }
 
 /**
- * Implements hook_stockinfo_historical_save().
+ * Processes historical stock records.
  */
 function stockinfo_historical_process_stock($items) {
   $symbol = $items['symbol'];
