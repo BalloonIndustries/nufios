@@ -277,7 +277,7 @@ function _stockinfo_historical_parse_csv($data) {
   foreach ($csv[0] as &$map) {
     $map = strtolower($map);
     $map = str_replace(" ", "_", $map);
-    if ($map == "high" || $map == "low" || $map == "close" || $map == "adj_close") {
+    if ($map == "high" || $map == "low" || $map == "close" || $map == "adj_close" || $map == "volume") {
       $map = "stockinfo_historical_" . $map;
     }
     elseif ($map == "date") {
