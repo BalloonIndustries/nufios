@@ -174,7 +174,6 @@ function stockinfo_historical_entity_info() {
     'module' => 'stockinfo_historical',
     'views controller class' => 'EntityDefaultViewsController',
     'controller class' => 'EntityAPIController',
-    'access callback' => 'stock_info_access_callback',
     'fieldable' => TRUE,
   );
 
