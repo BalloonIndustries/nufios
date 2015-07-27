@@ -365,7 +365,7 @@ function stockinfo_historical_entity_property_info() {
   $info['stockinfo_historical']['properties']['date'] = array(
     'label' => t('Date'),
     'description' => t('The day this happened on.'),
-    'type' => 'integer',
+    'type' => 'date',
     'schema field' => 'date',
     'entity views field' => TRUE,
   );
