@@ -48,7 +48,7 @@ function stockinfo_historical_schema() {
         'type' => 'float',
         'not null' => FALSE,
         'default' => 0,),
-      'stockinfo_volume' => array(
+      'stockinfo_historical_volume' => array(
         'description' => 'Volume',
         'type' => 'float',
         'not null' => FALSE,

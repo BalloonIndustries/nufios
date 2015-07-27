@@ -335,3 +335,75 @@ function _stockinfo_historical_request_failure($results) {
   }
   return FALSE;
 }
+
+/**
+ * Implements hook_entity_property_info().
+ */
+function stockinfo_entity_property_info() {
+  $info = array();
+
+  $info['stockinfo_historical']['properties']['sid'] = array(
+    'label' => t('SID'),
+    'description' => t('The ID of the stockinfo historical row.'),
+    'type' => 'stockinfo_historical',
+    'schema field' => 'sid',
+    'entity views field' => TRUE,
+  );
+  $info['stockinfo_historical']['properties']['symbol'] = array(
+    'label' => t('Symbol'),
+    'description' => t('Symbol of the stock.'),
+    'type' => 'text',
+    'schema field' => 'symbol',
+    'entity views field' => TRUE,
+  );
+  $info['stockinfo_historical']['properties']['name'] = array(
+    'label' => t('Company Name'),
+    'description' => t('Name of the company.'),
+    'type' => 'text',
+    'schema field' => 'name',
+    'entity views field' => TRUE,
+  );
+  $info['stockinfo_historical']['properties']['date'] = array(
+    'label' => t('Date'),
+    'description' => t('The day this happened on.'),
+    'type' => 'integer',
+    'schema field' => 'date',
+    'entity views field' => TRUE,
+  );
+  $info['stockinfo_historical']['properties']['stockinfo_historical_high'] = array(
+    'label' => t('High'),
+    'description' => t('The high on this day.'),
+    'type' => 'decimal',
+    'schema field' => 'stockinfo_historical_high',
+    'entity views field' => TRUE,
+  );
+  $info['stockinfo_historical']['properties']['stockinfo_historical_low'] = array(
+    'label' => t('Low'),
+    'description' => t('The low on this day.'),
+    'type' => 'decimal',
+    'schema field' => 'stockinfo_historical_low',
+    'entity views field' => TRUE,
+  );
+  $info['stockinfo_historical']['properties']['stockinfo_historical_close'] = array(
+    'label' => t('Close'),
+    'description' => t('The close on this day.'),
+    'type' => 'decimal',
+    'schema field' => 'stockinfo_historical_close',
+    'entity views field' => TRUE,
+  );
+  $info['stockinfo_historical']['properties']['stockinfo_historical_volume'] = array(
+    'label' => t('Volume'),
+    'description' => t('The volume on this day.'),
+    'type' => 'decimal',
+    'schema field' => 'stockinfo_historical_volume',
+    'entity views field' => TRUE,
+  );
+  $info['stockinfo_historical']['properties']['stockinfo_historical_adj_close'] = array(
+    'label' => t('Adjusted Close'),
+    'description' => t('The adjusted close on this day.'),
+    'type' => 'decimal',
+    'schema field' => 'stockinfo_historical_adj_close',
+    'entity views field' => TRUE,
+  );
+  return $info;
+}
