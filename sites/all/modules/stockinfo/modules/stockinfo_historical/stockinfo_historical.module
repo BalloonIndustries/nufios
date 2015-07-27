@@ -339,7 +339,7 @@ function _stockinfo_historical_request_failure($results) {
 /**
  * Implements hook_entity_property_info().
  */
-function stockinfo_entity_property_info() {
+function stockinfo_historical_entity_property_info() {
   $info = array();
 
   $info['stockinfo_historical']['properties']['sid'] = array(
