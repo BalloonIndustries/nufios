@@ -682,7 +682,7 @@ function _stockinfo_request_failure($results) {
     case '304': // Not modified, nothing to do.
       return FALSE;
     default:
-      watchdog('stockinfo', 'Failed to retrieve stock quotes with error: %error', array('%error' => $results->error));
+      watchdog('Stockinfo', 'Failed to retrieve stock quotes with error: %error', array('%error' => $results->error));
       return TRUE;
   }
   return FALSE;
