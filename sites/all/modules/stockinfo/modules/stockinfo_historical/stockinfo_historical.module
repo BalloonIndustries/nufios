@@ -218,7 +218,7 @@ function stockinfo_historical_queue_it() {
   foreach ($symbols as $symbol) {
     $stock = stockinfo_historical_fetch($symbol);
     if ($stock == FALSE) {
-      watchdog("Stockinfo", "Error, symbol does not have data");
+      watchdog("Stockinfo Historical", "Error, symbol does not have data");
       return;
     }
     $queue->createItem($stock);
