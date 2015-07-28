@@ -347,7 +347,7 @@ function stockinfo_cron() {
     // Check if day is even correct, first.
     $day = date('l', time());
     $stockinfo_days = array_filter(array_values(variable_get("stockinfo_days", array('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'))));
-    if (array_search($day, $stockinfo_days)) {
+    if (in_array($day, $stockinfo_days)) {
       // Now check if the time is correct.
       $current_time = date("h:i a", time());
       $open = variable_get("stockinfo_market_open");
