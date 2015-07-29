@@ -446,6 +446,11 @@ function nufios_chart_alter(&$chart, $chart_id) {
     $chart['panel_pane_1__last_trade_price_only_2']['#data'] = array_reverse($chart['panel_pane_1__last_trade_price_only_2']['#data']);
     $chart['counter'] = 1;
   }
+else if ($chart_id == "stockinfo_historical__panel_pane_1" && $chart['counter'] != 1) {
+   $chart['xaxis']['#labels'] = array_reverse($chart['xaxis']['#labels']);
+    $chart['panel_pane_1__stockinfo_historical_close']['#data'] = array_reverse($chart['panel_pane_1__stockinfo_historical_close']['#data']);
+    $chart['counter'] = 1;
+}
 }
 
 /**
