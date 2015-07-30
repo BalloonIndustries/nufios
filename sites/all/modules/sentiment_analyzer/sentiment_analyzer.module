@@ -1,0 +1,146 @@
+<?php
+
+/**
+ * @file
+ * Creates a sentiment analyzer for Twitter & Reddit
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function sentiment_analyzer_menu() {
+  $items['admin/config/services/sentiment'] = array(
+    'title' => 'Sentiment Authorization',
+    'description' => t('Authorization page for sentiment services'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('sentiment_analyzer_admin'),
+    'access arguments' => array('administer site configuration'),
+  );
+    $items['admin/config/services/sentiment/test'] = array(
+    'title' => 'Sentiment Authorization Test',
+    'description' => t('Authorization page for sentiment services'),
+    'page callback' => 'sentiment_analyzer_twitter_pull',
+      'access arguments' => array('administer site configuration'),
+  );
+  return $items;
+}
+
+/**
+ * Creates an admin form for sentiment analyzer.
+ */
+function sentiment_analyzer_admin($form, &$form_state) {
+  $form['sentiment_analyzer_twitter_consumer_key'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Twitter Consumer Key'),
+    '#default_value' => variable_get('sentiment_analyzer_twitter_consumer_key'),
+    '#size' => 60,
+    '#maxlength' => 128,
+  );
+  $form['sentiment_analyzer_twitter_consumer_secret'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Twitter Consumer Secret'),
+    '#default_value' => variable_get('sentiment_analyzer_twitter_consumer_secret'),
+    '#size' => 60,
+    '#maxlength' => 128,
+  );
+  $form['sentiment_analyzer_twitter_token'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Twitter OAuth Token'),
+    '#default_value' => variable_get('sentiment_analyzer_twitter_token'),
+    '#size' => 60,
+    '#maxlength' => 128,
+  );
+  $form['sentiment_analyzer_twitter_token_secret'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Twitter OAuth Token Secret'),
+    '#default_value' => variable_get('sentiment_analyzer_twitter_token_secret'),
+    '#size' => 60,
+    '#maxlength' => 128,
+  );
+  return system_settings_form($form);
+}
+
+/**
+ * Pulls Twitter data for processing.
+ */
+function sentiment_analyzer_twitter_pull() {
+
+  $url = "https://api.twitter.com/1.1/search/tweets.jsonq=%23superbowl&result_type=recent";
+
+  $oauth_access_token = variable_get('sentiment_analyzer_twitter_token');
+  $oauth_access_token_secret = variable_get('sentiment_analyzer_twitter_token_secret');
+  $consumer_key = variable_get('sentiment_analyzer_twitter_consumer_key');
+  $consumer_secret = variable_get('sentiment_analyzer_twitter_consumer_secret');
+
+  $oauth = array('oauth_consumer_key' => $consumer_key,
+    //'oauth_nonce' => time(),
+    'oauth_nonce' => sentiment_analyzer_random_string(10),
+    'oauth_signature_method' => 'HMAC-SHA1',
+    'oauth_token' => $oauth_access_token,
+    'oauth_timestamp' => time(),
+    'oauth_version' => '1.0');
+  
+
+  $base_info = sentiment_analyzer_build_base_string($url, 'GET', $oauth);
+  watchdog("base info", "<pre>" . print_r($base_info, true) . "</pre>");
+  $composite_key = str_replace('%7E', '~', rawurlencode($consumer_secret)) . '&' . str_replace('%7E', '~', rawurlencode($oauth_access_token_secret));
+  $oauth_signature = base64_encode(hash_hmac('sha1', $base_info, $composite_key, true));
+  $oauth['oauth_signature'] = $oauth_signature;
+  
+  watchdog("oauth", "<pre>" . print_r($oauth, true) . "</pre>");
+
+  // Make requests
+  $header = array(sentiment_analyzer_build_authorization_header($oauth));
+  watchdog("header", "<pre>" . print_r($header, true) . "</pre>");
+  $options = array(CURLOPT_HTTPHEADER => $header,
+    //CURLOPT_POSTFIELDS => $postfields,
+    CURLOPT_HEADER => false,
+    CURLOPT_URL => $url,
+    //CURLOPT_RETURNTRANSFER => true,
+    //CURLOPT_SSL_VERIFYPEER => false
+    );
+
+  $feed = curl_init();
+  curl_setopt_array($feed, $options);
+  $json = curl_exec($feed);
+  curl_close($feed);
+
+  $twitter_data = json_decode($json);
+  
+  watchdog("twitter data", "<pre>" . print_r($twitter_data, true) . "</pre>");
+  return print_r("<pre>" . $twitter_data . "</pre>");
+  
+}
+
+function sentiment_analyzer_build_base_string($base_uri, $method, $params) {
+  $r = array();
+  ksort($params);
+  foreach ($params as $key => $value) {
+    $r[] = "$key=" . str_replace('%7E', '~', rawurlencode($value));
+  }
+  return $method . "&" . str_replace('%7E', '~', rawurlencode($base_uri)) . '&' . str_replace('%7E', '~', rawurlencode(implode('&', $r)));
+}
+
+function sentiment_analyzer_build_authorization_header($oauth) {
+  $r = 'Authorization: OAuth ';
+  $values = array();
+  foreach ($oauth as $key => $value)
+    $values[] = "$key=\"" . str_replace('%7E', '~', rawurlencode($value)) . "\"";
+  $r .= implode(', ', $values);
+  return $r;
+}
+
+/**
+ * Creates random string - intended for nonce
+ */
+function sentiment_analyzer_random_string($length = 32) {
+ $str = "";
+ $characters = array_merge(range('A','Z'), range('a','z'), range('0','9'));
+ $count = count($characters);
+ $max = $count - 1;
+ for ($i = 0; $i < $length; $i++) {
+  $rand = mt_rand(0, $max);
+  $str .= $characters[$rand];
+ }
+ return $str;
+}

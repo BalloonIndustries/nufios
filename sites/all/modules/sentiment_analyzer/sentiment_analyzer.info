@@ -1,0 +1,4 @@
+name = Sentiment Analyzer
+description = Sentiment analyzer from Twitter & Reddit
+package = sentiment
+core = 7.x
