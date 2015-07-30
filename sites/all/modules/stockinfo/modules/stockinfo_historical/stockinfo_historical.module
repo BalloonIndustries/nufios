@@ -84,34 +84,36 @@ function stockinfo_historical_process_stock($items) {
   unset($items['name']);
 
   foreach ($items as $item) {
-    $sid = db_query("SELECT sid FROM stockinfo_historical WHERE symbol = :symbol AND date = :date", array("symbol" => $item['Symbol'], "date" => strtotime($item['Date'])))->fetchCol();
-    if (!isset($sid[0])) {
-      $entity = entity_create("stockinfo_historical", array('type' => "stockinfo_historical"));
-      foreach ($item as $key => $value) {
-        $key = strtolower($key);
-        $key = str_replace(" ", "_", $key);
-        if ($key == "high" || $key == "low" || $key == "close" || $key == "adj_close" || $key == "volume") {
-          $key = "stockinfo_historical_" . $key;
+    if (is_array($item) || is_object($item)) {
+      $sid = db_query("SELECT sid FROM stockinfo_historical WHERE symbol = :symbol AND date = :date", array("symbol" => $item['Symbol'], "date" => strtotime($item['Date'])))->fetchCol();
+      if (!isset($sid[0])) {
+        $entity = entity_create("stockinfo_historical", array('type' => "stockinfo_historical"));
+        foreach ($item as $key => $value) {
+          $key = strtolower($key);
+          $key = str_replace(" ", "_", $key);
+          if ($key == "high" || $key == "low" || $key == "close" || $key == "adj_close" || $key == "volume") {
+            $key = "stockinfo_historical_" . $key;
+          }
+          elseif ($key == "date" || $key == "symbol") {
+            
+          }
+          else {
+            $key = "stockinfo_" . $key;
+          }
+          if (in_array($key, variable_get('stockinfo_reserved_mysql'))) {
+            $key = $key . "_";
+          }
+          if (isset($value)) {
+            $entity->$key = $value;
+          }
+          else {
+            $entity->$key = NULL;
+          }
         }
-        elseif ($key == "date" || $key == "symbol") {
-          
-        }
-        else {
-          $key = "stockinfo_" . $key;
-        }
-        if (in_array($key, variable_get('stockinfo_reserved_mysql'))) {
-          $key = $key . "_";
-        }
-        if (isset($value)) {
-          $entity->$key = $value;
-        }
-        else {
-          $entity->$key = NULL;
-        }
+        $entity->name = $name;
+        drupal_alter('stockinfo_historical_save', $entity);
+        entity_save("stockinfo_historical", $entity);
       }
-      $entity->name = $name;
-      drupal_alter('stockinfo_historical_save', $entity);
-      entity_save("stockinfo_historical", $entity);
     }
   }
 }
@@ -224,7 +226,7 @@ function stockinfo_historical_queue_it() {
   $queue = DrupalQueue::get('stockinfo_historical');
   foreach ($symbols as $symbol) {
     $stock = stockinfo_historical_fetch($symbol);
-    $stock_chunks = array_chunk($stock['data'], 200);
+    $stock_chunks = array_chunk($stock['data'], 50);
     foreach ($stock_chunks as $chunk) {
       $chunk['name'] = $stock["name"];
       $queue->createItem($chunk);
