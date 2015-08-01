@@ -52,8 +52,8 @@ function sentiment_analyzer_admin($form, &$form_state) {
 function sentiment_analyzer_twitter_pull() {
 
 $bearer_token = sentiment_analyzer_get_token();
-print "<pre>" . sentiment_analyzer_search_term($bearer_token, "superbowl") . "</pre>";
-watchdog("twitter data new", "<pre>" . print_r(drupal_json_decode(sentiment_analyzer_search_term($bearer_token, "test")), true) . "</pre>");
+print "<pre>" . sentiment_analyzer_search_term($bearer_token, "superbowl", "2015-06-12") . "</pre>";
+watchdog("twitter data new", "<pre>" . print_r(drupal_json_decode(sentiment_analyzer_search_term($bearer_token, "test", "2015-06-12")), true) . "</pre>");
 sentiment_analyzer_invalidate_token($bearer_token);
   
 }
