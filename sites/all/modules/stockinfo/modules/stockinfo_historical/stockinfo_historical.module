@@ -55,6 +55,13 @@ function stockinfo_historical_admin_settings() {
     '#submit' => array('stockinfo_historical_delete'),
   );
 
+  $form['stockinfo_historical_limit_by_timestamp'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Limit by Timestamp.'),
+    '#description' => t('If this is selected, limits the data collection to the latest timestamp for a given symbol if it is newer than the From Date. Recommended to prevent large amounts of queue items.'),
+    '#default_value' => variable_get('stockinfo_historical_limit_by_timestamp', 1),
+  );
+
   $form['#theme'] = 'system_settings_form';
   return $form;
 }
@@ -226,7 +233,7 @@ function stockinfo_historical_queue_it() {
   $queue = DrupalQueue::get('stockinfo_historical');
   foreach ($symbols as $symbol) {
     $stock = stockinfo_historical_fetch($symbol);
-    $stock_chunks = array_chunk($stock['data'], 50);
+    $stock_chunks = array_chunk($stock['data'], 5);
     foreach ($stock_chunks as $chunk) {
       $chunk['name'] = $stock["name"];
       $queue->createItem($chunk);
@@ -265,24 +272,34 @@ function stockinfo_historical_process_data($url, $result) {
  */
 function stockinfo_historical_fetch($symbol) {
   $date = variable_get("stockinfo_historical_from_date", variable_get("stockinfo_historical_from_date_default"));
-  $date['month'] = $date['month'] - 1;
+  $limit_by = variable_get('stockinfo_historical_limit_by_timestamp', 1);
+  $historical_timestamp = strtotime($date['year'] . '-' . $date['month'] . '-' . $date['day']);
+  $latest_timestamp = db_query("SELECT date from stockinfo_historical WHERE symbol = :symbol ORDER BY date DESC LIMIT 1", array("symbol" => $symbol))->fetchField();
   $result = array(
     "data" => array(),
   );
-  $year = $date['year'];
-  $month = $date['month'];
-  $day = $date['day'];
-  if ($date['year'] < (date("Y") - 1)) {
+  if ($limit_by == 0 && ($latest_timestamp < $historical_timestamp || !isset($latest_timestamp))) {
+    $date['month'] = $date['month'] - 1;
+    $year = $date['year'];
+    $month = $date['month'];
+    $day = $date['day'];
+  }
+  else {
+    $year = date("Y", $latest_timestamp);
+    $month = date("m", $latest_timestamp);
+    $day = date("d", $latest_timestamp);
+  }
+  if ($year < (date("Y") - 1)) {
     $date_catchup = date("Y");
-    while ($date_catchup >= $date['year']) {
+    while ($date_catchup >= $year) {
       if ($date_catchup == date("Y")) {
         $date_end = date("Y") . "-" . date("m") . "-" . date("d");
       }
       else {
         $date_end = $date_catchup . "-12-31";
       }
-      if ($date_catchup == $date['year']) {
-        $date_origin = $date['year'] . "-" . $date['month'] . "-" . $date['day'];
+      if ($date_catchup == $year) {
+        $date_origin = $year . "-" . $month . "-" . $day;
       }
       else {
         $date_origin = $date_catchup . "-01-01";
