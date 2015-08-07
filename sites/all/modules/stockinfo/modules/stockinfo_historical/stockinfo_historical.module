@@ -278,7 +278,7 @@ function stockinfo_historical_fetch($symbol) {
   $result = array(
     "data" => array(),
   );
-  if (empty($latest_timestamp) || ($limit_by == 0 && $latest_timestamp < $historical_timestamp)) {
+  if (isset($latest_timestamp) || ($limit_by == 0 && $latest_timestamp < $historical_timestamp)) {
     $date['month'] = $date['month'] - 1;
     $year = $date['year'];
     $month = $date['month'];
