@@ -469,3 +469,14 @@ function sentiment_analyzer_value_save($mood, $date = NULL) {
 function sentiment_analyzer_cron() {
   sentiment_analyzer_twitter_pull();
 }
+
+/**
+ * Implements hook_views_api().
+ */
+function sentiment_analyzer_views_api()
+{
+    return array(
+        'api' => 3,
+        'path' => drupal_get_path('module', 'sentiment_analyzer'),
+    );
+}
