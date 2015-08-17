@@ -14,7 +14,7 @@ function sentiment_analyzer_views_data() {
     'help' => t('Contains Sentiment Analyzer data.'),
   );
 
-  $data['sentiment_analyzer']['id'] = array(
+  $data['sentiment_analyzer']['aid'] = array(
     'title' => t('AID'),
     'help' => t('The Analyzer ID.'),
     'field' => array(
