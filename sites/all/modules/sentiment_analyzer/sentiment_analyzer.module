@@ -10,19 +10,73 @@
  */
 function sentiment_analyzer_menu() {
   $items['admin/config/services/sentiment'] = array(
-    'title' => 'Sentiment Authorization',
+    'title' => 'Sentiment Analyzer Authorization',
     'description' => t('Authorization page for sentiment services'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('sentiment_analyzer_admin'),
     'access arguments' => array('administer site configuration'),
   );
+  $items['admin/config/services/sentiment/data'] = array(
+    'title' => 'Sentiment Analyzer Data',
+    'description' => t('Authorization page for sentiment services'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('sentiment_analyzer_data_collection'),
+    'access arguments' => array('administer site configuration'),
+  );
   $items['admin/config/services/sentiment/test'] = array(
-    'title' => 'Sentiment Authorization Test',
+    'title' => 'Sentiment Analyzer Test',
     'description' => t('Authorization page for sentiment services'),
     'page callback' => 'sentiment_analyzer_twitter_pull',
     'access arguments' => array('administer site configuration'),
   );
   return $items;
+}
+
+/**
+ * Creates admin page for data collection.
+ */
+function sentiment_analyzer_data_collection() {
+  $form['sentiment_analyzer_from_date'] = array(
+    '#type' => 'date',
+    '#title' => t('From Date'),
+    '#date_year_range' => '-1:+0',
+    '#default_value' => variable_get("sentiment_analyzer_from_date", strtotime('today midnight')),
+  );
+  $form['sentiment_analyzer_process_button'] = array(
+    '#type' => 'submit',
+    '#value' => t('Process Historical Data'),
+    '#description' => t('Process from the date specified, collecting all the data.'),
+    '#submit' => array('system_settings_form_submit', 'sentiment_analyzer_historical_data'),
+  );
+  $form['sentiment_analyzer_delete_button'] = array(
+    '#type' => 'submit',
+    '#value' => t('Delete Old Values'),
+    '#description' => t('Delete all values - useful for reimporting data'),
+    '#submit' => array('sentiment_analyzer_delete'),
+  );
+  $form['#theme'] = 'system_settings_form';
+  return $form;
+}
+
+/**
+ * Deletes Sentiment Analyzer Data.
+ */
+function sentiment_analyzer_delete() {
+  db_delete("sentiment_analyzer")
+      ->execute();
+}
+
+/**
+ * Processes historical data.
+ */
+function sentiment_analyzer_historical_data() {
+  $init_from = variable_get('sentiment_analyzer_from_date');
+  $from_date = strtotime($init_from['year'] . '/' . $init_from['month'] . '/' . $init_from['day']);
+  for ($i = $from_date; $i <= time() - 86400; $i = $i + 86400) {
+    $since = date('Y-m-d', $i);
+    $until = date('Y-m-d', $i + 86400);
+    sentiment_analyzer_twitter_pull($since, $until);
+  }
 }
 
 /**
@@ -53,7 +107,61 @@ function sentiment_analyzer_admin($form, &$form_state) {
     '#type' => 'textarea',
     '#title' => t('Twitter Elated Words'),
     '#default_value' => variable_get('sentiment_analyzer_twitter_elated_words'),
-    '#description' => t('Words in this category are checked against downloaded Tweets'),
+    '#description' => t('Words in the elated category are checked against downloaded Tweets'),
+  );
+  $form['sentiment_analyzer_twitter_depressed_words'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Twitter Depressed Words'),
+    '#default_value' => variable_get('sentiment_analyzer_twitter_depressed_words'),
+    '#description' => t('Words in the depressed category are checked against downloaded Tweets'),
+  );
+  $form['sentiment_analyzer_twitter_composed_words'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Twitter Composed Words'),
+    '#default_value' => variable_get('sentiment_analyzer_twitter_composed_words'),
+    '#description' => t('Words in the composed category are checked against downloaded Tweets'),
+  );
+  $form['sentiment_analyzer_twitter_anxious_words'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Twitter Anxious Words'),
+    '#default_value' => variable_get('sentiment_analyzer_twitter_anxious_words'),
+    '#description' => t('Words in the anxious category are checked against downloaded Tweets'),
+  );
+  $form['sentiment_analyzer_twitter_agreeable_words'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Twitter Agreeable Words'),
+    '#default_value' => variable_get('sentiment_analyzer_twitter_agreeable_words'),
+    '#description' => t('Words in the agreeable category are checked against downloaded Tweets'),
+  );
+  $form['sentiment_analyzer_twitter_hostile_words'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Twitter Hostile Words'),
+    '#default_value' => variable_get('sentiment_analyzer_twitter_hostile_words'),
+    '#description' => t('Words in the hostile category are checked against downloaded Tweets'),
+  );
+  $form['sentiment_analyzer_twitter_energetic_words'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Twitter Energetic Words'),
+    '#default_value' => variable_get('sentiment_analyzer_twitter_energetic_words'),
+    '#description' => t('Words in the energetic category are checked against downloaded Tweets'),
+  );
+  $form['sentiment_analyzer_twitter_tired_words'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Twitter Tired Words'),
+    '#default_value' => variable_get('sentiment_analyzer_twitter_tired_words'),
+    '#description' => t('Words in the tired category are checked against downloaded Tweets'),
+  );
+  $form['sentiment_analyzer_twitter_clearheaded_words'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Twitter Clearheaded Words'),
+    '#default_value' => variable_get('sentiment_analyzer_twitter_clearheaded_words'),
+    '#description' => t('Words in the clearheaded category are checked against downloaded Tweets'),
+  );
+  $form['sentiment_analyzer_twitter_confused_words'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Twitter Confused Words'),
+    '#default_value' => variable_get('sentiment_analyzer_twitter_confused_words'),
+    '#description' => t('Words in the confused category are checked against downloaded Tweets'),
   );
   return system_settings_form($form);
 }
@@ -76,35 +184,128 @@ function sentiment_analyzer_twitter_url_format($words) {
 /**
  * Pulls Twitter data for processing.
  */
-function sentiment_analyzer_twitter_pull() {
-
+function sentiment_analyzer_twitter_pull($since = NULL, $until = NULL) {
+  if ($since == NULL) {
+    $since = date("Y") . "-" . date("m") . "-" . date("d");
+  }
   $bearer_token = sentiment_analyzer_get_token();
-  watchdog("bearer token", "<pre>" . print_r($bearer_token, true) . "</pre>");
+  //watchdog("bearer token", "<pre>" . print_r($bearer_token, true) . "</pre>");
   $twitter_words = variable_get("sentiment_analyzer_twitter_words");
   $twitter_array = explode(",", $twitter_words);
-  watchdog("twitter array", "<pre>" . print_r($twitter_array, true) . "</pre>");
+  //watchdog("twitter array", "<pre>" . print_r($twitter_array, true) . "</pre>");
   $chunks = array_chunk($twitter_array, 30);
-  watchdog("the chunks", "<pre>" . print_r($chunks, true) . "</pre>");
+  //watchdog("the chunks", "<pre>" . print_r($chunks, true) . "</pre>");
+  // Look into fixing chunk later on. Currently exists but unenabled.
+  $words_count = array();
   foreach ($chunks as $chunk) {
     $twitter_url = sentiment_analyzer_twitter_url_format($chunk);
-    watchdog("twitter url", "<pre>" . print_r($twitter_url, true) . "</pre>");
+    //watchdog("twitter url", "<pre>" . print_r($twitter_url, true) . "</pre>");
     if (!empty($twitter_url)) {
-      watchdog("json decoded twitter words", "<pre>" . print_r("<pre>" . sentiment_analyzer_search_term($bearer_token, $twitter_url, "mixed", 99, "2015-06-12") . "</pre>", true) . "</pre>");
-      print "<pre>" . sentiment_analyzer_search_term($bearer_token, $twitter_url, "2015-06-12") . "</pre>";
-      $result = drupal_json_decode(sentiment_analyzer_search_term($bearer_token, $twitter_url, "2015-06-12"));
-      $statuses = $result['statuses'];
-      foreach ($statuses as $status) {
-        $elated = explode(",", variable_get("sentiment_analyzer_twitter_elated_words"));
-        // Write another function here
-        foreach ($elated as $e) {
-          if (stripos($status['text'], $e) !== false) {
-            watchdog("status text", "<pre>" . print_r(preg_replace('/[^(\x20-\x7F)]*/', '', $status['text']), true) . "</pre>");
-          }
+      // Refactor so that there aren't a billion variables
+      $page = 1;
+      // Maybe make pages optional
+      while ($page <= 15) {
+        //watchdog("page", "<pre>" . print_r($page, true) . "</pre>");
+        $max_id = variable_get("sentiment_analyzer_twitter_max_id", NULL);
+        //watchdog("max_id iter", "<pre>" . print_r($max_id, true) . "</pre>");
+        if ($max_id != 0 && isset($max_id)) {
+          $max_id = number_format($max_id - 1, 0, ".", "");
+        }
+        //watchdog("max id string thing", "<pre>" . print_r($max_id, true) . "</pre>");
+        $result = drupal_json_decode(sentiment_analyzer_search_term($bearer_token, $twitter_url, "recent", '99', $since, 'en', $max_id, $since, $until));
+        //watchdog("nsearch metad data id", "<pre>" . print_r($result['search_metadata']['max_id_str'], true) . "</pre>");
+        $statuses = $result['statuses'];
+        foreach ($statuses as $status) {
+          $words_count = sentiment_analzyer_total_count($status, $words_count);
+        }
+        //watchdog("status id outside", "<pre>" . print_r($status['id_str'], true) . "</pre>");
+        variable_set("sentiment_analyzer_twitter_max_id", $status['id_str']);
+        $page++;
+        //watchdog("page", "<pre>" . print_r($page, true) . "</pre>");
+      }
+      variable_set("sentiment_analyzer_twitter_max_id", 0);
+    }
+    $mood_score = sentiment_analyzer_by_dimension($words_count);
+    sentiment_analyzer_value_save($mood_score, $until);
+    watchdog("mood score", "<pre>" . print_r($mood_score, true) . "</pre>");
+    watchdog("words count final", "<pre>" . print_r($words_count, true) . "</pre>");
+  }
+  //sentiment_analyzer_invalidate_token($bearer_token);
+}
+
+function sentiment_analzyer_total_count($status, $words_count) {
+  // Can we get around hard-coding this?
+  $moods = sentiment_analyzer_get_moods();
+  // No duplicate setting instead of just creating separate wordlist of all
+  $no_dup = array();
+  foreach ($moods as $mood) {
+    $emotions = explode(",", variable_get("sentiment_analyzer_twitter_" . $mood . "_words"));
+    //watchdog("status id", "<pre>" . print_r($status['id_str'], true) . "</pre>");
+    // Write another function here
+    foreach ($emotions as $emotion) {
+      // Remove HTTPS, HTTP and WWW for spam
+      if (!in_array($emotion, $no_dup) && stripos($status['text'], $emotion) !== false) {
+        $no_dup[] = $emotion;
+        $word_count = substr_count($status['text'], $emotion);
+        //$words_count = $words_count + $word_count;
+
+        if (isset($words_count[$emotion])) {
+          $words_count[$emotion] = $words_count[$emotion] + $word_count;
+        }
+        else {
+          $words_count[$emotion] = $word_count;
+        }
+        //watchdog("status text", "<pre>" . print_r(preg_replace('/[^(\x20-\x7F)]*/', '', $status['text']), true) . "</pre>");
+        //watchdog("name", "<pre>" . print_r($emotion, true) . "</pre>");
+        //watchdog("screen name", "<pre>" . print_r($status['user']['screen_name'], true) . "</pre>");
+        //watchdog("words count", "<pre>" . print_r($words_count, true) . "</pre>");
+      }
+    }
+  }
+  return $words_count;
+}
+
+function sentiment_analyzer_get_moods() {
+  return array(
+    "elated",
+    "depressed",
+    "confused",
+    "clearheaded",
+    "anxious",
+    "composed",
+    "tired",
+    "energetic",
+    "hostile",
+    "agreeable",
+  );
+}
+
+/**
+ * Daily score computation re Stock Prediction Using Twitter Sentiment Analysis
+ */
+function sentiment_analyzer_by_dimension($words_count) {
+  $moods = sentiment_analyzer_get_moods();
+  $total_count = array_sum($words_count);
+  $mood_score = array();
+  foreach ($moods as $mood) {
+    $emotions = explode(",", variable_get("sentiment_analyzer_twitter_" . $mood . "_words"));
+    foreach ($emotions as $emotion) {
+      if (!empty($words_count[$emotion])) {
+        $emotion_count = $words_count[$emotion];
+        //watchdog("emotion count", "<pre>" . print_r($emotion_count, true) . "</pre>");
+        //watchdog("total count", "<pre>" . print_r($total_count, true) . "</pre>");
+        $score = $emotion_count / $total_count;
+        //watchdog("score", "<pre>" . print_r($score, true) . "</pre>");
+        if (isset($mood_score[$mood])) {
+          $mood_score[$mood] = $mood_score[$mood] + $score;
+        }
+        else {
+          $mood_score[$mood] = $score;
         }
       }
     }
   }
-  sentiment_analyzer_invalidate_token($bearer_token);
+  return $mood_score;
 }
 
 /**
@@ -138,6 +339,7 @@ function sentiment_analyzer_get_token() {
   $header = curl_setopt($ch, CURLOPT_HEADER, 1); // send custom headers
   $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
   $retrievedhtml = curl_exec($ch); // execute the curl
+  //watchdog("rethtml", "<pre>" . print_r($retrievedhtml, true) . "</pre>");
   curl_close($ch); // close the curl
   $output = explode("\n", $retrievedhtml);
   $bearer_token = '';
@@ -192,7 +394,7 @@ function sentiment_analyzer_invalidate_token($bearer_token) {
  * Basic Search of the Search API
  * Based on https://dev.twitter.com/docs/api/1.1/get/search/tweets
  */
-function sentiment_analyzer_search_term($bearer_token, $q, $result_type = 'mixed', $count = '15', $since = NULL, $lang = 'en') {
+function sentiment_analyzer_search_term($bearer_token, $q, $result_type = 'mixed', $count = '15', $since = NULL, $lang = 'en', $max_id = NULL, $since = NULL, $until = NULL) {
   $url = "https://api.twitter.com/1.1/search/tweets.json"; // base url
   //$q = urlencode(trim($query)); // query term
   $formed_url = '?q=' . $q; // fully formed url
@@ -205,7 +407,13 @@ function sentiment_analyzer_search_term($bearer_token, $q, $result_type = 'mixed
   if ($since != NULL) {
     $formed_url = $formed_url . "&since=" . $since;
   }
+  if ($until != NULL) {
+    $formed_url = $formed_url . "&until=" . $until;
+  }
   $formed_url = $formed_url . "&lang=" . $lang;
+  if (!empty($max_id)) {
+    $formed_url = $formed_url . "&max_id=" . $max_id;
+  }
   $formed_url = $formed_url . '&include_entities=true'; // makes sure the entities are included, note @mentions are not included see documentation
   // Maybe include an argument to allow arbitrary arguments
   watchdog("formed url", "<pre>" . print_r($formed_url, true) . "</pre>");
@@ -222,4 +430,42 @@ function sentiment_analyzer_search_term($bearer_token, $q, $result_type = 'mixed
   $retrievedhtml = curl_exec($ch); // execute the curl
   curl_close($ch); // close the curl
   return $retrievedhtml;
+}
+
+/**
+ * Saves the relevant values into a database table.
+ */
+function sentiment_analyzer_value_save($mood, $date = NULL) {
+  watchdog("mood before end", "<pre>" . print_r($mood, true) . "</pre>");
+  if(!empty($mood)) {
+  if($date == NULL) {
+    $date = strtotime("today midnight");
+  }
+  else {
+    $date = strtotime($date);
+  }
+  db_insert("sentiment_analyzer")
+      ->fields(array(
+        'type' => 'feeling', // Currently hard-coded, change later
+        'elated' => $mood['elated'],
+        'depressed' => $mood['depressed'],
+        'confused' => $mood['confused'],
+        'clearheaded' => $mood['clearheaded'],
+        'anxious' => $mood['anxious'],
+        'composed' => $mood['composed'],
+        'tired' => $mood['tired'],
+        'energetic' => $mood['energetic'],
+        'hostile' => $mood['hostile'],
+        'agreeable' => $mood['agreeable'],
+        'date' => $date,
+          )
+      )->execute();
+  }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function sentiment_analyzer_cron() {
+  sentiment_analyzer_twitter_pull();
 }

@@ -1,0 +1,105 @@
+<?php
+
+/**
+ * @file
+ * Contains the schema, install, and uninstall functions for Sentiment Analyzer.
+ */
+/*
+ * Implements hook_schema().
+ */
+function sentiment_analyzer_schema() {
+  $schema['sentiment_analyzer'] = array(
+    'description' => 'Data for sentiment analyzing',
+    'fields' => array(
+      'aid' => array(
+        'description' => 'Analyzer ID',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => FALSE),
+      'type' => array(
+        'description' => 'Type',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',),
+      'elated' => array(
+        'description' => 'Points relating to the elated emotion',
+        'type' => 'float',
+        'unsigned' => TRUE,
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'depressed' => array(
+        'description' => 'Points relating to the depressed emotion',
+        'type' => 'float',
+        'unsigned' => TRUE,
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'confused' => array(
+        'description' => 'Points relating to the confused emotion',
+        'type' => 'float',
+        'unsigned' => TRUE,
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'clearheaded' => array(
+        'description' => 'Points relating to the clearheaded emotion',
+        'type' => 'float',
+        'unsigned' => TRUE,
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'anxious' => array(
+        'description' => 'Points relating to the anxious emotion',
+        'type' => 'float',
+        'unsigned' => TRUE,
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'composed' => array(
+        'description' => 'Points relating to the composed emotion',
+        'type' => 'float',
+        'unsigned' => TRUE,
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'tired' => array(
+        'description' => 'Points relating to the tired emotion',
+        'type' => 'float',
+        'unsigned' => TRUE,
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'energetic' => array(
+        'description' => 'Points relating to the energetic emotion',
+        'type' => 'float',
+        'unsigned' => TRUE,
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'hostile' => array(
+        'description' => 'Points relating to the hostile emotion',
+        'type' => 'float',
+        'unsigned' => TRUE,
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'agreeable' => array(
+        'description' => 'Points relating to the agreeable emotion',
+        'type' => 'float',
+        'unsigned' => TRUE,
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'date' => array(
+        'description' => 'Date',
+        'type' => 'int',
+        'length' => 11,
+        'not null' => TRUE),
+      ),
+      'primary key' => array('aid'),
+  );
+
+  return $schema;
+}
