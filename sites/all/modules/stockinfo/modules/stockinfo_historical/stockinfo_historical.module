@@ -233,10 +233,12 @@ function stockinfo_historical_queue_it() {
   $queue = DrupalQueue::get('stockinfo_historical');
   foreach ($symbols as $symbol) {
     $stock = stockinfo_historical_fetch($symbol);
-    $stock_chunks = array_chunk($stock['data'], 5);
-    foreach ($stock_chunks as $chunk) {
-      $chunk['name'] = $stock["name"];
-      $queue->createItem($chunk);
+    if (isset($stock)) {
+      $stock_chunks = array_chunk($stock['data'], 5);
+      foreach ($stock_chunks as $chunk) {
+        $chunk['name'] = $stock["name"];
+        $queue->createItem($chunk);
+      }
     }
   }
 }
