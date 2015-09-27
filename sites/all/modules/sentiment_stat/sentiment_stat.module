@@ -31,10 +31,9 @@ function sentiment_stat_calculate() {
     $mean = $mean_init / count($sa);
     watchdog("sa", "<pre>" . print_r($sa, true) . "</pre>");
     watchdog("mean", "<pre>" . print_r($mean, true) . "</pre>");
-    $variance_array = array();
     $variance_init = 0;
     foreach($sa as $number) {
-        $variance_init = $variance_init + ($number - $mean)^2;
+        $variance_init = $variance_init + pow(($number - $mean), 2);
     }
     $variance = $variance_init / count($sa);
     watchdog("variance", "<pre>" . print_r($variance, true) . "</pre>");
