@@ -20,9 +20,15 @@ function sentiment_stat_menu() {
 
 function sentiment_stat_calculate() {
     $field = "elated";
+    $avg_init = 0;
     $sa = db_select("sentiment_analyzer", "sa")
     ->fields("sa", array($field))
     ->execute()
-    ->fetchAll();
+    ->fetchCol();
+    foreach($sa as $number) {
+        $avg_init = $avg_init + $number;
+    }
+    $avg = $avg_init / count($sa);
     watchdog("sa", "<pre>" . print_r($sa, true) . "</pre>");
+    watchdog("avg", "<pre>" . print_r($avg, true) . "</pre>");
 }
