@@ -7,7 +7,7 @@
 /*
  * Implements hook_schema().
  */
-function sentiment_analyzer_schema() {
+function sentiment_stat_schema() {
   $schema['sentiment_stat'] = array(
     'description' => 'Data for sentiment analyzing',
     'fields' => array(
