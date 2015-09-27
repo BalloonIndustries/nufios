@@ -39,4 +39,6 @@ function sentiment_stat_calculate() {
     watchdog("variance", "<pre>" . print_r($variance, true) . "</pre>");
     $std = sqrt($variance);
     watchdog("std", "<pre>" . print_r($std, true) . "</pre>");
+    $zscore = $mean / $std;
+    watchdog("zscore", "<pre>" . print_r($zscore, true) . "</pre>");
 }
