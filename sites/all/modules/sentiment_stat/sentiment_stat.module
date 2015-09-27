@@ -8,7 +8,7 @@ function sentiment_stat_menu() {
       $items['admin/config/services/stat'] = array(
     'title' => 'Sentiment Stat Test',
     'description' => t('Test stat generation'),
-    'page callback' => 'sentiment_stat_calculate',
+    'page callback' => array('sentiment_stat_calculate'),
     'access arguments' => array('administer site configuration'),
   );
         return $items;
