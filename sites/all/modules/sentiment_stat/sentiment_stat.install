@@ -1,0 +1,69 @@
+<?php
+
+/**
+ * @file
+ * Contains the schema, install, and uninstall functions for Sentiment Stat.
+ */
+/*
+ * Implements hook_schema().
+ */
+function sentiment_analyzer_schema() {
+  $schema['sentiment_stat'] = array(
+    'description' => 'Data for sentiment analyzing',
+    'fields' => array(
+      'sid' => array(
+        'description' => 'Statistic ID',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => FALSE),
+      'type' => array(
+        'description' => 'Type',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',),
+              'category' => array(
+        'description' => 'category',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',),
+                      'mean' => array(
+        'description' => 'Mean',
+        'type' => 'float',
+        'unsigned' => TRUE,
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+        'std' => array(
+        'description' => 'Standard Deviation',
+        'type' => 'float',
+        'unsigned' => TRUE,
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+                      'variance' => array(
+        'description' => 'Variance',
+        'type' => 'float',
+        'unsigned' => TRUE,
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+              'zscore' => array(
+        'description' => 'Z-score',
+        'type' => 'float',
+        'unsigned' => TRUE,
+        'default' => 0,
+        'not null' => TRUE,
+      ),
+      'date' => array(
+        'description' => 'Date',
+        'type' => 'int',
+        'length' => 11,
+        'not null' => TRUE),
+      ),
+      'primary key' => array('aid'),
+  );
+
+  return $schema;
+}

@@ -1,0 +1,4 @@
+name = Sentiment Statistics
+description = Sentiment Statistics
+package = sentiment
+core = 7.x
