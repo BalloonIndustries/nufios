@@ -19,7 +19,7 @@ function sentiment_stat_menu() {
  */
 
 function sentiment_stat_calculate() {
-    $field = "elated"
+    $field = "elated";
     $sa = db_select("sentiment_analyzer", "sa")
     ->fields("sa", array($field))
     ->fetchAll();
