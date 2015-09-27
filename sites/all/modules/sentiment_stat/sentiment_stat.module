@@ -22,6 +22,7 @@ function sentiment_stat_calculate() {
     $field = "elated";
     $sa = db_select("sentiment_analyzer", "sa")
     ->fields("sa", array($field))
+    ->execute()
     ->fetchAll();
     watchdog("sa", "<pre>" . print_r($sa, true) . "</pre>");
 }
