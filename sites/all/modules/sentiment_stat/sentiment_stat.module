@@ -4,6 +4,16 @@
  * @file calculates statistics
  */
 
+function sentiment_stat_menu() {
+      $items['admin/config/services/stat'] = array(
+    'title' => 'Sentiment Stat Test',
+    'description' => t('Test stat generation'),
+    'page callback' => 'sentiment_stat_calculate',
+    'access arguments' => array('administer site configuration'),
+  );
+        return $items;
+}
+
 /**
  * 
  */
@@ -12,4 +22,5 @@ function sentiment_stat_calculate() {
     $sa = db_select("sentiment_analyzer", "sa")
     ->fields("sa", array($field))
     ->fetchAll();
+    watchdog("sa", "<pre>" . print_r($sa, true) . "</pre>");
 }
