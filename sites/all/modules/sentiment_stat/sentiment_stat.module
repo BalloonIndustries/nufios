@@ -20,15 +20,24 @@ function sentiment_stat_menu() {
 
 function sentiment_stat_calculate() {
     $field = "elated";
-    $avg_init = 0;
+    $mean_init = 0;
     $sa = db_select("sentiment_analyzer", "sa")
     ->fields("sa", array($field))
     ->execute()
     ->fetchCol();
     foreach($sa as $number) {
-        $avg_init = $avg_init + $number;
+        $mean_init = $mean_init + $number;
     }
-    $avg = $avg_init / count($sa);
+    $mean = $mean_init / count($sa);
     watchdog("sa", "<pre>" . print_r($sa, true) . "</pre>");
-    watchdog("avg", "<pre>" . print_r($avg, true) . "</pre>");
+    watchdog("mean", "<pre>" . print_r($mean, true) . "</pre>");
+    $variance_array = array();
+    $variance_init = 0;
+    foreach($sa as $number) {
+        $variance_init = $variance_init + ($number - $mean)^2;
+    }
+    $variance = $variance_init / count($sa);
+    watchdog("variance", "<pre>" . print_r($variance, true) . "</pre>");
+    $std = sqrt($variance);
+    watchdog("std", "<pre>" . print_r($std, true) . "</pre>");
 }
