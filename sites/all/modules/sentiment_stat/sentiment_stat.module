@@ -70,8 +70,8 @@ function sentiment_stat_calculate() {
                     "variance" => $variance,
                     "zscore" => $zscore,
                     "date" => $number->date,
-                    ),
-                )->execute;
+                    )
+                )->execute();
     }
     watchdog("zscore", "<pre>" . print_r($zscore_array, true) . "</pre>");
     }
