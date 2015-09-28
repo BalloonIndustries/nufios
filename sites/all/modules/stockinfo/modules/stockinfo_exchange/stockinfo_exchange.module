@@ -197,6 +197,7 @@ return array(
 function stockinfo_exchange_fetch_data($batch) {
   $exchanges = stockinfo_exchange_exchanges();
   foreach ($exchanges as $exchange) {
+      watchdog("exchange", "<pre>" . print_r($exchange, true) . "</pre>");
     $data = stockinfo_exchange_fetch($exchange);
     watchdog("stockinfo exchange fetch data", "<pre>" . print_r($data, true) . "</pre>");
     if (isset($data)) {
