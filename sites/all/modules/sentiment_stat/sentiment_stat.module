@@ -31,7 +31,7 @@ function sentiment_stat_values() {
  */
 
 function sentiment_stat_calculate() {
-      db_delete("{sentiment_stats}")
+      db_delete("{sentiment_stat}")
       ->execute();
     $tables = sentiment_stat_values();
     foreach ($tables as $table => $fields) {
