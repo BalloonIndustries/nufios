@@ -102,10 +102,10 @@ function stockinfo_exchange_process_data($url) {
   $results = drupal_http_request($url);
   watchdog("results", "<pre>" . print_r($results, true) . "</pre>");
   $data = drupal_json_decode($results->data);
-  if (is_array($data['query']['results']['quote'])) {
+  /*if (is_array($data['query']['results']['quote'])) {
     $result['data'] = array_merge($result['data'], $data['query']['results']['quote']);
-  }
-  return $result;
+  }*/
+  return $data['query']['results']['quote'];
 }
 
 /**
