@@ -208,7 +208,7 @@ function stockinfo_exchange_fetch_data($batch) {
  */
 function stockinfo_exchange_mapexchange($chunk) {
   foreach ($chunk as $item) {
-    stockinfo_exchange_process_($item);
+    stockinfo_exchange_item_process_($item);
   }
 }
 
@@ -245,7 +245,7 @@ function stockinfo_exchange_cron_queue_info() {
  * Worker Callback for the exchange stockinfo cron queue.
  */
 function stockinfo_exchange_run($items) {
-  stockinfo_exchange_process($items);
+  stockinfo_exchange_item_process($items);
 }
 
 /**
@@ -320,7 +320,7 @@ function stockinfo_exchange_entity_property_info() {
   return $info;
 }
 
-function stockinfo_exchange_process($items) {
+function stockinfo_exchange_item_process($items) {
     watchdog("items for processing", "<pre>" . print_r($items, true) . "</pre>");
 }
 
