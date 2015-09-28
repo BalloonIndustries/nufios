@@ -15,13 +15,27 @@ function sentiment_stat_menu() {
 }
 
 /**
+ * Keeps values for calculation.
+ */
+function sentiment_stat_values() {
+    $tables = array(
+        'sentiment_analyzer' => array(
+            'elated',
+        ),
+    );
+    return $tables;
+}
+
+/**
  * 
  */
 
 function sentiment_stat_calculate() {
-    $field = "elated";
+    $tables = sentiment_stat_values();
+    foreach ($tables as $table => $fields) {
+        foreach($fields as $field) {
     $mean_init = 0;
-    $sa = db_select("sentiment_analyzer", "sa")
+    $sa = db_select($table, "sa")
     ->fields("sa", array($field))
     ->execute()
     ->fetchAll();
@@ -44,4 +58,6 @@ function sentiment_stat_calculate() {
         $zscore[] = ($number->$field - $mean) / $std;
     }
     watchdog("zscore", "<pre>" . print_r($zscore, true) . "</pre>");
+    }
+    }
 }
