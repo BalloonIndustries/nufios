@@ -203,11 +203,8 @@ function stockinfo_exchange_fetch_data($batch) {
       watchdog("exchange", "<pre>" . print_r($exchange, true) . "</pre>");
     $data = stockinfo_exchange_fetch($exchange);
     watchdog("stockinfo exchange fetch data", "<pre>" . print_r($data, true) . "</pre>");
-    if (isset($data)) {
-      $data_array[] = $data;
-    }
   }
-  $data_chunks = array_chunk($data_array, 200);
+  $data_chunks = array_chunk($data, 200);
   foreach ($data_chunks as $chunk) {
     $batch['operations'][] = array('stockinfo_exchange_mapexchange', array($chunk));
   }
@@ -220,7 +217,7 @@ function stockinfo_exchange_fetch_data($batch) {
  */
 function stockinfo_exchange_mapexchange($chunk) {
   foreach ($chunk as $item) {
-    stockinfo_exchange_item_process_($item);
+    stockinfo_exchange_item_process($item);
   }
 }
 
