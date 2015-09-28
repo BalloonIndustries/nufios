@@ -37,6 +37,12 @@ function stockinfo_exchange_admin_settings() {
     '#description' => t('Save all values'),
     '#submit' => array('system_settings_form_submit'),
   );
+  
+   $form['stockinfo_exchange_batch_process'] = array(
+    '#type' => 'submit',
+    '#value' => 'Batch Process',
+    '#submit' => array('stockinfo_exchange_batch_generate')
+  );
 
   $form['stockinfo_exchange_delete_button'] = array(
     '#type' => 'submit',
@@ -219,7 +225,7 @@ function stockinfo_exchange_rules_action_info() {
 }
 
 /**
- *  This callback fetches the historical stock data.
+ *  This callback fetches the exchange data.
  */
 function stockinfo_exchange_rules_action_pull_exchange_data() {
   stockinfo_exchange_batch_generate();
