@@ -342,7 +342,7 @@ function stockinfo_exchange_item_process($item) {
             $key = "stockinfo_exchange_" . $key;
           }
           elseif ($key == "date") {
-            
+            $value = strtotime($value);
           }
           elseif ($key == "symbol") {
               $key = "exchange";
