@@ -91,3 +91,14 @@ function sentiment_stat_calculate() {
     }
     }
 }
+
+/**
+ * Implements hook_views_api().
+ */
+function sentiment_stat_views_api()
+{
+    return array(
+        'api' => 3,
+        'path' => drupal_get_path('module', 'sentiment_stat') . '/views',
+    );
+}
