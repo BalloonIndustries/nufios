@@ -26,6 +26,12 @@ function sentiment_stat_views_data()
     'filter' => array(
         'handler' => 'views_handler_filter_numeric',
     ),
+            'relationship' => array(
+        'base' => 'sentiment_stat',
+        'field' => 'sid',
+        'handler' => 'views_handler_relationship',
+        'label' => t('Statistics'),
+    ),
 );
     
         $data['sentiment_stat']['variance'] = array(
