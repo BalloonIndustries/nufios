@@ -68,7 +68,7 @@ function stockinfo_exchange_delete() {
  */
 function stockinfo_exchange_map_symbol($exchange) {
     $map = array(
-        "^djia" => "DJIA",
+        "^dji" => "DJIA",
     );
 }
 
@@ -339,7 +339,7 @@ function stockinfo_exchange_item_process($item) {
           $key = strtolower($key);
           $key = str_replace(" ", "_", $key);
           if ($key == "high" || $key == "low" || $key == "close" || $key == "adj_close" || $key == "volume") {
-            $key = "stockinfo_exchange" . $key;
+            $key = "stockinfo_exchange_" . $key;
           }
           elseif ($key == "date") {
             
