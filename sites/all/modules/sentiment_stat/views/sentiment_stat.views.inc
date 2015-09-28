@@ -124,6 +124,13 @@ function sentiment_stat_views_data()
         'handler' => 'views_handler_filter_date',
     ),
     );
+    
+    $data['sentiment_stat']['table']['join'] = array(
+    'sentiment_stat' => array(
+        'left_field' => 'sid',
+        'field' => 'sid',
+    ),
+);
 
     return $data;
 
