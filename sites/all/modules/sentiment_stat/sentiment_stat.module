@@ -31,12 +31,14 @@ function sentiment_stat_values() {
  */
 
 function sentiment_stat_calculate() {
+      db_delete("{sentiment_stats}")
+      ->execute();
     $tables = sentiment_stat_values();
     foreach ($tables as $table => $fields) {
         foreach($fields as $field) {
     $mean_init = 0;
-    $sa = db_select($table, "sa")
-    ->fields("sa", array($field))
+    $sa = db_select($table, "tb")
+    ->fields("tb", array($field, "date"))
     ->execute()
     ->fetchAll();
     foreach($sa as $number) {
@@ -53,11 +55,25 @@ function sentiment_stat_calculate() {
     watchdog("variance", "<pre>" . print_r($variance, true) . "</pre>");
     $std = sqrt($variance);
     watchdog("std", "<pre>" . print_r($std, true) . "</pre>");
-    $zscore = array();
+    $zscore_array = array();
     foreach($sa as $number) {
-        $zscore[] = ($number->$field - $mean) / $std;
+        $zscore = ($number->$field - $mean) / $std;
+        $zscore_array[] = $zscore
+        db_insert("sentiment_stats", "ss")
+        ->fields("ss",
+                array(
+                    // Change field to some combo of field at some point soon
+                    "type" => $field,
+                    "category" => "feeling",
+                    "mean" => $mean,
+                    "std" => $std,
+                    "variance" => $variance,
+                    "zscore" => $zscore,
+                    "date" => $number->date,
+                    ),
+                )->execute;
     }
-    watchdog("zscore", "<pre>" . print_r($zscore, true) . "</pre>");
+    watchdog("zscore", "<pre>" . print_r($zscore_array, true) . "</pre>");
     }
     }
 }
