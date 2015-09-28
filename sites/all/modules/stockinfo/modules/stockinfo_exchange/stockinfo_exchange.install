@@ -1,0 +1,80 @@
+<?php
+/**
+ * @file
+ * Contains the schema, install, and uninstall functions for Stockinfo Exchange.
+ */
+/*
+ * Implements hook_schema().
+ */
+function stockinfo_exchange_schema() {
+  $schema['stockinfo_exchange'] = array(
+    'description' => 'A table to store exchange stock information',
+    'fields' => array(
+      'exchange' => array(
+        'description' => 'Exchange',
+        'type' => 'varchar',
+        'length' => 12,
+        'not null' => TRUE,
+        'default' => '',),
+              'label' => array(
+        'description' => 'Exchange Label',
+        'type' => 'varchar',
+        'length' => 12,
+        'not null' => TRUE,
+        'default' => '',),
+      'eid' => array(
+        'description' => 'Exchange ID',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => FALSE),
+      'date' => array(
+        'description' => 'Date',
+        'type' => 'int',
+        'length' => 11,
+        'not null' => TRUE),
+      'stockinfo_exchange_high' => array(
+        'description' => 'Exchange High',
+        'type' => 'float',
+        'not null' => FALSE,
+        'default' => 0,),
+      'stockinfo_exchange_low' => array(
+        'description' => 'Exchange Low',
+        'type' => 'float',
+        'not null' => FALSE,
+        'default' => 0,),
+      'stockinfo_exchange_close' => array(
+        'description' => 'Exchange Close',
+        'type' => 'float',
+        'not null' => FALSE,
+        'default' => 0,),
+      'stockinfo_exchange_volume' => array(
+        'description' => 'Volume',
+        'type' => 'float',
+        'not null' => FALSE,
+        'default' => 0,),
+      'stockinfo_exchange_adj_close' => array(
+        'description' => 'Exchange Adjusted Close',
+        'type' => 'float',
+        'not null' => FALSE,
+        'default' => 0,),
+    ),
+    'primary key' => array('eid', 'date'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Implemenets hook_install().
+ */
+function stockinfo_exchange_install() {
+  variable_set('stockinfo_exchange_from_date_default', array('year' => '2010', 'month' => '1', 'day' => '1'));
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function stockinfo_exchange_uninstall() {
+  variable_del('stockinfo_historical_from_date');
+}
+

@@ -1,0 +1,6 @@
+name = Stock Info Exchange
+description = Provides exchange stock data.
+package = stock info
+core = 7.x
+
+dependencies[] = entity

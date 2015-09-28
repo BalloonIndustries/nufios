@@ -1,0 +1,326 @@
+<?php
+/**
+ * @file downloads the exchange data
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function stockinfo_exchange_menu() {
+      $items = array();
+  $items['admin/config/services/stockinfo/exchange'] = array(
+    'title' => 'Exchange Stock Info settings',
+    'description' => 'Pull exchange data',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('stockinfo_exchange_admin_settings'),
+    'access arguments' => array('administer site configuration'),
+  );
+  return $items;
+}
+
+/**
+ * Create the form for Stock Info exchange data admin settings.
+ */
+function stockinfo_exchange_admin_settings() {
+
+  $form = array();
+
+  $form['stockinfo_exchange_from_date'] = array(
+    '#type' => 'date',
+    '#title' => t('From Date'),
+    '#default_value' => variable_get("stockinfo_exchange_from_date", variable_get("stockinfo_exchange_from_date_default")),
+  );
+
+  $form['stockinfo_exchange_submit_button'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save configuration'),
+    '#description' => t('Save all values'),
+    '#submit' => array('system_settings_form_submit'),
+  );
+
+  $form['stockinfo_exchange_delete_button'] = array(
+    '#type' => 'submit',
+    '#value' => t('Delete Exchange Data'),
+    '#description' => t('Delete all values - useful for reimporting data'),
+    '#submit' => array('stockinfo_exchange_delete'),
+  );
+
+  $form['#theme'] = 'system_settings_form';
+  return $form;
+}
+
+/**
+ * Deletes all exchange stock data.
+ */
+function stockinfo_exchange_delete() {
+  db_delete("{stockinfo_exchange}")
+      ->execute();
+}
+
+/**
+ * Implements hook_entity_info().
+ */
+function stockinfo_exchange_entity_info() {
+
+  $info = array();
+  $info['stockinfo_exchange'] = array(
+    'label' => t('Stock Info Exchange'),
+    'plural label' => t('Stock Info Exchanges'),
+    'base table' => 'stockinfo_exchange',
+    'entity keys' => array(
+      'id' => 'eid',
+      'label' => 'exchange',
+    ),
+    'module' => 'stockinfo_exchange',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'fieldable' => TRUE,
+  );
+
+  return $info;
+}
+
+/**
+ * Processes exchange stock data from Yahoo.
+ */
+function stockinfo_exchange_process_data($url) {
+  $results = drupal_http_request($url);
+  watchdog("results", "<pre>" . print_r($results, true) . "</pre>");
+  $data = drupal_json_decode($results->data);
+  if (is_array($data['query']['results']['quote'])) {
+    $result['data'] = array_merge($result['data'], $data['query']['results']['quote']);
+  }
+  return $result;
+}
+
+/**
+ * Exchange fetch - grabs exchange data
+ */
+function stockinfo_exchange_fetch($exchange) {
+    $date = variable_get("stockinfo_exchange_from_date", variable_get("stockinfo_exchange_from_date_default"));
+  $historical_timestamp = strtotime($date['year'] . '-' . $date['month'] . '-' . $date['day']);
+  $latest_timestamp = db_query("SELECT date from stockinfo_exchange WHERE exchange = :exchange ORDER BY date DESC LIMIT 1", array("symbol" => $symbol))->fetchField();
+  if (empty($latest_timestamp) || ($latest_timestamp < $historical_timestamp)) {
+    $date['month'] = $date['month'] - 1;
+    $year = $date['year'];
+    $month = $date['month'];
+    $day = $date['day'];
+  }
+  else {
+    $year = date("Y", $latest_timestamp);
+    $month = date("m", $latest_timestamp);
+    $day = date("d", $latest_timestamp);
+  }
+    
+    foreach($exchanges as $exchange) {
+    $url = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22$exchange%22%20and%20startDate%20%3D%20%22$year-$month-$day%22%20and%20endDate%20%3D%20%22" . date("Y") . "-" . date("m") . "-" . date("d") . "%22&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&format=json";
+    $result = stockinfo_exchange_process_data($url);
+    }
+}
+
+/**
+ * Queues exchange stockinfo items.
+ */
+function stockinfo_exchange_queue_it() {
+  $queue = DrupalQueue::get('stockinfo_exchange');
+  foreach ($exchanges as $exchange) {
+    $data = stockinfo_exchange_fetch($exchange);
+    if (isset($data)) {
+      $data_chunks = array_chunk($data['data'], 5);
+      foreach ($data_chunks as $chunk) {
+        $queue->createItem($chunk);
+      }
+    }
+  }
+}
+
+/**
+ * Generates batch, passes it to relevant function.
+ */
+function stockinfo_exchange_batch_generate() {
+
+  $batch = array(
+    'operations' => array(),
+    'title' => t('Processing Stock Exchange Import'),
+    'finished' => 'stockinfo_exchange_import_batch_finished',
+    'init_message' => t('Import is starting.'),
+    'progress_message' => t('Processed @current out of @total.'),
+    'error_message' => t('Import has encountered an error.'),
+  );
+
+  stockinfo_exchange_fetch_data($batch);
+}
+
+/**
+ * Function for when the batch is finished.
+ */
+function stockinfo_exchange_import_batch_finished($success, $results, $operations) {
+  if ($success) {
+    drupal_set_message('Import is complete');
+  }
+  else {
+    $error_operation = reset($operations);
+    $message = t('An error occurred while processing %error_operation with arguments: @arguments', array(
+      '%error_operation' => $error_operation[0],
+      '@arguments' => print_r($error_operation[1], TRUE)
+    ));
+    drupal_set_message($message, 'error');
+  }
+}
+
+/**
+ * Black box to generate the exchange values.
+ */
+function stockinfo_exchange_exchanges() {
+return array(
+    "^dji",
+);
+}
+
+/**
+ * Processes batch of exchange data.
+ */
+function stockinfo_exchange_fetch_data($batch) {
+  $exchanges = stockinfo_exchange_exchanges();
+  foreach ($exchanges as $exchange) {
+    $data = stockinfo_exchange_fetch($exchange);
+    watchdog("stockinfo exchange fetch data", "<pre>" . print_r($data, true) . "</pre>");
+    if (isset($data)) {
+      $data_array[] = $data;
+    }
+  }
+  $data_chunks = array_chunk($data_array, 200);
+  foreach ($data_chunks as $chunk) {
+    $batch['operations'][] = array('stockinfo_exchange_mapexchange', array($chunk));
+  }
+  batch_set($batch);
+  batch_process("/admin/config/services/stockinfo/exchange");
+}
+
+/**
+ * Processes chunks into individual exchange data points for processing.
+ */
+function stockinfo_exchange_mapexchange($chunk) {
+  foreach ($chunk as $item) {
+    stockinfo_exchange_process_($item);
+  }
+}
+
+/**
+ * Implement hook_rules_action_info().
+ */
+function stockinfo_exchange_rules_action_info() {
+  return array(
+    'stockinfo_exchange_rules_action_pull_exchange_data' => array(
+      'label' => t('Pull Exchange Data'),
+      'group' => t('Stockinfo'),
+    ),
+  );
+}
+
+/**
+ *  This callback fetches the historical stock data.
+ */
+function stockinfo_exchange_rules_action_pull_exchange_data() {
+  stockinfo_exchange_batch_generate();
+}
+
+/**
+ * Implementation of hook_cron_queue_info().
+ */
+function stockinfo_exchange_cron_queue_info() {
+  $queues['stockinfo_exchange'] = array(
+    'worker callback' => 'stockinfo_exchange_run',
+  );
+  return $queues;
+}
+
+/**
+ * Worker Callback for the exchange stockinfo cron queue.
+ */
+function stockinfo_exchange_run($items) {
+  stockinfo_exchange_process($items);
+}
+
+/**
+ * Implements hook_entity_property_info().
+ */
+function stockinfo_exchange_entity_property_info() {
+  $info = array();
+
+  $info['stockinfo_exchange']['properties']['eid'] = array(
+    'label' => t('EID'),
+    'description' => t('The ID of the stockinfo exchange row.'),
+    'type' => 'stockinfo_exchange',
+    'schema field' => 'eid',
+    'entity views field' => TRUE,
+  );
+  $info['stockinfo_exchange']['properties']['exchange'] = array(
+    'label' => t('Exchange'),
+    'description' => t('The exchange name.'),
+    'type' => 'text',
+    'schema field' => 'exchange',
+    'entity views field' => TRUE,
+  );
+  $info['stockinfo_exchange']['properties']['label'] = array(
+    'label' => t('Exchange Label'),
+    'description' => t('The label of the exchange.'),
+    'type' => 'text',
+    'schema field' => 'label',
+    'entity views field' => TRUE,
+  );
+  $info['stockinfo_exchange']['properties']['date'] = array(
+    'label' => t('Date'),
+    'description' => t('The day this happened on.'),
+    'type' => 'date',
+    'schema field' => 'date',
+    'entity views field' => TRUE,
+  );
+  $info['stockinfo_exchange']['properties']['stockinfo_exchange_high'] = array(
+    'label' => t('High'),
+    'description' => t('The high on this day.'),
+    'type' => 'decimal',
+    'schema field' => 'stockinfo_exchange_high',
+    'entity views field' => TRUE,
+  );
+  $info['stockinfo_exchange']['properties']['stockinfo_exchange_low'] = array(
+    'label' => t('Low'),
+    'description' => t('The low on this day.'),
+    'type' => 'decimal',
+    'schema field' => 'stockinfo_exchange_low',
+    'entity views field' => TRUE,
+  );
+  $info['stockinfo_exchange']['properties']['stockinfo_exchange_close'] = array(
+    'label' => t('Close'),
+    'description' => t('The close on this day.'),
+    'type' => 'decimal',
+    'schema field' => 'stockinfo_exchange_close',
+    'entity views field' => TRUE,
+  );
+  $info['stockinfo_exchange']['properties']['stockinfo_exchange_volume'] = array(
+    'label' => t('Volume'),
+    'description' => t('The volume on this day.'),
+    'type' => 'decimal',
+    'schema field' => 'stockinfo_exchange_volume',
+    'entity views field' => TRUE,
+  );
+  $info['stockinfo_exchange']['properties']['stockinfo_exchange_adj_close'] = array(
+    'label' => t('Adjusted Close'),
+    'description' => t('The adjusted close on this day.'),
+    'type' => 'decimal',
+    'schema field' => 'stockinfo_exchange_adj_close',
+    'entity views field' => TRUE,
+  );
+  return $info;
+}
+
+function stockinfo_exchange_process($items) {
+    watchdog("items for processing", "<pre>" . print_r($items, true) . "</pre>");
+}
+
+/**
+ * Implementation of hook_cron().
+ */
+function stockinfo_exchange_cron() {
+  stockinfo_exchange_queue_it();
+}

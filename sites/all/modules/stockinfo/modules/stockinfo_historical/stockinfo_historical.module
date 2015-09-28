@@ -44,7 +44,7 @@ function stockinfo_historical_admin_settings() {
   $form['stockinfo_historical_submit_button'] = array(
     '#type' => 'submit',
     '#value' => t('Save configuration'),
-    '#description' => t('Delete all values - useful for reimporting data'),
+    '#description' => t('Save all values'),
     '#submit' => array('system_settings_form_submit'),
   );
 
@@ -139,7 +139,7 @@ function stockinfo_historical_stockinfo_historical_save_alter(&$stock) {
 /**
  * Processes batch of historical stock data.
  */
-function stockinfo_fetch_historical_data($batch) {
+function stockinfo_historical_fetch_data($batch) {
   $symbols = explode(" ", variable_get("stockinfo_historical_symbols", variable_get('stockinfo_historical_default_symbols')));
   $stock_array = array();
   foreach ($symbols as $symbol) {
@@ -164,13 +164,30 @@ function stockinfo_historical_batch_generate() {
   $batch = array(
     'operations' => array(),
     'title' => t('Processing Historical Stock Import'),
-    'finished' => 'stockinfo_import_batch_finished',
+    'finished' => 'stockinfo_historical_import_batch_finished',
     'init_message' => t('Import is starting.'),
     'progress_message' => t('Processed @current out of @total.'),
     'error_message' => t('Import has encountered an error.'),
   );
 
-  stockinfo_fetch_historical_data($batch);
+  stockinfo_historical_fetch_data($batch);
+}
+
+/**
+ * Function for when the batch is finished.
+ */
+function stockinfo_historical_import_batch_finished($success, $results, $operations) {
+  if ($success) {
+    drupal_set_message('Import is complete');
+  }
+  else {
+    $error_operation = reset($operations);
+    $message = t('An error occurred while processing %error_operation with arguments: @arguments', array(
+      '%error_operation' => $error_operation[0],
+      '@arguments' => print_r($error_operation[1], TRUE)
+    ));
+    drupal_set_message($message, 'error');
+  }
 }
 
 /**
