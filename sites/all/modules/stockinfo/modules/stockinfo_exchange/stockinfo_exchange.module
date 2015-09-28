@@ -70,6 +70,7 @@ function stockinfo_exchange_map_symbol($exchange) {
     $map = array(
         "^dji" => "DJIA",
     );
+    return $map[$exchange];
 }
 
 /**
