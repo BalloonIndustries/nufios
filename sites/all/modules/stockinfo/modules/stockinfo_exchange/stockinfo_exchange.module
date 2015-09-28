@@ -116,7 +116,6 @@ function stockinfo_exchange_fetch($exchange) {
   $historical_timestamp = strtotime($date['year'] . '-' . $date['month'] . '-' . $date['day']);
   $latest_timestamp = db_query("SELECT date from stockinfo_exchange WHERE exchange = :exchange ORDER BY date DESC LIMIT 1", array("exchange" => $exchange))->fetchField();
   if (empty($latest_timestamp) || ($latest_timestamp < $historical_timestamp)) {
-    $date['month'] = $date['month'] - 1;
     $year = $date['year'];
     $month = $date['month'];
     $day = $date['day'];
