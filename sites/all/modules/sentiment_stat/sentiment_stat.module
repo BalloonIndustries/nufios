@@ -21,6 +21,20 @@ function sentiment_stat_values() {
     $tables = array(
         'sentiment_analyzer' => array(
             'elated',
+            'depressed',
+            'confused',
+            'clearheaded',
+            'anxious',
+            'composed',
+            'tired',
+            'energetic',
+            'hostile',
+            'agreeable',
+        ),
+        'stockinfo_exchange' => array(
+            'stockinfo_exchange_close',
+            'stockinfo_exchange_high',
+            'stockinfo_exchange_low',
         ),
     );
     return $tables;
