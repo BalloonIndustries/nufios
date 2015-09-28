@@ -329,8 +329,32 @@ function stockinfo_exchange_entity_property_info() {
   return $info;
 }
 
-function stockinfo_exchange_item_process($items) {
-    watchdog("items for processing", "<pre>" . print_r($items, true) . "</pre>");
+function stockinfo_exchange_item_process($item) {
+    watchdog("items for processing", "<pre>" . print_r($item, true) . "</pre>");
+          $eid = db_query("SELECT eid FROM stockinfo_exchange WHERE exchange = :exchange AND date = :date", array("symbol" => $item['Symbol'], "date" => strtotime($item['Date'])))->fetchCol();
+      if (!isset($eid[0])) {
+        $entity = entity_create("stockinfo_exchange", array('type' => "stockinfo_exchange"));
+      }
+      foreach ($item as $key => $value) {
+          $key = strtolower($key);
+          $key = str_replace(" ", "_", $key);
+          if ($key == "high" || $key == "low" || $key == "close" || $key == "adj_close" || $key == "volume") {
+            $key = "stockinfo_exchange" . $key;
+          }
+          elseif ($key == "date") {
+            
+          }
+          elseif ($key == "symbol") {
+              $key = "exchange";
+          }
+          else {
+            $key = "stockinfo_" . $key;
+          }
+        $entity->$key = $value;
+      }
+      $entity->label = stockinfo_exchange_map_symbol($item['Symbol']);
+      drupal_alter('stockinfo_exchange_save', $entity);
+      entity_save("stockinfo_exchange", $entity);
 }
 
 /**
