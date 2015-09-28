@@ -64,6 +64,15 @@ function stockinfo_exchange_delete() {
 }
 
 /**
+ * Maps the exchange queries to their labels
+ */
+function stockinfo_exchange_map_symbol($exchange) {
+    $map = array(
+        "^djia" => "DJIA",
+    );
+}
+
+/**
  * Implements hook_entity_info().
  */
 function stockinfo_exchange_entity_info() {
@@ -105,7 +114,7 @@ function stockinfo_exchange_process_data($url) {
 function stockinfo_exchange_fetch($exchange) {
     $date = variable_get("stockinfo_exchange_from_date", variable_get("stockinfo_exchange_from_date_default"));
   $historical_timestamp = strtotime($date['year'] . '-' . $date['month'] . '-' . $date['day']);
-  $latest_timestamp = db_query("SELECT date from stockinfo_exchange WHERE exchange = :exchange ORDER BY date DESC LIMIT 1", array("symbol" => $symbol))->fetchField();
+  $latest_timestamp = db_query("SELECT date from stockinfo_exchange WHERE exchange = :exchange ORDER BY date DESC LIMIT 1", array("exchange" => $exchange))->fetchField();
   if (empty($latest_timestamp) || ($latest_timestamp < $historical_timestamp)) {
     $date['month'] = $date['month'] - 1;
     $year = $date['year'];
@@ -129,6 +138,7 @@ function stockinfo_exchange_fetch($exchange) {
  */
 function stockinfo_exchange_queue_it() {
   $queue = DrupalQueue::get('stockinfo_exchange');
+  $exchanges = stockinfo_exchange_exchanges();
   foreach ($exchanges as $exchange) {
     $data = stockinfo_exchange_fetch($exchange);
     if (isset($data)) {
