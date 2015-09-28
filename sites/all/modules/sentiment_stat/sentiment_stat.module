@@ -59,7 +59,7 @@ function sentiment_stat_calculate() {
     foreach($sa as $number) {
         $zscore = ($number->$field - $mean) / $std;
         $zscore_array[] = $zscore;
-        db_insert("sentiment_stats")
+        db_insert("sentiment_stat")
         ->fields(
                 array(
                     // Change field to some combo of field at some point soon
