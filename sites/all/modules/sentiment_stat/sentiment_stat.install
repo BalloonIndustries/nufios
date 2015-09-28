@@ -52,7 +52,6 @@ function sentiment_stat_schema() {
               'zscore' => array(
         'description' => 'Z-score',
         'type' => 'float',
-        'unsigned' => TRUE,
         'default' => 0,
         'not null' => TRUE,
       ),
