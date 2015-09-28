@@ -125,6 +125,9 @@ function stockinfo_exchange_fetch($exchange) {
     $month = date("m", $latest_timestamp);
     $day = date("d", $latest_timestamp);
   }
+  $month = sprintf("%02d", $month);
+  $day = sprintf("%02d", $day);
+  $year = sprintf("%02d", $year);
     $url = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22" . urlencode($exchange) . "%22%20and%20startDate%20%3D%20%22$year-$month-$day%22%20and%20endDate%20%3D%20%22"  . date("Y") . "-" . date("m") . "-" . date("d") . "%22&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys";
     watchdog("url", "<pre>" . print_r($url, true) . "</pre>");
     $result = stockinfo_exchange_process_data($url);
