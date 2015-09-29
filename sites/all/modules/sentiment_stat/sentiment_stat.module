@@ -106,8 +106,16 @@ function sentiment_stat_corr($field1, $field2) {
     ->execute()
     ->fetchCol();
     
+    $days = array(0, 1, 2, 3, 4);
+    
+    foreach($days as $day) {
+    
+    $x = array_slice($x, 0, (len($x) - $day));
+    $y = array_slice($y, $day);
+    
     $regression = sentiment_stat_linear_regression($x, $y);
-    watchdog("regression", "<pre>" . print_r($regression, true) . "</pre>");
+    watchdog("regression days " . $day, "<pre>" . print_r($regression, true) . "</pre>");
+    }
 }
 
 /**
