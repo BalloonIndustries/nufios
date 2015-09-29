@@ -106,6 +106,9 @@ function sentiment_stat_corr($field1, $field2) {
     ->execute()
     ->fetchCol();
     
+        watchdog("x", "<pre>" . print_r($x, true) . "</pre>");
+    watchdog("y", "<pre>" . print_r($y, true) . "</pre>");
+    
     $days = array(0, 1, 2, 3, 4);
     
     foreach($days as $day) {
