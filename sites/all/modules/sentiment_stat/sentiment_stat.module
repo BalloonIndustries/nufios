@@ -114,7 +114,7 @@ function sentiment_stat_corr($field1, $field2) {
     $y = array_slice($y, $day);
     
     $regression = sentiment_stat_linear_regression($x, $y);
-    watchdog("regression", "<pre>" . print_r(array($day => $regression), true) . "</pre>");
+    watchdog("regression", "<pre>" . print_r($regression, true) . "</pre>");
     }
 }
 
