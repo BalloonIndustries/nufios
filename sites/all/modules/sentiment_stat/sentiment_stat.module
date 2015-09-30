@@ -114,6 +114,9 @@ function sentiment_stat_corr($field1, $field2) {
     
     sentiment_stat_process_weekends($x, $y);
     
+            watchdog("x after", "<pre>" . print_r($x, true) . "</pre>");
+    watchdog("y after", "<pre>" . print_r($y, true) . "</pre>");
+    
     $days = array(0, 1, 2, 3, 4);
     
     foreach($days as $day) {
@@ -146,11 +149,53 @@ function sentiment_stat_process_weekends(&$x, &$y, $interpolate = true) {
     }
     }
     else if($interpolate == false) {
-        
+        sentiment_stat_remove_days($x, $y);
+        sentiment_stat_remove_dates($x, $y);
     }
 }
 
+function sentiment_stat_remove_dates(&$x, &$y) {
+    $xarray = array();
+    $yarray = array();
+    foreach($x as $xval) {
+        $xarray[] = $xval->zscore; //switch to field
+    }
+    foreach($y as $yval) {
+        $yarray[] = $yval->zscore; //switch to field
+    }
+    $x = $xarray;
+    $y = $yarray;
+}
+
+function sentiment_stat_return_dates($array) {
+    $dates = array();
+    foreach($array as $val) {
+        $dates[] = $val->date;
+    }
+    return $dates;
+}
+
+function sentiment_stat_remove_days(&$x, &$y) {
+            sentiment_stat_change_date($x, true);
+        sentiment_stat_change_date($y);
+        $ydates = sentiment_stat_return_dates($y);
+        $xdates = sentiment_stat_return_dates($x);
+        foreach($x as $xval) {
+            if(!in_array($xval->date, $ydates)) {
+                unset($x[$xval]);
+            }
+          foreach($y as $yval) {
+            if(!in_array($yval->date, $xdates)) {
+                unset($y[$yval]);
+            }
+        }
+}
+
 function sentiment_stat_add_days($longer, $shorter) {
+    $long_dates = array();
+    foreach($longer as $long) {
+        $long_dates[] = $long->date;
+    }
     foreach($shorter as $short) {
         
     }
