@@ -156,7 +156,7 @@ function sentiment_stat_add_days($longer, $shorter) {
     }
 }
 
-function sentiment_stat_change_date(&$values, $collected) {
+function sentiment_stat_change_date(&$values, $collected = false) {
     // If the value is collected, it may be collected a few hours too late.
     $correction = 0;
     if($collected == true) {
