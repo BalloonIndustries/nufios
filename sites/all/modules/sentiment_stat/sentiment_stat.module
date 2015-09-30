@@ -134,7 +134,7 @@ function sentiment_stat_corr($field1, $field2) {
  */
 function sentiment_stat_process_weekends(&$x, &$y, $interpolate = true) {
     if($interpolate == true) {
-        sentiment_stat_change_date($x);
+        sentiment_stat_change_date($x, true);
         sentiment_stat_change_date($y);
             watchdog("y date", "<pre>" . print_r($y, true) . "</pre>");
                 watchdog("x date", "<pre>" . print_r($x, true) . "</pre>");
@@ -156,9 +156,14 @@ function sentiment_stat_add_days($longer, $shorter) {
     }
 }
 
-function sentiment_stat_change_date(&$values) {
+function sentiment_stat_change_date(&$values, $collected) {
+    // If the value is collected, it may be collected a few hours too late.
+    $correction = 0;
+    if($collected == true) {
+        $correction = 21600;
+    }
     foreach($values as $value) {
-        $value->date = date("m-d", $value->date);
+        $value->date = date("m-d", $value->date - $correction);
     }
 }
 
