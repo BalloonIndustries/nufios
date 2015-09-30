@@ -121,7 +121,7 @@ function sentiment_stat_corr($field1, $field2) {
     
     foreach($days as $day) {
     
-    $x = array_slice($x, 0, (len($x) - $day));
+    $x = array_slice($x, 0, count($x) - $day);
     $y = array_slice($y, $day);
     
     watchdog("x before reg", "<pre>" . print_r($x, true) . "</pre>");
@@ -141,10 +141,10 @@ function sentiment_stat_process_weekends(&$x, &$y, $interpolate = true) {
         sentiment_stat_change_date($y);
             watchdog("y date", "<pre>" . print_r($y, true) . "</pre>");
                 watchdog("x date", "<pre>" . print_r($x, true) . "</pre>");
-    if(len($x) > len($y)) {
+    if(count($x) > count($y)) {
         sentiment_stat_add_days($x, $y);
     }
-    else if(len($y) > len($x)) {
+    else if(count($y) > count($x)) {
         sentiment_stat_add_days($x, $y);
     }
     }
