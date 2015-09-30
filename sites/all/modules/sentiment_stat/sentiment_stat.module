@@ -156,7 +156,7 @@ function sentiment_stat_add_days($longer, $shorter) {
     }
 }
 
-function sentiment_stat_date(&$values) {
+function sentiment_stat_change_date(&$values) {
     foreach($values as $value) {
         $value->date = date("m-d", $value->date);
     }
