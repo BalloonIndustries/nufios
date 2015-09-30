@@ -96,21 +96,23 @@ function sentiment_stat_calculate() {
 function sentiment_stat_corr($field1, $field2) {
     $date = 1439769600;
     $x = db_select("sentiment_stat", "tb")
-    ->fields("tb", array("zscore"))
+    ->fields("tb", array("zscore", "date"))
             ->condition('type', $field1,'=')
             ->condition('date', $date, '>')
     ->execute()
-    ->fetchCol();
+    ->fetchAll();
     
     $y = db_select("sentiment_stat", "tb")
-    ->fields("tb", array("zscore"))
+    ->fields("tb", array("zscore", "date"))
             ->condition('type', $field2,'=')
             ->condition('date', $date, '>')
     ->execute()
-    ->fetchCol();
+    ->fetchAll();
     
         watchdog("x", "<pre>" . print_r($x, true) . "</pre>");
     watchdog("y", "<pre>" . print_r($y, true) . "</pre>");
+    
+    sentiment_stat_interpolate_weekends($x, $y);
     
     $days = array(0, 1, 2, 3, 4);
     
@@ -128,6 +130,39 @@ function sentiment_stat_corr($field1, $field2) {
 }
 
 /**
+ * Responsible for figuring out what days are weekends/holidays.
+ */
+function sentiment_stat_process_weekends(&$x, &$y, $interpolate = true) {
+    if($interpolate == true) {
+        sentiment_stat_change_date($x);
+        sentiment_stat_change_date($y);
+            watchdog("y date", "<pre>" . print_r($y, true) . "</pre>");
+                watchdog("x date", "<pre>" . print_r($x, true) . "</pre>");
+    if(len($x) > len($y)) {
+        sentiment_stat_add_days($x, $y);
+    }
+    else if(len($y) > len($x)) {
+        sentiment_stat_add_days($x, $y);
+    }
+    }
+    else if($interpolate == false) {
+        
+    }
+}
+
+function sentiment_stat_add_days($longer, $shorter) {
+    foreach($shorter as $short) {
+        
+    }
+}
+
+function sentiment_stat_date(&$values) {
+    foreach($values as $value) {
+        $value->date = date("m-d", $value->date);
+    }
+}
+
+/**
  * linear regression function
  * @param $x array x-coords
  * @param $y array y-coords
@@ -141,7 +176,7 @@ function sentiment_stat_linear_regression($x, $y) {
   // ensure both arrays of points are the same size
   if ($n != count($y)) {
 
-    watchdog("Linear Regression", "linear_regression(): Number of elements in coordinate arrays do not match.");
+    watchdog("Linear Regression", "Number of elements in coordinate arrays do not match.");
   
   }
 
