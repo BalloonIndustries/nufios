@@ -190,6 +190,7 @@ function sentiment_stat_remove_days(&$x, &$y) {
             }
         }
 }
+}
 
 function sentiment_stat_add_days($longer, $shorter) {
     $long_dates = array();
