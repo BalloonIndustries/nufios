@@ -180,13 +180,13 @@ function sentiment_stat_remove_days(&$x, &$y) {
         sentiment_stat_change_date($y);
         $ydates = sentiment_stat_return_dates($y);
         $xdates = sentiment_stat_return_dates($x);
-        foreach($x as $xval) {
+        foreach($x as $xkey => $xval) {
             if(!in_array($xval->date, $ydates)) {
-                unset($x[$xval]);
+                unset($x[$xkey]);
             }
-          foreach($y as $yval) {
+          foreach($y as $ykey => $yval) {
             if(!in_array($yval->date, $xdates)) {
-                unset($y[$yval]);
+                unset($y[$ykey]);
             }
         }
 }
