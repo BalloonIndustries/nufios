@@ -112,7 +112,7 @@ function sentiment_stat_corr($field1, $field2) {
         watchdog("x", "<pre>" . print_r($x, true) . "</pre>");
     watchdog("y", "<pre>" . print_r($y, true) . "</pre>");
     
-    sentiment_stat_interpolate_weekends($x, $y);
+    sentiment_stat_process_weekends($x, $y);
     
     $days = array(0, 1, 2, 3, 4);
     
