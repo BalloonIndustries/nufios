@@ -94,15 +94,18 @@ function sentiment_stat_calculate() {
 }
 
 function sentiment_stat_corr($field1, $field2) {
+    $date = 1439769600;
     $x = db_select("sentiment_stat", "tb")
     ->fields("tb", array("zscore"))
             ->condition('type', $field1,'=')
+            ->condition('date', $date, '>')
     ->execute()
     ->fetchCol();
     
     $y = db_select("sentiment_stat", "tb")
     ->fields("tb", array("zscore"))
             ->condition('type', $field2,'=')
+            ->condition('date', $date, '>')
     ->execute()
     ->fetchCol();
     
