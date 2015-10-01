@@ -134,7 +134,7 @@ function sentiment_stat_corr($field1, $field2) {
     
     watchdog("x before reg", "<pre>" . print_r($x, true) . "</pre>");
     watchdog("y before reg", "<pre>" . print_r($y, true) . "</pre>");
-    $coords = [];
+    $coords = array();
     for($i = 0; $i <= count($x) - 1; $i++) {
         $coords[] =  strval($x[$i]) . "," . strval($y[$i]) . PHP_EOL;
     }
