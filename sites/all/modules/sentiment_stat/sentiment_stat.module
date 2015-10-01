@@ -134,6 +134,12 @@ function sentiment_stat_corr($field1, $field2) {
     
     watchdog("x before reg", "<pre>" . print_r($x, true) . "</pre>");
     watchdog("y before reg", "<pre>" . print_r($y, true) . "</pre>");
+    $coords = array();
+    for($i = 0; $i < count($x); $i++) {
+        $coords[] = $x[$i] . "," . $y[$i];
+    }
+    
+    watchdog($field1, "<pre>" . print_r($coords, true) . "</pre>");
     
     $regression = sentiment_stat_linear_regression($x, $y);
     $regression["day"] = $day;
