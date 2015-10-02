@@ -141,6 +141,9 @@ function sentiment_stat_corr($field1, $field2) {
     
     $unified = implode("", $coords);
     
+    
+    watchdog($field1 . " coords", "<pre>" . print_r($coords, true) . "</pre>");
+    
     watchdog($field1, "<pre>" . print_r($unified, true) . "</pre>");
     
     $regression = sentiment_stat_linear_regression($x, $y);
