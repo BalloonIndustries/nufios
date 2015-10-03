@@ -212,7 +212,7 @@ function sentiment_stat_remove_days(&$x, &$y) {
 }
 }
 
-function sentiment_stat_add_days($longer, $shorter) {
+function sentiment_stat_add_days(&$longer, &$shorter) {
     watchdog("shorter", "<pre>" . print_r($shorter, true) . "</pre>");
     $long = sentiment_stat_return_dates($longer);
     foreach($shorter as $short) {
@@ -221,6 +221,7 @@ function sentiment_stat_add_days($longer, $shorter) {
             continue;
         }
         $diff_short = $short->date - $last_short->date;
+        watchdog("diff short", "<pre>" . print_r($diff_short, true) . "</pre>");
         if ($diff_short > 1) {
             $avg = ($short->zscore + $last_short->zscore)/2;
             for($i = $diff_short - 1; $i > 1; $i--) {
