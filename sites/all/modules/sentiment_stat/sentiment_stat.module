@@ -164,28 +164,27 @@ function sentiment_stat_process_weekends(&$x, &$y, $interpolate = true) {
                 watchdog("x date", "<pre>" . print_r($x, true) . "</pre>");
     if(count($x) > count($y)) {
         sentiment_stat_add_days($x, $y);
+        $y = sentiment_stat_remove_dates($y);
+        $x = sentiment_stat_remove_dates($x);
     }
     else if(count($y) > count($x)) {
         sentiment_stat_add_days($x, $y);
+        $y = sentiment_stat_remove_dates($y);
+        $x = sentiment_stat_remove_dates($x);
     }
     }
     else if($interpolate == false) {
-        sentiment_stat_remove_days($x, $y);
-        sentiment_stat_remove_dates($x, $y);
+        $x = sentiment_stat_remove_days($x);
+        $y = sentiment_stat_remove_dates($y);
     }
 }
 
-function sentiment_stat_remove_dates(&$x, &$y) {
-    $xarray = array();
-    $yarray = array();
-    foreach($x as $xval) {
-        $xarray[] = $xval->zscore; //switch to field
+function sentiment_stat_remove_dates($array) {
+    $coordarray = array();
+    foreach($array as $val) {
+        $coordarray[] = $val->zscore; //switch to field
     }
-    foreach($y as $yval) {
-        $yarray[] = $yval->zscore; //switch to field
-    }
-    $x = $xarray;
-    $y = $yarray;
+return $coordarray;
 }
 
 function sentiment_stat_return_dates($array) {
