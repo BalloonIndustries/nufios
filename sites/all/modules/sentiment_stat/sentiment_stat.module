@@ -134,7 +134,7 @@ function sentiment_stat_corr($field1, $field2) {
     
     watchdog("x before reg", "<pre>" . print_r($x, true) . "</pre>");
     watchdog("y before reg", "<pre>" . print_r($y, true) . "</pre>");
-    $coords = array();
+    /*$coords = array();
     for($i = 0; $i <= count($x) - 1; $i++) {
         $coords[] =  strval($x[$i]) . "," . strval($y[$i]) . PHP_EOL;
     }
@@ -145,7 +145,7 @@ function sentiment_stat_corr($field1, $field2) {
     watchdog($field1 . " coords", "<pre>" . print_r($coords, true) . "</pre>");
     
     watchdog($field1 . $day, "<pre>" . print_r($unified, true) . "</pre>");
-    
+    */
     $regression = sentiment_stat_linear_regression($x, $y);
     $regression["day"] = $day;
     $regression["field"] = $field1;
