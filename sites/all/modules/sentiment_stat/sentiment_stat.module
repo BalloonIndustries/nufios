@@ -231,8 +231,9 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
                 $shorter[] = $item;
             }
         }
-        
+        $last_short = $short;
     }
+    watchdog("shorter after", "<pre>" . print_r($shorter, true) . "</pre>");
 }
 
 function sentiment_stat_change_date(&$values, $collected = false) {
