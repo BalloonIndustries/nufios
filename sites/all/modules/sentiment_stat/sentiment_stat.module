@@ -216,7 +216,7 @@ function sentiment_stat_date_compare($a, $b)
 {
     $t1 = strtotime($a->date);
     $t2 = strtotime($b->date);
-    return $t1 - $t2;
+    return $t1->diff($t2);
 }
 
 function sentiment_stat_add_days(&$longer, &$shorter) {
