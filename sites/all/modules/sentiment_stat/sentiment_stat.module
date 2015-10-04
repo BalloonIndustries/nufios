@@ -220,6 +220,7 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
             $last_short = $short;
             continue;
         }
+        watchdog("year test", "<pre>" . print_r(date("Y"), true) . "</pre>");
         $date1 = new DateTime(date('Y') . '-' . $short->date);
         $date2 = new DateTime(date('Y') . '-' . $last_short->date);
         $diff_short = $date1->diff($date2);
