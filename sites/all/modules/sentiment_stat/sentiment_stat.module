@@ -226,16 +226,15 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
         $date2 = new DateTime($last_short->date);
         $diff_short = $date1->diff($date2);
         watchdog("short", "<pre>" . print_r($short, true) . "</pre>");
-        watchdog("last short", "<pre>" . print_r($last_short, true) . "</pre>");
-        watchdog("diff short", "<pre>" . print_r($diff_short->d, true) . "</pre>");
+
         if ($diff_short->d > 1) {
             $avg = ($short->zscore + $last_short->zscore)/2;
             for($i = $diff_short->d; $i > 1; $i--) {
                 watchdog("i count", "<pre>" . print_r($i, true) . "</pre>");
                 $item = new stdClass();
                 $item->zscore = $avg;
-                watchdog("date1 diff short", "<pre>" . print_r($date1, true) . "</pre>");
-                watchdog("date2 diff short", "<pre>" . print_r($date2, true) . "</pre>");
+        watchdog("last short", "<pre>" . print_r($last_short, true) . "</pre>");
+        watchdog("diff short", "<pre>" . print_r($diff_short->d, true) . "</pre>");
                 $item->date = $date1->sub(new DateInterval('P' . $i . 'D'));
                 $new_shorter[] = $item;
             }
