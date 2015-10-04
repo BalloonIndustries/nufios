@@ -237,7 +237,7 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
         watchdog("short", "<pre>" . print_r($short, true) . "</pre>");
 watchdog("last short", "<pre>" . print_r($last_short, true) . "</pre>");
         if ($diff_short->d > 1) {
-            watchdog("last short diff", "<pre>" . print_r($last_short, true) . "</pre>");
+            watchdog("last short diff", "<pre>" . print_r($last_short->date, true) . "</pre>");
             $avg = ($short->zscore + $last_short->zscore)/2;
             for($i = $diff_short->d; $i > 1; $i--) {
                 watchdog("i count", "<pre>" . print_r($i, true) . "</pre>");
