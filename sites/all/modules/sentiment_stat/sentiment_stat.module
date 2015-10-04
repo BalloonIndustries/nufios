@@ -237,7 +237,7 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
         }
         $last_short = $short;
     }
-        $shorter = $new_shorter;
+        $shorter = $new_shorter + $shorter;
     watchdog("shorter after", "<pre>" . print_r($shorter, true) . "</pre>");
 }
 
