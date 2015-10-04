@@ -214,6 +214,8 @@ function sentiment_stat_remove_days(&$x, &$y) {
 
 function sentiment_stat_date_compare($a, $b)
 {
+    watchdog("a", "<pre>" . print_r($a, true) . "</pre>");
+    watchdog("b", "<pre>" . print_r($b, true) . "</pre>");
     $t1 = $a->date;
     $t2 = $b->date;
     return $t1->diff($t2);
