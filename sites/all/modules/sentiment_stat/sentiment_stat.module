@@ -218,6 +218,7 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
     $new_shorter = array();
     foreach($shorter as $short) {
         if(!isset($last_short)) {
+            watchdog("first short", "<pre>" . print_r($short, true) . "</pre>");
             $last_short = $short;
             continue;
         }
