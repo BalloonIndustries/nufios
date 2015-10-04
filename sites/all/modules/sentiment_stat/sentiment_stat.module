@@ -212,6 +212,13 @@ function sentiment_stat_remove_days(&$x, &$y) {
 }
 }
 
+function sentiment_stat_date_compare($a, $b)
+{
+    $t1 = strtotime($a['datetime']);
+    $t2 = strtotime($b['datetime']);
+    return $t1 - $t2;
+}
+
 function sentiment_stat_add_days(&$longer, &$shorter) {
     watchdog("shorter", "<pre>" . print_r($shorter, true) . "</pre>");
     $long = sentiment_stat_return_dates($longer);
@@ -235,6 +242,7 @@ watchdog("last short", "<pre>" . print_r($last_short, true) . "</pre>");
                 $item->zscore = $avg;
         
         watchdog("diff short", "<pre>" . print_r($diff_short->d, true) . "</pre>");
+        watchdog("date interval", "<pre>" . print_r(new DateInterval('P' . $i . 'D'), true) . "</pre>");
                 $item->date = $date1->sub(new DateInterval('P' . $i . 'D'));
                 $new_shorter[] = $item;
             }
@@ -243,6 +251,7 @@ watchdog("last short", "<pre>" . print_r($last_short, true) . "</pre>");
     }
     watchdog("new shorter after", "<pre>" . print_r($new_shorter, true) . "</pre>");
         $shorter = array_merge($new_shorter, $shorter);
+        usort($array, 'date_compare');
     watchdog("shorter after", "<pre>" . print_r($shorter, true) . "</pre>");
 }
 
