@@ -223,8 +223,8 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
         watchdog("year test", "<pre>" . print_r(date('Y') . '-' . $short->date, true) . "</pre>");
         watchdog("short", "<pre>" . print_r($short, true) . "</pre>");
         watchdog("short date", "<pre>" . print_r($short->date, true) . "</pre>");
-        $date1 = new DateTime(date('Y') . '-' . $short->date);
-        $date2 = new DateTime(date('Y') . '-' . $last_short->date);
+        $date1 = new DateTime($short->date);
+        $date2 = new DateTime($last_short->date);
         $diff_short = $date1->diff($date2);
         watchdog("diff short", "<pre>" . print_r($diff_short, true) . "</pre>");
         if ($diff_short->d > 1) {
@@ -232,7 +232,7 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
             for($i = $diff_short->d - 1; $i > 1; $i--) {
                 $item = new stdClass();
                 $item->zscore = $avg;
-                $item->date = $short->date - $i;
+                $item->date = $date1->sub(new DateInterval($i . 'D'));
                 $shorter[] = $item;
             }
         }
@@ -248,7 +248,7 @@ function sentiment_stat_change_date(&$values, $collected = false) {
         $correction = 21600;
     }
     foreach($values as &$value) {
-        $value->date = date("m-d", $value->date - $correction);
+        $value->date = date("Y-m-d", $value->date - $correction);
     }
     watchdog("date values", "<pre>" . print_r($values, true) . "</pre>");
 }
