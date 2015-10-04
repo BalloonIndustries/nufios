@@ -231,8 +231,7 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
             for($i = $diff_short->d - 1; $i > 1; $i--) {
                 $item = new stdClass();
                 $item->zscore = $avg;
-                $new_date = $date1->sub(new DateInterval('P' . $i . 'D'));
-                $item->date = $new_date->date;
+                $item->date = $date1->sub(new DateInterval('P' . $i . 'D'));
                 $new_shorter[] = $item;
             }
         }
