@@ -242,7 +242,7 @@ watchdog("last short", "<pre>" . print_r($last_short, true) . "</pre>");
                 $item->zscore = $avg;
         
         watchdog("diff short", "<pre>" . print_r($diff_short->d, true) . "</pre>");
-        watchdog("date interval", "<pre>" . print_r(new DateInterval('P' . $i . 'D'), true) . "</pre>");
+        watchdog("date interval", "<pre>" . print_r($date1->sub(new DateInterval('P' . $i . 'D'), true) . "</pre>");
                 $item->date = $date1->sub(new DateInterval('P' . $i . 'D'));
                 $new_shorter[] = $item;
             }
@@ -251,7 +251,7 @@ watchdog("last short", "<pre>" . print_r($last_short, true) . "</pre>");
     }
     watchdog("new shorter after", "<pre>" . print_r($new_shorter, true) . "</pre>");
         $shorter = array_merge($new_shorter, $shorter);
-        usort($array, 'date_compare');
+        usort($shorter, 'sentiment_stat_date_compare');
     watchdog("shorter after", "<pre>" . print_r($shorter, true) . "</pre>");
 }
 
