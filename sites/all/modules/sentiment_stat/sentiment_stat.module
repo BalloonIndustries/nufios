@@ -249,6 +249,7 @@ function sentiment_stat_change_date(&$values, $collected = false) {
     foreach($values as &$value) {
         $value->date = date("m-d", $value->date - $correction);
     }
+    watchdog("date values", "<pre>" . print_r($values, true) . "</pre>");
 }
 
 /**
