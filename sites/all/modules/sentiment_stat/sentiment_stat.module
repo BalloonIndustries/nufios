@@ -233,6 +233,7 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
                 watchdog("i count", "<pre>" . print_r($i, true) . "</pre>");
                 $item = new stdClass();
                 $item->zscore = $avg;
+                watchdog("date1 diff short", "<pre>" . print_r($date1, true) . "</pre>");
                 $item->date = $date1->sub(new DateInterval('P' . $i . 'D'));
                 $new_shorter[] = $item;
             }
