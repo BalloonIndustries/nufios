@@ -222,7 +222,7 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
         }
         $date1 = new DateTime(date('Y') . '-' . $short->date);
         $date2 = new DateTime(date('Y') . '-' . $last_short->date);
-        $diff_short = $date1 - $date2;
+        $diff_short = $date1->diff($date2);
         watchdog("diff short", "<pre>" . print_r($diff_short, true) . "</pre>");
         if ($diff_short > 1) {
             $avg = ($short->zscore + $last_short->zscore)/2;
