@@ -233,6 +233,7 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
         }
         $date2 = new DateTime($short->date);
         $date1 = new DateTime($last_short->date);
+         watchdog("date1 before all", "<pre>" . print_r($date1, true) . "</pre>");
         $diff_short = $date1->diff($date2);
         watchdog("short", "<pre>" . print_r($short, true) . "</pre>");
 watchdog("last short", "<pre>" . print_r($last_short->date, true) . "</pre>");
