@@ -248,7 +248,7 @@ watchdog("last short", "<pre>" . print_r($last_short->date, true) . "</pre>");
                 $item->zscore = $avg;
         
         watchdog("diff short", "<pre>" . print_r($diff_short->d, true) . "</pre>");
-        watchdog("date interval", "<pre>" . print_r(date_format($date1->sub(new DateInterval('P' . $i . 'D')), "Y-m-d"), true) . "</pre>");
+        //watchdog("date interval", "<pre>" . print_r(date_format($date1->sub(new DateInterval('P' . $i . 'D')), "Y-m-d"), true) . "</pre>");
         watchdog("date 1 first", "<pre>" . print_r(date_format($date1, "Y-m-d"), true) . "</pre>");
         $date_sub = clone $date1;
         watchdog("date sub", "<pre>" . print_r(date_format($date_sub, "Y-m-d"), true) . "</pre>");
