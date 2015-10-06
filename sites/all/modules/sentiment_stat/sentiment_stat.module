@@ -247,17 +247,18 @@ watchdog("last short", "<pre>" . print_r($last_short->date, true) . "</pre>");
                 $item = new stdClass();
                 $item->zscore = $avg;
         
-        watchdog("diff short", "<pre>" . print_r($diff_short->d, true) . "</pre>");
+        //watchdog("diff short", "<pre>" . print_r($diff_short->d, true) . "</pre>");
         //watchdog("date interval", "<pre>" . print_r(date_format($date1->sub(new DateInterval('P' . $i . 'D')), "Y-m-d"), true) . "</pre>");
         watchdog("date 1 first", "<pre>" . print_r(date_format($date1, "Y-m-d"), true) . "</pre>");
+        watchdog("date 2 first", "<pre>" . print_r(date_format($date2, "Y-m-d"), true) . "</pre>");
         $date_sub = clone $date1;
         watchdog("date sub", "<pre>" . print_r(date_format($date_sub, "Y-m-d"), true) . "</pre>");
         //$item->date = date_format($date_sub->sub(new DateInterval('P' . $i . 'D')), "Y-m-d");
         $pvd = 'P' . $i . 'D';
         $item->date = date_format($date_sub->add(new DateInterval($pvd)), "Y-m-d");
-        watchdog("item date", "<pre>" . print_r($item->date, true) . "</pre>");
-        watchdog("pvd", "<pre>" . print_r($pvd, true) . "</pre>");
-        watchdog("date 1 second", "<pre>" . print_r(date_format($date1, "Y-m-d"), true) . "</pre>");
+        //watchdog("item date", "<pre>" . print_r($item->date, true) . "</pre>");
+        //watchdog("pvd", "<pre>" . print_r($pvd, true) . "</pre>");
+        //watchdog("date 1 second", "<pre>" . print_r(date_format($date1, "Y-m-d"), true) . "</pre>");
                 $new_shorter[] = $item;
             }
         }
