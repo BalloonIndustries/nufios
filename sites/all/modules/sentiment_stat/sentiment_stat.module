@@ -224,6 +224,8 @@ function sentiment_stat_remove_days(&$x, &$y) {
   $ydates = sentiment_stat_return_dates($y);
   $xdates = sentiment_stat_return_dates($x);
   foreach ($x as $xkey => $xval) {
+    watchdog("ydates", "<pre>" . print_r($ydates, true) . "</pre>");
+    watchdog("xval", "<pre>" . print_r($xval, true) . "</pre>");
     if (!in_array($xval->date, $ydates)) {
       unset($x[$xkey]);
     }
