@@ -257,7 +257,7 @@ watchdog("last short", "<pre>" . print_r($last_short->date, true) . "</pre>");
         $date_sub = clone $date1;
         watchdog("date sub", "<pre>" . print_r(date_format($date_sub, "Y-m-d"), true) . "</pre>");
         //$item->date = date_format($date_sub->sub(new DateInterval('P' . $i . 'D')), "Y-m-d");
-        $pvd = 'P' . ($i + 1) . 'D';
+        $pvd = 'P' . ($i - 1) . 'D';
         $item->date = date_format($date_sub->sub(new DateInterval($pvd)), "Y-m-d");
         //watchdog("item date", "<pre>" . print_r($item->date, true) . "</pre>");
         //watchdog("pvd", "<pre>" . print_r($pvd, true) . "</pre>");
