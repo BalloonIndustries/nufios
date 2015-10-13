@@ -222,6 +222,8 @@ function sentiment_stat_date_compare($a, $b)
 }
 
 function sentiment_stat_add_days(&$longer, &$shorter) {
+  watchdog("count longer", "<pre>" . print_r(count($longer), true) . "</pre>");
+  watchdog("count shorter", "<pre>" . print_r(count($shorter), true) . "</pre>");
     watchdog("shorter", "<pre>" . print_r($shorter, true) . "</pre>");
     $long = sentiment_stat_return_dates($longer);
     $new_shorter = array();
