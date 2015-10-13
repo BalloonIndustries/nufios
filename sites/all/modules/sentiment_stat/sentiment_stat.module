@@ -110,27 +110,20 @@ function sentiment_stat_calculate() {
   
   $weekend = array(true, false);
   
+  $array = array();
+  
   foreach($moods as $mood) {
     foreach($stockstuffs as $stockstuff) {
       foreach($weekend as $weekendday) {
-        sentiment_stat_corr($mood, $stockstuff, $weekendday);
+        sentiment_stat_corr($array, $mood, $stockstuff, $weekendday);
       }
     }
   }
-  
-  
-  sentiment_stat_corr("hostile", "stockinfo_exchange_close");
-  sentiment_stat_corr("elated", "stockinfo_exchange_close");
-  sentiment_stat_corr("depressed", "stockinfo_exchange_close");
-  sentiment_stat_corr("agreeable", "stockinfo_exchange_close");
-  sentiment_stat_corr("anxious", "stockinfo_exchange_close");
-  sentiment_stat_corr("clearheaded", "stockinfo_exchange_close");
-  sentiment_stat_corr("confused", "stockinfo_exchange_close");
-  sentiment_stat_corr("composed", "stockinfo_exchange_close");
-  sentiment_stat_corr("tired", "stockinfo_exchange_close");
+  asort($array);
+  watchdog("final array", "<pre>" . print_r($array, true) . "</pre>");
 }
 
-function sentiment_stat_corr($field1, $field2, $weekend = false) {
+function sentiment_stat_corr(&$array, $field1, $field2, $weekend = false) {
   $date = 1439769600;
   $x = db_select("sentiment_stat", "tb")
       ->fields("tb", array("zscore", "date"))
@@ -179,6 +172,7 @@ function sentiment_stat_corr($field1, $field2, $weekend = false) {
     $regression["day"] = $day;
     $regression["field"] = $field1;
     watchdog("regression" . $field1 . " " . $day . "weekend: " . $weekend, "<pre>" . print_r($regression['m'], true) . "</pre>");
+    $array["regression" . $field1 . " " . $day . "weekend: " . $weekend] = $regression["m"];
   }
 }
 
