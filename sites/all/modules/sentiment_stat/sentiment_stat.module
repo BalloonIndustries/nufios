@@ -91,14 +91,14 @@ function sentiment_stat_calculate() {
     }
     }
     sentiment_stat_corr("hostile", "stockinfo_exchange_close");
-    /*sentiment_stat_corr("elated", "stockinfo_exchange_close");
+    sentiment_stat_corr("elated", "stockinfo_exchange_close");
     sentiment_stat_corr("depressed", "stockinfo_exchange_close");
     sentiment_stat_corr("agreeable", "stockinfo_exchange_close");
     sentiment_stat_corr("anxious", "stockinfo_exchange_close");
     sentiment_stat_corr("clearheaded", "stockinfo_exchange_close");
     sentiment_stat_corr("confused", "stockinfo_exchange_close");
     sentiment_stat_corr("composed", "stockinfo_exchange_close");
-    sentiment_stat_corr("tired", "stockinfo_exchange_close");*/
+    sentiment_stat_corr("tired", "stockinfo_exchange_close");
 }
 
 function sentiment_stat_corr($field1, $field2) {
