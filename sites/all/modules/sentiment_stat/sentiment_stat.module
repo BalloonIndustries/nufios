@@ -178,7 +178,7 @@ function sentiment_stat_corr($field1, $field2, $weekend = false) {
     $regression = sentiment_stat_linear_regression($x, $y);
     $regression["day"] = $day;
     $regression["field"] = $field1;
-    watchdog("regression" . $field1 . " " . $day, "<pre>" . print_r($regression['m'], true) . "</pre>");
+    watchdog("regression" . $field1 . " " . $day . "weekend: " . $weekend, "<pre>" . print_r($regression['m'], true) . "</pre>");
   }
 }
 
