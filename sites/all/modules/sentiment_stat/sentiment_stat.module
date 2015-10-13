@@ -3,253 +3,281 @@
 /**
  * @file calculates statistics
  */
-
 function sentiment_stat_menu() {
-      $items['admin/config/services/stat'] = array(
+  $items['admin/config/services/stat'] = array(
     'title' => 'Sentiment Stat Test',
     'description' => t('Test stat generation'),
     'page callback' => array('sentiment_stat_calculate'),
     'access arguments' => array('administer site configuration'),
   );
-        return $items;
+  return $items;
 }
 
 /**
  * Keeps values for calculation.
  */
 function sentiment_stat_values() {
-    $tables = array(
-        'sentiment_analyzer' => array(
-            'elated',
-            'depressed',
-            'confused',
-            'clearheaded',
-            'anxious',
-            'composed',
-            'tired',
-            'energetic',
-            'hostile',
-            'agreeable',
-        ),
-        'stockinfo_exchange' => array(
-            'stockinfo_exchange_close',
-            'stockinfo_exchange_high',
-            'stockinfo_exchange_low',
-        ),
-    );
-    return $tables;
+  $tables = array(
+    'sentiment_analyzer' => array(
+      'elated',
+      'depressed',
+      'confused',
+      'clearheaded',
+      'anxious',
+      'composed',
+      'tired',
+      'energetic',
+      'hostile',
+      'agreeable',
+    ),
+    'stockinfo_exchange' => array(
+      'stockinfo_exchange_close',
+      'stockinfo_exchange_high',
+      'stockinfo_exchange_low',
+    ),
+  );
+  return $tables;
 }
 
 /**
  * 
  */
-
 function sentiment_stat_calculate() {
-      db_delete("{sentiment_stat}")
+  db_delete("{sentiment_stat}")
       ->execute();
-    $tables = sentiment_stat_values();
-    foreach ($tables as $table => $fields) {
-        foreach($fields as $field) {
-    $mean_init = 0;
-    $sa = db_select($table, "tb")
-    ->fields("tb", array($field, "date"))
-    ->execute()
-    ->fetchAll();
-    foreach($sa as $number) {
+  $tables = sentiment_stat_values();
+  foreach ($tables as $table => $fields) {
+    foreach ($fields as $field) {
+      $mean_init = 0;
+      $sa = db_select($table, "tb")
+          ->fields("tb", array($field, "date"))
+          ->execute()
+          ->fetchAll();
+      foreach ($sa as $number) {
         $mean_init = $mean_init + $number->$field;
-    }
-    $mean = $mean_init / count($sa);
-    watchdog("sa", "<pre>" . print_r($sa, true) . "</pre>");
-    watchdog("mean", "<pre>" . print_r($mean, true) . "</pre>");
-    $variance_init = 0;
-    foreach($sa as $number) {
+      }
+      $mean = $mean_init / count($sa);
+      watchdog("sa", "<pre>" . print_r($sa, true) . "</pre>");
+      watchdog("mean", "<pre>" . print_r($mean, true) . "</pre>");
+      $variance_init = 0;
+      foreach ($sa as $number) {
         $variance_init = $variance_init + pow(($number->$field - $mean), 2);
-    }
-    $variance = $variance_init / count($sa);
-    watchdog("variance", "<pre>" . print_r($variance, true) . "</pre>");
-    $std = sqrt($variance);
-    watchdog("std", "<pre>" . print_r($std, true) . "</pre>");
-    $zscore_array = array();
-    foreach($sa as $number) {
+      }
+      $variance = $variance_init / count($sa);
+      watchdog("variance", "<pre>" . print_r($variance, true) . "</pre>");
+      $std = sqrt($variance);
+      watchdog("std", "<pre>" . print_r($std, true) . "</pre>");
+      $zscore_array = array();
+      foreach ($sa as $number) {
         $zscore = ($number->$field - $mean) / $std;
         $zscore_array[] = $zscore;
         db_insert("sentiment_stat")
-        ->fields(
+            ->fields(
                 array(
-                    // Change field to some combo of field at some point soon
-                    "type" => $field,
-                    "category" => "feeling",
-                    "mean" => $mean,
-                    "std" => $std,
-                    "variance" => $variance,
-                    "zscore" => $zscore,
-                    "date" => $number->date,
-                    )
-                )->execute();
+                  // Change field to some combo of field at some point soon
+                  "type" => $field,
+                  "category" => "feeling",
+                  "mean" => $mean,
+                  "std" => $std,
+                  "variance" => $variance,
+                  "zscore" => $zscore,
+                  "date" => $number->date,
+                )
+            )->execute();
+      }
+      watchdog("zscore", "<pre>" . print_r($zscore_array, true) . "</pre>");
     }
-    watchdog("zscore", "<pre>" . print_r($zscore_array, true) . "</pre>");
+  }
+  
+  // shitty code, rewrite
+  
+  $moods = array(
+    "hostile",
+    "elated",
+    "depressed",
+    "agreeable",
+    "anxious",
+    "clearheaded",
+    "confused",
+    "composed",
+    "tired");
+  
+  $stockstuffs = array(
+    "stockinfo_exchange_close",
+    "stockinfo_exchange_open",
+    "stockinfo_exchange_low",
+    "stockinfo_exchange_high");
+  
+  $weekend = array(true, false);
+  
+  foreach($moods as $mood) {
+    foreach($stockstuffs as $stockstuff) {
+      foreach($weekend as $weekendday) {
+        sentiment_stat_corr($mood, $stockstuff, $weekendday);
+      }
     }
-    }
-    sentiment_stat_corr("hostile", "stockinfo_exchange_close");
-    sentiment_stat_corr("elated", "stockinfo_exchange_close");
-    sentiment_stat_corr("depressed", "stockinfo_exchange_close");
-    sentiment_stat_corr("agreeable", "stockinfo_exchange_close");
-    sentiment_stat_corr("anxious", "stockinfo_exchange_close");
-    sentiment_stat_corr("clearheaded", "stockinfo_exchange_close");
-    sentiment_stat_corr("confused", "stockinfo_exchange_close");
-    sentiment_stat_corr("composed", "stockinfo_exchange_close");
-    sentiment_stat_corr("tired", "stockinfo_exchange_close");
+  }
+  
+  
+  sentiment_stat_corr("hostile", "stockinfo_exchange_close");
+  sentiment_stat_corr("elated", "stockinfo_exchange_close");
+  sentiment_stat_corr("depressed", "stockinfo_exchange_close");
+  sentiment_stat_corr("agreeable", "stockinfo_exchange_close");
+  sentiment_stat_corr("anxious", "stockinfo_exchange_close");
+  sentiment_stat_corr("clearheaded", "stockinfo_exchange_close");
+  sentiment_stat_corr("confused", "stockinfo_exchange_close");
+  sentiment_stat_corr("composed", "stockinfo_exchange_close");
+  sentiment_stat_corr("tired", "stockinfo_exchange_close");
 }
 
-function sentiment_stat_corr($field1, $field2) {
-    $date = 1439769600;
-    $x = db_select("sentiment_stat", "tb")
-    ->fields("tb", array("zscore", "date"))
-            ->condition('type', $field1,'=')
-            ->condition('date', $date, '>')
-    ->execute()
-    ->fetchAll();
-    
-    $y = db_select("sentiment_stat", "tb")
-    ->fields("tb", array("zscore", "date"))
-            ->condition('type', $field2,'=')
-            ->condition('date', $date, '>')
-    ->execute()
-    ->fetchAll();
-    
-        watchdog("x", "<pre>" . print_r($x, true) . "</pre>");
-    watchdog("y", "<pre>" . print_r($y, true) . "</pre>");
-    
-    sentiment_stat_process_weekends($x, $y, true);
-    
-    watchdog("x after", "<pre>" . print_r($x, true) . "</pre>");
-    watchdog("y after", "<pre>" . print_r($y, true) . "</pre>");
-    
-    $days = array(0, 1, 2, 3, 4);
-    
-    foreach($days as $day) {
-    
+function sentiment_stat_corr($field1, $field2, $weekend = false) {
+  $date = 1439769600;
+  $x = db_select("sentiment_stat", "tb")
+      ->fields("tb", array("zscore", "date"))
+      ->condition('type', $field1, '=')
+      ->condition('date', $date, '>')
+      ->execute()
+      ->fetchAll();
+
+  $y = db_select("sentiment_stat", "tb")
+      ->fields("tb", array("zscore", "date"))
+      ->condition('type', $field2, '=')
+      ->condition('date', $date, '>')
+      ->execute()
+      ->fetchAll();
+
+  watchdog("x", "<pre>" . print_r($x, true) . "</pre>");
+  watchdog("y", "<pre>" . print_r($y, true) . "</pre>");
+
+  sentiment_stat_process_weekends($x, $y, $weekend);
+
+  watchdog("x after", "<pre>" . print_r($x, true) . "</pre>");
+  watchdog("y after", "<pre>" . print_r($y, true) . "</pre>");
+
+  $days = array(0, 1, 2, 3, 4);
+
+  foreach ($days as $day) {
+
     $x = array_slice($x, 0, count($x) - $day);
     $y = array_slice($y, $day);
-    
+
     watchdog("x before reg", "<pre>" . print_r($x, true) . "</pre>");
     watchdog("y before reg", "<pre>" . print_r($y, true) . "</pre>");
-    /*$coords = array();
-    for($i = 0; $i <= count($x) - 1; $i++) {
-        $coords[] =  strval($x[$i]) . "," . strval($y[$i]) . PHP_EOL;
-    }
-    
-    $unified = implode("", $coords);
-    
-    
-    watchdog($field1 . " coords", "<pre>" . print_r($coords, true) . "</pre>");
-    
-    watchdog($field1 . $day, "<pre>" . print_r($unified, true) . "</pre>");
-    */
+    /* $coords = array();
+      for($i = 0; $i <= count($x) - 1; $i++) {
+      $coords[] =  strval($x[$i]) . "," . strval($y[$i]) . PHP_EOL;
+      }
+
+      $unified = implode("", $coords);
+
+
+      watchdog($field1 . " coords", "<pre>" . print_r($coords, true) . "</pre>");
+
+      watchdog($field1 . $day, "<pre>" . print_r($unified, true) . "</pre>");
+     */
     $regression = sentiment_stat_linear_regression($x, $y);
     $regression["day"] = $day;
     $regression["field"] = $field1;
     watchdog("regression" . $field1 . " " . $day, "<pre>" . print_r($regression['m'], true) . "</pre>");
-    }
+  }
 }
 
 /**
  * Responsible for figuring out what days are weekends/holidays.
  */
 function sentiment_stat_process_weekends(&$x, &$y, $interpolate = true) {
-    if($interpolate == true) {
-        sentiment_stat_change_date($x, true);
-        sentiment_stat_change_date($y);
-            watchdog("y date", "<pre>" . print_r($y, true) . "</pre>");
-                watchdog("x date", "<pre>" . print_r($x, true) . "</pre>");
-    if(count($x) > count($y)) {
-        sentiment_stat_add_days($x, $y);
-        $y = sentiment_stat_remove_dates($y);
-        $x = sentiment_stat_remove_dates($x);
+  if ($interpolate == true) {
+    sentiment_stat_change_date($x, true);
+    sentiment_stat_change_date($y);
+    watchdog("y date", "<pre>" . print_r($y, true) . "</pre>");
+    watchdog("x date", "<pre>" . print_r($x, true) . "</pre>");
+    if (count($x) > count($y)) {
+      sentiment_stat_add_days($x, $y);
+      $y = sentiment_stat_remove_dates($y);
+      $x = sentiment_stat_remove_dates($x);
     }
-    else if(count($y) > count($x)) {
-        sentiment_stat_add_days($x, $y);
-        $y = sentiment_stat_remove_dates($y);
-        $x = sentiment_stat_remove_dates($x);
+    else if (count($y) > count($x)) {
+      sentiment_stat_add_days($x, $y);
+      $y = sentiment_stat_remove_dates($y);
+      $x = sentiment_stat_remove_dates($x);
     }
-    }
-    else if($interpolate == false) {
-        $x = sentiment_stat_remove_days($x);
-        $y = sentiment_stat_remove_dates($y);
-    }
+  }
+  else if ($interpolate == false) {
+    $x = sentiment_stat_remove_days($x);
+    $y = sentiment_stat_remove_dates($y);
+  }
 }
 
 function sentiment_stat_remove_dates($array) {
-    $coordarray = array();
-    foreach($array as $val) {
-        $coordarray[] = $val->zscore; //switch to field
-    }
-return $coordarray;
+  $coordarray = array();
+  foreach ($array as $val) {
+    $coordarray[] = $val->zscore; //switch to field
+  }
+  return $coordarray;
 }
 
 function sentiment_stat_return_dates($array) {
-    $dates = array();
-    foreach($array as $val) {
-        $dates[] = $val->date;
-    }
-    return $dates;
+  $dates = array();
+  foreach ($array as $val) {
+    $dates[] = $val->date;
+  }
+  return $dates;
 }
 
 function sentiment_stat_remove_days(&$x, &$y) {
-            sentiment_stat_change_date($x, true);
-        sentiment_stat_change_date($y);
-        $ydates = sentiment_stat_return_dates($y);
-        $xdates = sentiment_stat_return_dates($x);
-        foreach($x as $xkey => $xval) {
-            if(!in_array($xval->date, $ydates)) {
-                unset($x[$xkey]);
-            }
-          foreach($y as $ykey => $yval) {
-            if(!in_array($yval->date, $xdates)) {
-                unset($y[$ykey]);
-            }
-        }
-}
+  sentiment_stat_change_date($x, true);
+  sentiment_stat_change_date($y);
+  $ydates = sentiment_stat_return_dates($y);
+  $xdates = sentiment_stat_return_dates($x);
+  foreach ($x as $xkey => $xval) {
+    if (!in_array($xval->date, $ydates)) {
+      unset($x[$xkey]);
+    }
+    foreach ($y as $ykey => $yval) {
+      if (!in_array($yval->date, $xdates)) {
+        unset($y[$ykey]);
+      }
+    }
+  }
 }
 
-function sentiment_stat_date_compare($a, $b)
-{
-    watchdog("a", "<pre>" . print_r($a, true) . "</pre>");
-    watchdog("b", "<pre>" . print_r($b, true) . "</pre>");
-    $t1 = strtotime($a->date);
-    $t2 = strtotime($b->date);
-    return $t1 - $t2;
+function sentiment_stat_date_compare($a, $b) {
+  watchdog("a", "<pre>" . print_r($a, true) . "</pre>");
+  watchdog("b", "<pre>" . print_r($b, true) . "</pre>");
+  $t1 = strtotime($a->date);
+  $t2 = strtotime($b->date);
+  return $t1 - $t2;
 }
 
 function sentiment_stat_add_days(&$longer, &$shorter) {
   watchdog("count longer", "<pre>" . print_r(count($longer), true) . "</pre>");
   watchdog("count shorter", "<pre>" . print_r(count($shorter), true) . "</pre>");
-    watchdog("shorter", "<pre>" . print_r($shorter, true) . "</pre>");
-    $long = sentiment_stat_return_dates($longer);
-    $new_shorter = array();
-    foreach($shorter as $short) {
-        if(!isset($last_short)) {
-            watchdog("first short", "<pre>" . print_r($short, true) . "</pre>");
-            $last_short = $short;
-            continue;
-        }
-        $date2 = new DateTime($short->date);
-        $date1 = new DateTime($last_short->date);
-         watchdog("date1 before all", "<pre>" . print_r(date_format($date1, "Y-m-d"), true) . "</pre>");
-         watchdog("date2 before all", "<pre>" . print_r(date_format($date2, "Y-m-d"), true) . "</pre>");
-        $diff_short = $date1->diff($date2);
-        watchdog("short", "<pre>" . print_r($short, true) . "</pre>");
-watchdog("last short", "<pre>" . print_r($last_short->date, true) . "</pre>");
-        if ($diff_short->d > 1) {
-            watchdog("last short diff", "<pre>" . print_r(date_format($date1, "Y-m-d"), true) . "</pre>");
-            watchdog("diff short d", "<pre>" . print_r($diff_short->d, true) . "</pre>");
-            
-            $avg = ($short->zscore + $last_short->zscore)/2;
-            for($i = $diff_short->d; $i > 1; $i--) {
-                watchdog("i count", "<pre>" . print_r($i, true) . "</pre>");
-                $item = new stdClass();
-                $item->zscore = $avg;
-        
+  watchdog("shorter", "<pre>" . print_r($shorter, true) . "</pre>");
+  $long = sentiment_stat_return_dates($longer);
+  $new_shorter = array();
+  foreach ($shorter as $short) {
+    if (!isset($last_short)) {
+      watchdog("first short", "<pre>" . print_r($short, true) . "</pre>");
+      $last_short = $short;
+      continue;
+    }
+    $date2 = new DateTime($short->date);
+    $date1 = new DateTime($last_short->date);
+    watchdog("date1 before all", "<pre>" . print_r(date_format($date1, "Y-m-d"), true) . "</pre>");
+    watchdog("date2 before all", "<pre>" . print_r(date_format($date2, "Y-m-d"), true) . "</pre>");
+    $diff_short = $date1->diff($date2);
+    watchdog("short", "<pre>" . print_r($short, true) . "</pre>");
+    watchdog("last short", "<pre>" . print_r($last_short->date, true) . "</pre>");
+    if ($diff_short->d > 1) {
+      watchdog("last short diff", "<pre>" . print_r(date_format($date1, "Y-m-d"), true) . "</pre>");
+      watchdog("diff short d", "<pre>" . print_r($diff_short->d, true) . "</pre>");
+
+      $avg = ($short->zscore + $last_short->zscore) / 2;
+      for ($i = $diff_short->d; $i > 1; $i--) {
+        watchdog("i count", "<pre>" . print_r($i, true) . "</pre>");
+        $item = new stdClass();
+        $item->zscore = $avg;
+
         //watchdog("diff short", "<pre>" . print_r($diff_short->d, true) . "</pre>");
         //watchdog("date interval", "<pre>" . print_r(date_format($date1->sub(new DateInterval('P' . $i . 'D')), "Y-m-d"), true) . "</pre>");
         watchdog("date 1 first", "<pre>" . print_r(date_format($date1, "Y-m-d"), true) . "</pre>");
@@ -262,27 +290,27 @@ watchdog("last short", "<pre>" . print_r($last_short->date, true) . "</pre>");
         //watchdog("item date", "<pre>" . print_r($item->date, true) . "</pre>");
         //watchdog("pvd", "<pre>" . print_r($pvd, true) . "</pre>");
         //watchdog("date 1 second", "<pre>" . print_r(date_format($date1, "Y-m-d"), true) . "</pre>");
-                $new_shorter[] = $item;
-            }
-        }
-        $last_short = $short;
+        $new_shorter[] = $item;
+      }
     }
-    watchdog("new shorter after", "<pre>" . print_r($new_shorter, true) . "</pre>");
-        $shorter = array_merge($new_shorter, $shorter);
-        usort($shorter, 'sentiment_stat_date_compare');
-    watchdog("shorter after", "<pre>" . print_r($shorter, true) . "</pre>");
+    $last_short = $short;
+  }
+  watchdog("new shorter after", "<pre>" . print_r($new_shorter, true) . "</pre>");
+  $shorter = array_merge($new_shorter, $shorter);
+  usort($shorter, 'sentiment_stat_date_compare');
+  watchdog("shorter after", "<pre>" . print_r($shorter, true) . "</pre>");
 }
 
 function sentiment_stat_change_date(&$values, $collected = false) {
-    // If the value is collected, it may be collected a few hours too late.
-    $correction = 0;
-    if($collected == true) {
-        $correction = 21600;
-    }
-    foreach($values as &$value) {
-        $value->date = date("Y-m-d", $value->date - $correction);
-    }
-    watchdog("date values", "<pre>" . print_r($values, true) . "</pre>");
+  // If the value is collected, it may be collected a few hours too late.
+  $correction = 0;
+  if ($collected == true) {
+    $correction = 21600;
+  }
+  foreach ($values as &$value) {
+    $value->date = date("Y-m-d", $value->date - $correction);
+  }
+  watchdog("date values", "<pre>" . print_r($values, true) . "</pre>");
 }
 
 /**
@@ -295,12 +323,11 @@ function sentiment_stat_linear_regression($x, $y) {
 
   // calculate number points
   $n = count($x);
-  
+
   // ensure both arrays of points are the same size
   if ($n != count($y)) {
 
     watchdog("Linear Regression", "Number of elements in coordinate arrays do not match.");
-  
   }
 
   // calculate sums
@@ -309,32 +336,29 @@ function sentiment_stat_linear_regression($x, $y) {
 
   $xx_sum = 0;
   $xy_sum = 0;
-  
-  for($i = 0; $i < $n; $i++) {
-  
-    $xy_sum+=($x[$i]*$y[$i]);
-    $xx_sum+=($x[$i]*$x[$i]);
-    
+
+  for ($i = 0; $i < $n; $i++) {
+
+    $xy_sum+=($x[$i] * $y[$i]);
+    $xx_sum+=($x[$i] * $x[$i]);
   }
-  
+
   // calculate slope
   $m = (($n * $xy_sum) - ($x_sum * $y_sum)) / (($n * $xx_sum) - ($x_sum * $x_sum));
-  
+
   // calculate intercept
   $b = ($y_sum - ($m * $x_sum)) / $n;
-    
-  // return result
-  return array("m"=>$m, "b"=>$b);
 
+  // return result
+  return array("m" => $m, "b" => $b);
 }
 
 /**
  * Implements hook_views_api().
  */
-function sentiment_stat_views_api()
-{
-    return array(
-        'api' => 3,
-        'path' => drupal_get_path('module', 'sentiment_stat') . '/views',
-    );
+function sentiment_stat_views_api() {
+  return array(
+    'api' => 3,
+    'path' => drupal_get_path('module', 'sentiment_stat') . '/views',
+  );
 }
