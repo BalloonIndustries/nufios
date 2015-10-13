@@ -197,8 +197,9 @@ function sentiment_stat_process_weekends(&$x, &$y, $interpolate = true) {
     }
   }
   else if ($interpolate == false) {
-    $x = sentiment_stat_remove_days($x);
+    $x = sentiment_stat_remove_days($x, $y);
     $y = sentiment_stat_remove_dates($y);
+    $x = sentiment_stat_remove_dates($x);
   }
 }
 
