@@ -301,6 +301,7 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
   watchdog("new shorter after", "<pre>" . print_r($new_shorter, true) . "</pre>");
   $shorter = array_merge($new_shorter, $shorter);
   usort($shorter, 'sentiment_stat_date_compare');
+  array_pop($shorter);
   watchdog("shorter after", "<pre>" . print_r($shorter, true) . "</pre>");
 }
 
