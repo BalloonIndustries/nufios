@@ -227,6 +227,7 @@ function sentiment_stat_remove_dates($array) {
 
 function sentiment_stat_return_dates($array) {
   $dates = array();
+  watchdog("date value here", "<pre>" . print_r($array, true) . "</pre>");
   foreach ($array as $val) {
     $dates[] = $val->date;
   }
