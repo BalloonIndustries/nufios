@@ -108,7 +108,7 @@ function sentiment_stat_calculate() {
     "stockinfo_exchange_low",
     "stockinfo_exchange_high");
   
-  $weekend = array(true/*, false*/);
+  $weekend = array(true, false);
   
   $array = array();
   
@@ -197,7 +197,7 @@ function sentiment_stat_process_weekends(&$x, &$y, $interpolate = true) {
     }
   }
   else if ($interpolate == false) {
-    //$x = sentiment_stat_remove_days($x, $y);
+    sentiment_stat_remove_days($x, $y);
     watchdog("x remove days", "<pre>" . print_r($x, true) . "</pre>");
     watchdog("y remove days", "<pre>" . print_r($y, true) . "</pre>");
     $y = sentiment_stat_remove_dates($y);
