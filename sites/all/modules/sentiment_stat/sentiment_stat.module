@@ -108,7 +108,7 @@ function sentiment_stat_calculate() {
     "stockinfo_exchange_low",
     "stockinfo_exchange_high");
   
-  $weekend = array(true, false);
+  $weekend = array(true/*, false*/);
   
   $array = array();
   
