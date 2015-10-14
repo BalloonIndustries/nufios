@@ -306,10 +306,10 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
 
 function sentiment_stat_change_date(&$values, $collected = false) {
   // If the value is collected, it may be collected a few hours too late.
-  $correction = 0;
+  $correction = 0;/*
   if ($collected == true) {
     $correction = 21600;
-  }
+  }*/
   foreach ($values as &$value) {
     $value->date = date("Y-m-d", $value->date - $correction);
   }
