@@ -233,12 +233,12 @@ function sentiment_stat_remove_days(&$x, &$y) {
     if (!in_array($xval->date, $ydates)) {
       unset($x[$xkey]);
     }
+  }
     foreach ($y as $ykey => $yval) {
       if (!in_array($yval->date, $xdates)) {
         unset($y[$ykey]);
       }
     }
-  }
 }
 
 function sentiment_stat_date_compare($a, $b) {
