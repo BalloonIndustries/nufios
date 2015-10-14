@@ -234,7 +234,7 @@ function sentiment_stat_return_dates($array) {
 }
 
 function sentiment_stat_remove_days(&$x, &$y) {
-  sentiment_stat_change_date($x, true);
+  sentiment_stat_change_date($x);
   sentiment_stat_change_date($y);
   $ydates = sentiment_stat_return_dates($y);
   $xdates = sentiment_stat_return_dates($x);
@@ -243,11 +243,13 @@ function sentiment_stat_remove_days(&$x, &$y) {
     watchdog("ydates", "<pre>" . print_r($ydates, true) . "</pre>");
     watchdog("xval", "<pre>" . print_r($xval, true) . "</pre>");
     if (!in_array($xval->date, $ydates)) {
+      watchdog("date removed - x", "<pre>" . print_r($xval->date, true) . "</pre>");
       unset($x[$xkey]);
     }
   }
     foreach ($y as $ykey => $yval) {
       if (!in_array($yval->date, $xdates)) {
+        watchdog("date removed - y", "<pre>" . print_r($xval->date, true) . "</pre>");
         unset($y[$ykey]);
       }
     }
@@ -304,7 +306,7 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
   watchdog("new shorter after", "<pre>" . print_r($new_shorter, true) . "</pre>");
   $shorter = array_merge($new_shorter, $shorter);
   usort($shorter, 'sentiment_stat_date_compare');
-  array_pop($shorter);
+  usort($longer, 'sentiment_stat_date_compare');
   watchdog("shorter after", "<pre>" . print_r($shorter, true) . "</pre>");
 }
 
