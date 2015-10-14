@@ -157,6 +157,10 @@ function sentiment_stat_corr(&$array, &$array2, $field1, $field2, $weekend = fal
   $days = array(0, 1, 2, 3, 4);
 
   foreach ($days as $day) {
+    
+            sentiment_stat_remove_days($x, $y, $day);
+      $y = sentiment_stat_remove_dates($y);
+      $x = sentiment_stat_remove_dates($x);
 
     $x = array_slice($x, 0, count($x) - $day);
     $y = array_slice($y, $day);
@@ -191,29 +195,16 @@ function sentiment_stat_corr(&$array, &$array2, $field1, $field2, $weekend = fal
  */
 function sentiment_stat_process_weekends(&$x, &$y, $interpolate = true) {
   if ($interpolate == true) {
-    sentiment_stat_change_date($x, true);
+    sentiment_stat_change_date($x);
     sentiment_stat_change_date($y);
     watchdog("y date", "<pre>" . print_r($y, true) . "</pre>");
     watchdog("x date", "<pre>" . print_r($x, true) . "</pre>");
     if (count($x) > count($y)) {
       sentiment_stat_add_days($x, $y);
-      sentiment_stat_remove_days($x, $y);
-      $y = sentiment_stat_remove_dates($y);
-      $x = sentiment_stat_remove_dates($x);
     }
     else if (count($y) > count($x)) {
       sentiment_stat_add_days($y, $x);
-      sentiment_stat_remove_days($x, $y);
-      $y = sentiment_stat_remove_dates($y);
-      $x = sentiment_stat_remove_dates($x);
     }
-  }
-  else if ($interpolate == false) {
-    sentiment_stat_remove_days($x, $y);
-    watchdog("x remove days", "<pre>" . print_r($x, true) . "</pre>");
-    watchdog("y remove days", "<pre>" . print_r($y, true) . "</pre>");
-    $y = sentiment_stat_remove_dates($y);
-    $x = sentiment_stat_remove_dates($x);
   }
 }
 
@@ -234,7 +225,7 @@ function sentiment_stat_return_dates($array) {
   return $dates;
 }
 
-function sentiment_stat_remove_days(&$x, &$y) {
+function sentiment_stat_remove_days(&$x, &$y, $offset) {
   sentiment_stat_change_date($x);
   sentiment_stat_change_date($y);
   $ydates = sentiment_stat_return_dates($y);
@@ -249,7 +240,8 @@ function sentiment_stat_remove_days(&$x, &$y) {
     }
   }
     foreach ($y as $ykey => $yval) {
-      if (!in_array($yval->date, $xdates)) {
+      $yremove = date("Y-m-d", strtotime("-".$offset." days", strtotime($yval->date)));
+      if (!in_array($yremove, $xdates)) {
         watchdog("date removed - y", "<pre>" . print_r($xval->date, true) . "</pre>");
         unset($y[$ykey]);
       }
