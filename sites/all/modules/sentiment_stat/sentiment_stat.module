@@ -144,6 +144,9 @@ function sentiment_stat_corr(&$array, &$array2, $field1, $field2, $weekend = fal
       ->fetchAll();
 
   watchdog("x", "<pre>" . print_r($x, true) . "</pre>");
+  $xchanged = $x;
+  sentiment_stat_change_date($xchanged);
+  watchdog("xchanged", "<pre>" . print_r($xchanged, true) . "</pre>");
   watchdog("y", "<pre>" . print_r($y, true) . "</pre>");
 
   sentiment_stat_process_weekends($x, $y, $weekend);
