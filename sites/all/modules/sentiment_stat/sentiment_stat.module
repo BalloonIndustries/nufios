@@ -187,11 +187,13 @@ function sentiment_stat_process_weekends(&$x, &$y, $interpolate = true) {
     watchdog("x date", "<pre>" . print_r($x, true) . "</pre>");
     if (count($x) > count($y)) {
       sentiment_stat_add_days($x, $y);
+      sentiment_stat_remove_days($x, $y);
       $y = sentiment_stat_remove_dates($y);
       $x = sentiment_stat_remove_dates($x);
     }
     else if (count($y) > count($x)) {
       sentiment_stat_add_days($y, $x);
+      sentiment_stat_remove_days($x, $y);
       $y = sentiment_stat_remove_dates($y);
       $x = sentiment_stat_remove_dates($x);
     }
