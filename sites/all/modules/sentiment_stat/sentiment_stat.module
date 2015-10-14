@@ -298,7 +298,7 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
         $date_sub = clone $date1;
         watchdog("date sub", "<pre>" . print_r(date_format($date_sub, "Y-m-d"), true) . "</pre>");
         $pvd = 'P' . ($i - 1) . 'D';
-        $item->date = date_format($date_sub->sub(new DateInterval($pvd)), "Y-m-d");
+        $item->date = strtotime(date_format($date_sub->sub(new DateInterval($pvd)), "Y-m-d"));
         $new_shorter[] = $item;
       }
     }
