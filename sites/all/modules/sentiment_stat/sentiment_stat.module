@@ -328,7 +328,7 @@ function sentiment_stat_linear_regression($x, $y) {
   if ($n != count($y)) {
     
     watchdog("n number", "<pre>" . print_r($n, true) . "</pre>");
-    watchdog("count y", "<pre>" . print_r(count(y), true) . "</pre>");
+    watchdog("count y", "<pre>" . print_r(count($y), true) . "</pre>");
 
     watchdog("Linear Regression", "Number of elements in coordinate arrays do not match.");
   }
