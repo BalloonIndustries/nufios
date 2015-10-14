@@ -121,8 +121,8 @@ function sentiment_stat_calculate() {
   }
   asort($array);
   asort($array2);
-  watchdog("final array", "<pre>" . print_r($array, true) . "</pre>");
-  watchdog("correlation array", "<pre>" . print_r($array2, true) . "</pre>");
+  watchdog("final array", "<pre>" . print_r(array_filter($array, 'is_numeric'), true) . "</pre>");
+  watchdog("correlation array", "<pre>" . print_r(array_filter($array2, 'is_numeric'), true) . "</pre>");
 }
 
 function sentiment_stat_corr(&$array, &$array2, $field1, $field2, $weekend = false) {
