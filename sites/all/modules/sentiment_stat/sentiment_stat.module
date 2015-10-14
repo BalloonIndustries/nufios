@@ -125,7 +125,7 @@ function sentiment_stat_calculate() {
   watchdog("correlation array", "<pre>" . print_r($array2, true) . "</pre>");
 }
 
-function sentiment_stat_corr(&$array, $array2, $field1, $field2, $weekend = false) {
+function sentiment_stat_corr(&$array, &$array2, $field1, $field2, $weekend = false) {
   $date = 1439769600;
   $x = db_select("sentiment_stat", "tb")
       ->fields("tb", array("zscore", "date"))
