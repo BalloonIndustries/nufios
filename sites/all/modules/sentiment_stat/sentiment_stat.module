@@ -298,7 +298,7 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
         $date_sub = clone $date1;
         watchdog("date sub", "<pre>" . print_r(date_format($date_sub, "Y-m-d"), true) . "</pre>");
         $pvd = 'P' . ($i - 1) . 'D';
-        $item->date = strtotime(date_format($date_sub->sub(new DateInterval($pvd)), "Y-m-d"));
+        $item->date = date_format($date_sub->sub(new DateInterval($pvd)), "Y-m-d");
         $new_shorter[] = $item;
       }
     }
@@ -318,6 +318,10 @@ function sentiment_stat_change_date(&$values, $collected = false) {
     $correction = 21600;
   }*/
   foreach ($values as &$value) {
+    // normalize as timestamp
+    if(!is_numeric($value->date)) {
+      $value->date = strtotime($value->date);
+    }
     watchdog("date value individual", "<pre>" . print_r($value, true) . "</pre>");
     $value->date = date("Y-m-d", $value->date);
   }
