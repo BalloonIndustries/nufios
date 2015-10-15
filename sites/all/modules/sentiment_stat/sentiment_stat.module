@@ -311,11 +311,13 @@ function sentiment_stat_change_date(&$values, $collected = false) {
   }*/
   foreach ($values as &$value) {
     // normalize as timestamp
+    if(isset($value->date)) {
     if(!is_numeric($value->date)) {
       $value->date = strtotime($value->date);
     }
     watchdog("date value individual", "<pre>" . print_r($value, true) . "</pre>");
     $value->date = date("Y-m-d", $value->date);
+  }
   }
   watchdog("date values", "<pre>" . print_r($values, true) . "</pre>");
 }
