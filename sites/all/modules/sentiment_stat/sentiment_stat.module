@@ -225,7 +225,7 @@ function sentiment_stat_return_dates($array) {
   return $dates;
 }
 
-function sentiment_stat_remove_days(&$x, &$y, $offset) {
+function sentiment_stat_remove_days(&$x, &$y, $days) {
   sentiment_stat_change_date($x);
   sentiment_stat_change_date($y);
   $ydates = sentiment_stat_return_dates($y);
