@@ -169,7 +169,7 @@ function sentiment_stat_corr(&$array, &$array2, $field1, $field2, $weekend = fal
   $regression["field"] = $field1;
   watchdog("regression" . $field1 . " " . $field2 . " " . $day . "weekend: " . $weekend, "<pre>" . print_r($regression['m'], true) . "</pre>");
   $array["regression" . $field1 . " " . $field2 . " " . $day . "weekend: " . $weekend] = $regression["m"];
-  $array2["regression" . $field1 . " " . $field2 . " " . $day . "weekend: " . $weekend] = $correlation;
+  $array2["regression" . $field1 . " " . $field2 . " " . $day . "weekend: " . $weekend] = $regression['r'];
 }
 
 /**
@@ -349,7 +349,7 @@ function sentiment_stat_linear_regression($x, $y) {
   $b = ($y_sum - ($m * $x_sum)) / $n;
 
   // return result
-  return array("m" => $m, "b" => $b);
+  return array("m" => $m, "b" => $b, "r" => $correlation);
 }
 
 /**
