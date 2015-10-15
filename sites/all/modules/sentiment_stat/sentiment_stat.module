@@ -156,28 +156,14 @@ function sentiment_stat_corr(&$array, &$array2, $field1, $field2, $weekend = fal
   watchdog("y after", "<pre>" . print_r($y, true) . "</pre>");
 
   sentiment_stat_remove_days($x, $y, $day);
-  $y = sentiment_stat_remove_dates($y);
-  $x = sentiment_stat_remove_dates($x);
-
+  
   $x = array_slice($x, 0, count($x) - $day);
   $y = array_slice($y, $day);
 
   watchdog("x before reg", "<pre>" . print_r($x, true) . "</pre>");
   watchdog("y before reg", "<pre>" . print_r($y, true) . "</pre>");
-  /* $coords = array();
-    for($i = 0; $i <= count($x) - 1; $i++) {
-    $coords[] =  strval($x[$i]) . "," . strval($y[$i]) . PHP_EOL;
-    }
-
-    $unified = implode("", $coords);
 
 
-    watchdog($field1 . " coords", "<pre>" . print_r($coords, true) . "</pre>");
-
-    watchdog($field1 . $day, "<pre>" . print_r($unified, true) . "</pre>");
-   */
-  $correlation = stats_stat_correlation($x, $y);
-  watchdog("correlation", "<pre>" . print_r($correlation, true) . "</pre>");
   $regression = sentiment_stat_linear_regression($x, $y);
   $regression["day"] = $day;
   $regression["field"] = $field1;
@@ -325,6 +311,11 @@ function sentiment_stat_change_date(&$values, $collected = false) {
  * @returns array() m=>slope, b=>intercept
  */
 function sentiment_stat_linear_regression($x, $y) {
+  $y = sentiment_stat_remove_dates($y);
+  $x = sentiment_stat_remove_dates($x);
+  
+    $correlation = stats_stat_correlation($x, $y);
+  watchdog("correlation", "<pre>" . print_r($correlation, true) . "</pre>");
 
   // calculate number points
   $n = count($x);
