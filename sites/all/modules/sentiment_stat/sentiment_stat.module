@@ -163,14 +163,23 @@ function sentiment_stat_corr(&$array, &$array2, $field1, $field2, $weekend = fal
   //$y = sentiment_stat_remove_dates($y);
   //$x = sentiment_stat_remove_dates($x);
   
-  
+  $xzscore = sentiment_stat_column_get($x, 'zscore');
+  $yzscore = sentiment_stat_column_get($y, 'zscore');
 
-  $regression = sentiment_stat_linear_regression(array_column($x, 'zscore'), array_column($y, 'zscore'));
+  $regression = sentiment_stat_linear_regression($xzscore, $yzscore);
   $regression["day"] = $day;
   $regression["field"] = $field1;
   watchdog("regression" . $field1 . " " . $field2 . " " . $day . "weekend: " . $weekend, "<pre>" . print_r($regression['m'], true) . "</pre>");
   $array["regression" . $field1 . " " . $field2 . " " . $day . "weekend: " . $weekend] = $regression["m"];
   $array2["regression" . $field1 . " " . $field2 . " " . $day . "weekend: " . $weekend] = $regression['r'];
+}
+
+function sentiment_stat_column_get($array, $name) {
+  $column = array();
+  foreach ($array as $item) {
+    $column[] = $item[$name];
+}
+return $column;
 }
 
 /**
