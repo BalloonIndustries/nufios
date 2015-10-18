@@ -159,8 +159,13 @@ function sentiment_stat_corr(&$array, &$array2, $field1, $field2, $weekend = fal
 
   watchdog("x before reg", "<pre>" . print_r($x, true) . "</pre>");
   watchdog("y before reg", "<pre>" . print_r($y, true) . "</pre>");
+  
+  //$y = sentiment_stat_remove_dates($y);
+  //$x = sentiment_stat_remove_dates($x);
+  
+  
 
-  $regression = sentiment_stat_linear_regression($x, $y);
+  $regression = sentiment_stat_linear_regression(array_column($x, 'zscore'), array_column($y, 'zscore'));
   $regression["day"] = $day;
   $regression["field"] = $field1;
   watchdog("regression" . $field1 . " " . $field2 . " " . $day . "weekend: " . $weekend, "<pre>" . print_r($regression['m'], true) . "</pre>");
@@ -290,8 +295,6 @@ function sentiment_stat_add_date(&$values) {
  * @returns array() m=>slope, b=>intercept
  */
 function sentiment_stat_linear_regression($x, $y) {
-  $y = sentiment_stat_remove_dates($y);
-  $x = sentiment_stat_remove_dates($x);
   
     $correlation = stats_stat_correlation($x, $y);
   watchdog("correlation", "<pre>" . print_r($correlation, true) . "</pre>");
