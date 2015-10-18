@@ -177,7 +177,7 @@ function sentiment_stat_corr(&$array, &$array2, $field1, $field2, $weekend = fal
 function sentiment_stat_column_get($array, $name) {
   $column = array();
   foreach ($array as $item) {
-    $column[] = $item[$name];
+    $column[] = $item->$name;
 }
 return $column;
 }
