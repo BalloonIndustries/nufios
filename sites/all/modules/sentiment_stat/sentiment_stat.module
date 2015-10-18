@@ -144,11 +144,8 @@ function sentiment_stat_corr(&$array, &$array2, $field1, $field2, $weekend = fal
       ->condition('date', $date, '>')
       ->execute()
       ->fetchAll();
-  watchdog("x", "<pre>" . print_r($x, true) . "</pre>");
-  $xchanged = $x;
-  sentiment_stat_change_date($xchanged);
-  watchdog("xchanged", "<pre>" . print_r($xchanged, true) . "</pre>");
-  watchdog("y", "<pre>" . print_r($y, true) . "</pre>");
+  sentiment_stat_add_date($x);
+  sentiment_stat_add_date($y);
 
   sentiment_stat_process_weekends($x, $y, $weekend);
 
@@ -163,7 +160,6 @@ function sentiment_stat_corr(&$array, &$array2, $field1, $field2, $weekend = fal
   watchdog("x before reg", "<pre>" . print_r($x, true) . "</pre>");
   watchdog("y before reg", "<pre>" . print_r($y, true) . "</pre>");
 
-
   $regression = sentiment_stat_linear_regression($x, $y);
   $regression["day"] = $day;
   $regression["field"] = $field1;
@@ -177,8 +173,6 @@ function sentiment_stat_corr(&$array, &$array2, $field1, $field2, $weekend = fal
  */
 function sentiment_stat_process_weekends(&$x, &$y, $interpolate = true) {
   if ($interpolate == true) {
-    sentiment_stat_change_date($x);
-    sentiment_stat_change_date($y);
     watchdog("y date", "<pre>" . print_r($y, true) . "</pre>");
     watchdog("x date", "<pre>" . print_r($x, true) . "</pre>");
     if (count($x) > count($y)) {
@@ -202,39 +196,35 @@ function sentiment_stat_return_dates($array) {
   $dates = array();
   watchdog("date value here", "<pre>" . print_r($array, true) . "</pre>");
   foreach ($array as $val) {
-    $dates[] = $val->date;
+    $dates[] = $val->fulldate;
   }
   return $dates;
 }
 
 function sentiment_stat_remove_days(&$x, &$y, $offset) {
-  sentiment_stat_change_date($x);
-  sentiment_stat_change_date($y);
   $ydates = sentiment_stat_return_dates($y);
   $xdates = sentiment_stat_return_dates($x);
   watchdog("x before removal", "<pre>" . print_r($x, true) . "</pre>");
   foreach ($x as $xkey => $xval) {
     watchdog("ydates", "<pre>" . print_r($ydates, true) . "</pre>");
     watchdog("xval", "<pre>" . print_r($xval, true) . "</pre>");
-    if (!in_array($xval->date, $ydates)) {
-      watchdog("date removed - x", "<pre>" . print_r($xval->date, true) . "</pre>");
+    if (!in_array($xval->fulldate, $ydates)) {
+      watchdog("date removed - x", "<pre>" . print_r($xval->fulldate, true) . "</pre>");
       unset($x[$xkey]);
     }
   }
   foreach ($y as $ykey => $yval) {
-    $yremove = date("Y-m-d", strtotime("-" . $offset . " days", strtotime($yval->date)));
+    $yremove = date("Y-m-d", strtotime("-" . $offset . " days", strtotime($yval->fulldate)));
     if (!in_array($yremove, $xdates)) {
-      watchdog("date removed - y", "<pre>" . print_r($xval->date, true) . "</pre>");
+      watchdog("date removed - y", "<pre>" . print_r($xval->fulldate, true) . "</pre>");
       unset($y[$ykey]);
     }
   }
 }
 
 function sentiment_stat_date_compare($a, $b) {
-  watchdog("a", "<pre>" . print_r($a, true) . "</pre>");
-  watchdog("b", "<pre>" . print_r($b, true) . "</pre>");
-  $t1 = strtotime($a->date);
-  $t2 = strtotime($b->date);
+  $t1 = $a->date;
+  $t2 = $b->date;
   return $t1 - $t2;
 }
 
@@ -250,13 +240,13 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
       $last_short = $short;
       continue;
     }
-    $date2 = new DateTime($short->date);
-    $date1 = new DateTime($last_short->date);
+    $date2 = new DateTime($short->fulldate);
+    $date1 = new DateTime($last_short->fulldate);
     watchdog("date1 before all", "<pre>" . print_r(date_format($date1, "Y-m-d"), true) . "</pre>");
     watchdog("date2 before all", "<pre>" . print_r(date_format($date2, "Y-m-d"), true) . "</pre>");
     $diff_short = $date1->diff($date2);
     watchdog("short", "<pre>" . print_r($short, true) . "</pre>");
-    watchdog("last short", "<pre>" . print_r($last_short->date, true) . "</pre>");
+    watchdog("last short", "<pre>" . print_r($last_short->fulldate, true) . "</pre>");
     if ($diff_short->d > 1) {
       watchdog("last short diff", "<pre>" . print_r(date_format($date1, "Y-m-d"), true) . "</pre>");
       watchdog("diff short d", "<pre>" . print_r($diff_short->d, true) . "</pre>");
@@ -272,7 +262,8 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
         $date_sub = clone $date1;
         watchdog("date sub", "<pre>" . print_r(date_format($date_sub, "Y-m-d"), true) . "</pre>");
         $pvd = 'P' . ($i - 1) . 'D';
-        $item->date = date_format($date_sub->sub(new DateInterval($pvd)), "Y-m-d");
+        $item->fulldate = date_format($date_sub->sub(new DateInterval($pvd)), "Y-m-d");
+        $item->date = strtotime($item->fulldate);
         $new_shorter[] = $item;
       }
     }
@@ -285,21 +276,9 @@ function sentiment_stat_add_days(&$longer, &$shorter) {
   watchdog("shorter after", "<pre>" . print_r($shorter, true) . "</pre>");
 }
 
-function sentiment_stat_change_date(&$values, $collected = false) {
-  // If the value is collected, it may be collected a few hours too late.
-  $correction = 0; /*
-    if ($collected == true) {
-    $correction = 21600;
-    } */
+function sentiment_stat_add_date(&$values) {
   foreach ($values as &$value) {
-    // normalize as timestamp
-    if (isset($value->date)) {
-      if (!is_numeric($value->date)) {
-        $value->date = strtotime($value->date);
-      }
-      watchdog("date value individual", "<pre>" . print_r($value, true) . "</pre>");
-      $value->date = date("Y-m-d", $value->date);
-    }
+      $value->fulldate = date("Y-m-d", $value->date);
   }
   watchdog("date values", "<pre>" . print_r($values, true) . "</pre>");
 }
