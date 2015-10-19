@@ -306,6 +306,13 @@ function stockinfo_exchange_entity_property_info() {
     'schema field' => 'stockinfo_exchange_low',
     'entity views field' => TRUE,
   );
+    $info['stockinfo_exchange']['properties']['stockinfo_exchange_open'] = array(
+    'label' => t('Open'),
+    'description' => t('The open on this day.'),
+    'type' => 'decimal',
+    'schema field' => 'stockinfo_exchange_open',
+    'entity views field' => TRUE,
+  );
   $info['stockinfo_exchange']['properties']['stockinfo_exchange_close'] = array(
     'label' => t('Close'),
     'description' => t('The close on this day.'),
@@ -339,7 +346,7 @@ function stockinfo_exchange_item_process($item) {
       foreach ($item as $key => $value) {
           $key = strtolower($key);
           $key = str_replace(" ", "_", $key);
-          if ($key == "high" || $key == "low" || $key == "close" || $key == "adj_close" || $key == "volume") {
+          if ($key == "high" || $key == "low" || $key == "close" || $key == "adj_close" || $key == "volume" || $key == "open") {
             $key = "stockinfo_exchange_" . $key;
           }
           elseif ($key == "date") {
