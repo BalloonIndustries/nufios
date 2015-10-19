@@ -92,26 +92,24 @@ function sentiment_stat_calculate() {
   // shitty code, rewrite
 
   $moods = array(
-    //"hostile",
-    //"elated",
-    //"depressed",
-    //"agreeable",
-    //"anxious",
-    //"clearheaded",
-    //"confused",
-    //"composed",
+    "hostile",
+    "elated",
+    "depressed",
+    "agreeable",
+    "anxious",
+    "clearheaded",
+    "confused",
+    "composed",
     "tired");
 
   $stockstuffs = array(
-    //"stockinfo_exchange_close",
-    //"stockinfo_exchange_open",
-    //"stockinfo_exchange_low",
+    "stockinfo_exchange_close",
+    "stockinfo_exchange_open",
+    "stockinfo_exchange_low",
     "stockinfo_exchange_high");
 
-  //$weekend = array(true, false);
-$weekend = array(false);
-  //$days = array(0, 1, 2, 3, 4);
-$days = array(3);
+  $weekend = array(true, false);
+  $days = array(0, 1, 2, 3, 4);
   $array = array();
 
   foreach ($days as $day) {
