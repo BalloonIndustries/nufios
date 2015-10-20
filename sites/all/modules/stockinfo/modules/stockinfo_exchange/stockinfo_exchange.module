@@ -144,7 +144,7 @@ function stockinfo_exchange_queue_it() {
   foreach ($exchanges as $exchange) {
     $data = stockinfo_exchange_fetch($exchange);
     if (isset($data)) {
-      $data_chunks = array_chunk($data['data'], 5);
+      $data_chunks = array_chunk($data->data, 5);
       foreach ($data_chunks as $chunk) {
         $queue->createItem($chunk);
       }
