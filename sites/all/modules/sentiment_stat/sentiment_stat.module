@@ -34,6 +34,7 @@ function sentiment_stat_values() {
       'stockinfo_exchange_close',
       'stockinfo_exchange_high',
       'stockinfo_exchange_low',
+'stockinfo_exchange_open',
     ),
   );
   return $tables;
@@ -116,7 +117,7 @@ function sentiment_stat_calculate() {
     foreach ($moods as $mood) {
       foreach ($stockstuffs as $stockstuff) {
         foreach ($weekend as $weekendday) {
-          sentiment_stat_corr($array, $array2, $mood, $stockstuff, $weekendday, $day);
+          sentiment_stat_corr($array, $array2, $array3, $mood, $stockstuff, $weekendday, $day);
         }
       }
     }
@@ -127,9 +128,20 @@ function sentiment_stat_calculate() {
   asort($array2);
   watchdog("final array", "<pre>" . print_r($array, true) . "</pre>");
   watchdog("correlation array", "<pre>" . print_r($array2, true) . "</pre>");
+watchdog("filtered correlation array", "<pre>" . print_r(array_filter($array2, 'sentiment_stat_filter_corr'), true) . "</pre>");
+  watchdog("intercept array", "<pre>" . print_r($array3, true) . "</pre>");
 }
 
-function sentiment_stat_corr(&$array, &$array2, $field1, $field2, $weekend = false, $day) {
+function sentiment_stat_filter_corr($value) {
+if(abs($value) > .25) {
+return true;
+}
+else {
+return false;
+}
+}
+
+function sentiment_stat_corr(&$array, &$array2, &$array3, $field1, $field2, $weekend = false, $day) {
   $date = 1439769600;
   $x = db_select("sentiment_stat", "tb")
       ->fields("tb", array("zscore", "date"))
@@ -160,7 +172,12 @@ $y = array_values($y);
   watchdog("y after remove", "<pre>" . print_r($y, true) . "</pre>");
   watchdog("x after remove", "<pre>" . print_r($x, true) . "</pre>");
 
- 
+if(empty($x)) {
+
+watchdog("x empty field1", "<pre>" . print_r($field1, true) . "</pre>");
+watchdog("x empty field2", "<pre>" . print_r($field2, true) . "</pre>");
+
+} 
   $x = array_slice($x, 0, count($x) - $day);
   $y = array_slice($y, $day);
 
@@ -178,7 +195,8 @@ $y = array_values($y);
   $regression["field"] = $field1;
   watchdog("regression" . $field1 . " " . $field2 . " " . $day . "weekend: " . $weekend, "<pre>" . print_r($regression['m'], true) . "</pre>");
   $array["regression" . $field1 . " " . $field2 . " " . $day . "weekend: " . $weekend] = $regression["m"];
-  $array2["regression" . $field1 . " " . $field2 . " " . $day . "weekend: " . $weekend] = $regression['r'];
+  $array2["correlation" . $field1 . " " . $field2 . " " . $day . "weekend: " . $weekend] = $regression['r'];
+  $array3["intercept" . $field1 . " " . $field2 . " " . $day . "weekend: " . $weekend] = $regression['b'];
 }
 
 function sentiment_stat_column_get($array, $name) {
@@ -327,7 +345,6 @@ function sentiment_stat_linear_regression($x, $y) {
   // ensure both arrays of points are the same size
   if ($n != count($y)) {
 
-    watchdog("n number", "<pre>" . print_r($n, true) . "</pre>");
     watchdog("count y", "<pre>" . print_r(count($y), true) . "</pre>");
 
     watchdog("Linear Regression", "Number of elements in coordinate arrays do not match.");
@@ -345,6 +362,11 @@ function sentiment_stat_linear_regression($x, $y) {
     $xy_sum+=($x[$i] * $y[$i]);
     $xx_sum+=($x[$i] * $x[$i]);
   }
+
+
+watchdog("n number", "<pre>" . print_r($n, true) . "</pre>");
+watchdog("x sum", "<pre>" . print_r($x_sum, true) . "</pre>");
+watchdog("x at end", "<pre>" . print_r($x, true) . "</pre>");
 
   // calculate slope
   $m = (($n * $xy_sum) - ($x_sum * $y_sum)) / (($n * $xx_sum) - ($x_sum * $x_sum));
