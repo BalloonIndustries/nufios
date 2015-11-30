@@ -86,41 +86,38 @@ function stockinfo_historical_mapstock($chunk) {
 /**
  * Processes historical stock records.
  */
-function stockinfo_historical_process_stock($items) {
-  $name = $items['name'];
-  unset($items['name']);
+function stockinfo_historical_process_stock($item) {
+  watchdog("item for historical processing", "<pre>" . print_r($item, true) . "</pre>");
 
-  foreach ($items as $item) {
-    if (is_array($item) || is_object($item)) {
-      $sid = db_query("SELECT sid FROM stockinfo_historical WHERE symbol = :symbol AND date = :date", array("symbol" => $item['Symbol'], "date" => strtotime($item['Date'])))->fetchCol();
-      if (!isset($sid[0])) {
-        $entity = entity_create("stockinfo_historical", array('type' => "stockinfo_historical"));
-        foreach ($item as $key => $value) {
-          $key = strtolower($key);
-          $key = str_replace(" ", "_", $key);
-          if ($key == "high" || $key == "low" || $key == "close" || $key == "adj_close" || $key == "volume") {
-            $key = "stockinfo_historical_" . $key;
-          }
-          elseif ($key == "date" || $key == "symbol") {
-            
-          }
-          else {
-            $key = "stockinfo_" . $key;
-          }
-          if (in_array($key, variable_get('stockinfo_reserved_mysql'))) {
-            $key = $key . "_";
-          }
-          if (isset($value)) {
-            $entity->$key = $value;
-          }
-          else {
-            $entity->$key = NULL;
-          }
+  if (is_array($item) || is_object($item)) {
+    $sid = db_query("SELECT sid FROM stockinfo_historical WHERE symbol = :symbol AND date = :date", array("symbol" => $item['Symbol'], "date" => strtotime($item['Date'])))->fetchCol();
+    if (!isset($sid[0])) {
+      $entity = entity_create("stockinfo_historical", array('type' => "stockinfo_historical"));
+      foreach ($item as $key => $value) {
+        $key = strtolower($key);
+        $key = str_replace(" ", "_", $key);
+        if ($key == "high" || $key == "low" || $key == "close" || $key == "adj_close" || $key == "volume") {
+          $key = "stockinfo_historical_" . $key;
         }
-        $entity->name = $name;
-        drupal_alter('stockinfo_historical_save', $entity);
-        entity_save("stockinfo_historical", $entity);
+        elseif ($key == "date" || $key == "symbol") {
+          
+        }
+        else {
+          $key = "stockinfo_" . $key;
+        }
+        if (in_array($key, variable_get('stockinfo_reserved_mysql'))) {
+          $key = $key . "_";
+        }
+        if (isset($value)) {
+          $entity->$key = $value;
+        }
+        else {
+          $entity->$key = NULL;
+        }
       }
+      $entity->name = $name;
+      drupal_alter('stockinfo_historical_save', $entity);
+      entity_save("stockinfo_historical", $entity);
     }
   }
 }
@@ -143,14 +140,12 @@ function stockinfo_historical_fetch_data($batch) {
   $symbols = explode(" ", variable_get("stockinfo_historical_symbols", variable_get('stockinfo_historical_default_symbols')));
   $stock_array = array();
   foreach ($symbols as $symbol) {
-    $stock = stockinfo_historical_fetch($symbol);
-    if (isset($stock)) {
-      $stock_array[] = $stock;
+    $stocks = stockinfo_historical_fetch($symbol);
+    if (isset($stocks)) {
+      foreach ($stocks as $stock) {
+        $batch['operations'][] = array('stockinfo_historical_mapstock', array($stock));
+      }
     }
-  }
-  $stock_chunks = array_chunk($stock_array, 200);
-  foreach ($stock_chunks as $chunk) {
-    $batch['operations'][] = array('stockinfo_historical_mapstock', array($chunk));
   }
   batch_set($batch);
   batch_process("/admin/config/services/stockinfo/historical");
@@ -249,12 +244,13 @@ function stockinfo_historical_queue_it() {
   $symbols = explode(" ", variable_get("stockinfo_historical_symbols", variable_get('stockinfo_historical_default_symbols')));
   $queue = DrupalQueue::get('stockinfo_historical');
   foreach ($symbols as $symbol) {
-    $stock = stockinfo_historical_fetch($symbol);
-    if (isset($stock)) {
-      $stock_chunks = array_chunk($stock['data'], 5);
-      foreach ($stock_chunks as $chunk) {
-        $chunk['name'] = $stock["name"];
-        $queue->createItem($chunk);
+    $stocks = stockinfo_historical_fetch($symbol);
+    watchdog("stocks", "<pre>" . print_r($stocks, true) . "</pre>");
+    if (isset($stocks)) {
+      /* $stock_chunks = array_chunk($stock['data'], 5);
+        foreach ($stock_chunks as $chunk) { */
+      foreach ($stocks as $stock) {
+        $queue->createItem($stock);
       }
     }
   }
@@ -277,10 +273,14 @@ function stockinfo_historical_run($items) {
 /**
  * Processes historical stock data from Yahoo.
  */
-function stockinfo_historical_process_data($url, $result) {
+function stockinfo_historical_process_data($url, $result, $name) {
   $results = drupal_http_request($url);
+  watchdog("results before processing", "<pre>" . print_r($results, true) . "</pre>");
   $data = drupal_json_decode($results->data);
   if (is_array($data['query']['results']['quote'])) {
+    foreach ($data['query']['results']['quote'] as $key => $value) {
+      $data['query']['results']['quote'][$key]['name'] = $name;
+    }
     $result['data'] = array_merge($result['data'], $data['query']['results']['quote']);
   }
   return $result;
@@ -290,52 +290,72 @@ function stockinfo_historical_process_data($url, $result) {
  * Historical stock fetch - grabs historical data for stocks
  */
 function stockinfo_historical_fetch($symbol) {
-  $date = variable_get("stockinfo_historical_from_date", variable_get("stockinfo_historical_from_date_default"));
-  $limit_by = variable_get('stockinfo_historical_limit_by_timestamp', 1);
-  $historical_timestamp = strtotime($date['year'] . '-' . $date['month'] . '-' . $date['day']);
-  $latest_timestamp = db_query("SELECT date from stockinfo_historical WHERE symbol = :symbol ORDER BY date DESC LIMIT 1", array("symbol" => $symbol))->fetchField();
   $result = array(
     "data" => array(),
   );
-  if (empty($latest_timestamp) || ($limit_by == 0 && $latest_timestamp < $historical_timestamp)) {
-    $date['month'] = $date['month'] - 1;
-    $year = $date['year'];
-    $month = $date['month'];
-    $day = $date['day'];
-  }
-  else {
-    $year = date("Y", $latest_timestamp);
-    $month = date("m", $latest_timestamp);
-    $day = date("d", $latest_timestamp);
-  }
-  if ($year < (date("Y") - 1)) {
-    $date_catchup = date("Y");
-    while ($date_catchup >= $year) {
-      if ($date_catchup == date("Y")) {
-        $date_end = date("Y") . "-" . date("m") . "-" . date("d");
-      }
-      else {
-        $date_end = $date_catchup . "-12-31";
-      }
-      if ($date_catchup == $year) {
-        $date_origin = $year . "-" . $month . "-" . $day;
-      }
-      else {
-        $date_origin = $date_catchup . "-01-01";
-      }
-      $url = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22$symbol%22%20and%20startDate%20%3D%20%22$date_origin%22%20and%20endDate%20%3D%20%22$date_end%22&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&format=json";
-      $result = stockinfo_historical_process_data($url, $result);
-      $date_catchup--;
-    }
-  }
-  else {
-    $url = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22$symbol%22%20and%20startDate%20%3D%20%22$year-$month-$day%22%20and%20endDate%20%3D%20%22" . date("Y") . "-" . date("m") . "-" . date("d") . "%22&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&format=json";
-    $result = stockinfo_historical_process_data($url, $result);
-  }
+  $date = stockinfo_historical_collect_date($symbol);
+  $end_date = time();
   $name = stockinfo_historical_generate_name($symbol);
-  $result['name'] = $name;
+  while ($end_date >= $date['timestamp']) {
+    $date_return = stockinfo_historical_next_date($end_date, $date['timestamp']);
+    $date_origin = $date_return['date_origin'];
+    $date_end = $date_return['date_end'];
+    $url = "https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20yahoo.finance.historicaldata%20where%20symbol%20%3D%20%22$symbol%22%20and%20startDate%20%3D%20%22$date_origin%22%20and%20endDate%20%3D%20%22$date_end%22&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys&format=json";
+    $result = stockinfo_historical_process_data($url, $result, $name);
+    watchdog("first result", "<pre>" . print_r($result, true) . "</pre>");
+    $end_date = $date_return['end_date'];
+  }
+  watchdog("final result", "<pre>" . print_r($result, true) . "</pre>");
+  return $result['data'];
+}
 
-  return $result;
+/**
+ * Calculates the next date to be parsed, based on an interval.
+ */
+function stockinfo_historical_next_date($end_date, $origin_point, $interval = 5184000) {
+  $date_diff = $end_date - $origin_point;
+  watchdog("date diff", "<pre>" . print_r($date_diff, true) . "</pre>");
+  $date_return = array();
+  if ($date_diff > $interval) {
+    $start_date = $end_date - $interval;
+  }
+  else {
+    $start_date = $origin_point;
+  }
+  watchdog("start date", "<pre>" . print_r($start_date, true) . "</pre>");
+  watchdog("origin point", "<pre>" . print_r($origin_point, true) . "</pre>");
+  $date_return['date_origin'] = stockinfo_historical_format_date($start_date);
+  $date_return['date_end'] = stockinfo_historical_format_date($end_date);
+  $date_return['end_date'] = $start_date - 86400;
+  return $date_return;
+}
+
+/**
+ * Formats date for Yahoo! Finance.
+ */
+function stockinfo_historical_format_date($date) {
+  return date('Y-m-d', $date);
+}
+
+/**
+ * Returns the beginning date for historical stock data.
+ */
+function stockinfo_historical_collect_date($symbol) {
+  $date = variable_get("stockinfo_historical_from_date", variable_get("stockinfo_historical_from_date_default"));
+  $limit_by = variable_get('stockinfo_historical_limit_by_timestamp', 1);
+  //$historical_timestamp = strtotime($date['year'] . '-' . $date['month'] . '-' . $date['day']);
+  $latest_timestamp = db_query("SELECT date from stockinfo_historical WHERE symbol = :symbol ORDER BY date DESC LIMIT 1", array("symbol" => $symbol))->fetchField();
+  if (empty($latest_timestamp) || ($limit_by == 0)) {
+    $date['timestamp'] = strtotime($date['year'] . '-' . $date['month'] . '-' . $date['day']);
+    $date['month'] = $date['month'] - 1;
+  }
+  else {
+    /* $date['year'] = date("Y", $latest_timestamp);
+      $date['month'] = date("m", $latest_timestamp);
+      $date['day'] = date("d", $latest_timestamp); */
+    $date['timestamp'] = $latest_timestamp;
+  }
+  return $date;
 }
 
 /**
