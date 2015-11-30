@@ -87,6 +87,7 @@ function stockinfo_historical_mapstock($chunk) {
  * Processes historical stock records.
  */
 function stockinfo_historical_process_stock($item) {
+  $name = $item['name'];
   if (is_array($item) || is_object($item)) {
     $sid = db_query("SELECT sid FROM stockinfo_historical WHERE symbol = :symbol AND date = :date", array("symbol" => $item['Symbol'], "date" => strtotime($item['Date'])))->fetchCol();
     if (!isset($sid[0])) {
@@ -332,16 +333,12 @@ function stockinfo_historical_format_date($date) {
 function stockinfo_historical_collect_date($symbol) {
   $date = variable_get("stockinfo_historical_from_date", variable_get("stockinfo_historical_from_date_default"));
   $limit_by = variable_get('stockinfo_historical_limit_by_timestamp', 1);
-  //$historical_timestamp = strtotime($date['year'] . '-' . $date['month'] . '-' . $date['day']);
   $latest_timestamp = db_query("SELECT date from stockinfo_historical WHERE symbol = :symbol ORDER BY date DESC LIMIT 1", array("symbol" => $symbol))->fetchField();
   if (empty($latest_timestamp) || ($limit_by == 0)) {
     $date['timestamp'] = strtotime($date['year'] . '-' . $date['month'] . '-' . $date['day']);
     $date['month'] = $date['month'] - 1;
   }
   else {
-    /* $date['year'] = date("Y", $latest_timestamp);
-      $date['month'] = date("m", $latest_timestamp);
-      $date['day'] = date("d", $latest_timestamp); */
     $date['timestamp'] = $latest_timestamp;
   }
   return $date;
@@ -354,7 +351,12 @@ function stockinfo_historical_generate_name($symbol) {
   $nameurl = "http://download.finance.yahoo.com/d/quotes.csv?s=$symbol&f=n&e=.csv";
   $name_results = drupal_http_request($nameurl);
   $name_array = _stockinfo_historical_str_getcsv($name_results->data);
-  return $name_array[0][0];
+  if (!empty($name_array[0][0])) {
+    return $name_array[0][0];
+  }
+  else {
+    return '';
+  }
 }
 
 /*
