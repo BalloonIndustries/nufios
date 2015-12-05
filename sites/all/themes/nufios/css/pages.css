@@ -345,6 +345,10 @@ ul.links li {
     overflow: visible !important;
 }
 
+.qtip-wrapper {
+    margin-top: -9px;
+}
+
 .menu-minipanels a {
     text-decoration: none;
     color: #000;
@@ -355,6 +359,11 @@ ul.links li {
     font-weight: bold;
 }
 
+.menu-minipanels li {
+    display: inline-block;
+    width:25%;
+}
+
 .menu-minipanels {
     border-bottom: 1px solid #686868 ;
     border-left: 1px solid #686868 ;
@@ -363,7 +372,26 @@ ul.links li {
 
 .menu-minipanels ul li.leaf {
     list-style: none;
-    margin: 10px 20px 10px 0px;
+    margin: 10px 20px 10px 20px;
+}
+
+.view-news-menu-view tr {
+    background-color: #FFF;
+    border-bottom: none;
+}
+
+.view-news-menu-view th {
+    text-align: center;
+}
+
+.view-news-menu-view td {
+    width: 33%;
+    text-align: center;
+}
+
+.view-display-id-panel_pane_7 td {
+    width: 50%;
+    text-align: center;
 }
 
 /*Front Page View Changes*/
@@ -495,4 +523,23 @@ h2 {
 }
 #top-story-view .highcharts-container {
     margin: 0 auto;
+}
+.pane-radioactive-articles .pane-title {
+    font-size: 1em;
+}
+
+.pane-radioactive-articles .views-field-title a {
+    font-size: .8em;
+}
+
+.menu-minipanels .panel-2col .panel-col-first {
+    width:100%;
+}
+
+.page-home .panel-2col-bricks .panel-col-first {
+    width: 33%;
+}
+
+.page-home .panel-2col-bricks .panel-col-last {
+    margin-left: 12%;
 }
