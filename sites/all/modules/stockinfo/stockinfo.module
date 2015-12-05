@@ -205,6 +205,7 @@ function stockinfo_fetch_data($batch) {
     watchdog("Stockinfo", "Error, symbols are not an array");
     return;
   }
+  watchdog("stocks", "<pre>" . print_r($stocks, true) . "</pre>");
   $stock_chunks = array_chunk($stocks, 200);
   foreach ($stock_chunks as $chunk) {
     $batch['operations'][] = array('stockinfo_mapstock', array($chunk));
@@ -376,6 +377,7 @@ function stockinfo_run($item) {
  * Saves stockinfo entity.
  */
 function stockinfo_save($stockinfo) {
+  watchdog("stock is new", "<pre>" . print_r($stockinfo->is_new, true) . "</pre>");
   if (isset($stockinfo->is_new)) {
     $sid = db_insert('stockinfo')
         ->useDefaults(array('sid'))
@@ -558,6 +560,14 @@ function stockinfo_save($stockinfo) {
           ))
           ->execute();
     }
+    else {
+      db_update('stockinfo')
+          ->condition('sid', $stockinfo->sid)
+          ->fields(array(
+            'vid' => $stockinfo->vid,
+          ))
+          ->execute();
+    }
   }
 
   // let Field UI deal with the fields.
@@ -691,6 +701,7 @@ function _stockinfo_request_failure($results) {
 /*
  * Helper function to convert CSV string to array for all PHP versions.
  */
+
 function _stockinfo_str_getcsv($input, $delimiter = ',', $enclosure = '"', $escape = NULL, $eol = NULL) {
   $array = array();
   $input = trim($input);

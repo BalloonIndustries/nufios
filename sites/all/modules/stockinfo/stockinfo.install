@@ -1,9 +1,9 @@
 <?php
+
 /**
  * @file
  * Contains the schema, install, and uninstall functions for Stockinfo.
  */
-
 /*
  * Implements hook_schema().
  */
@@ -21,7 +21,7 @@ function stockinfo_schema() {
         'type' => 'serial',
         'unsigned' => TRUE,
         'not null' => FALSE,
-        ),
+      ),
       'vid' => array(
         'description' => 'Stock Revision ID.',
         'type' => 'int',
@@ -329,6 +329,15 @@ function stockinfo_schema() {
         'default' => 0,
       ),
     ),
+    'unique keys' => array(
+      'vid' => array('vid'),
+    ),
+    'foreign keys' => array(
+      'stockinfo_revision' => array(
+        'table' => 'stockinfo_revision',
+        'columns' => array('vid' => 'vid'),
+      ),
+    ),
     'primary key' => array('sid'),
   );
   $schema['stockinfo_revision'] = array(
@@ -345,7 +354,7 @@ function stockinfo_schema() {
         'unsigned' => TRUE,
         'not null' => FALSE,
         'default' => 0,
-        ),
+      ),
       'vid' => array(
         'description' => 'Stock Revision ID.',
         'type' => 'serial',
@@ -644,6 +653,12 @@ function stockinfo_schema() {
         'type' => 'int',
         'not null' => TRUE,
         'default' => 0,
+      ),
+    ),
+    'foreign keys' => array(
+      'versioned_stockinfo' => array(
+        'table' => 'stockinfo',
+        'columns' => array('sid' => 'sid'),
       ),
     ),
     'primary key' => array('vid'),
