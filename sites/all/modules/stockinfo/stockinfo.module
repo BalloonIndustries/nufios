@@ -256,16 +256,24 @@ function stockinfo_entity_info() {
         'admin' => array(
           'path' => 'admin/structure/stocks',
           'real path' => 'admin/structure/stocks',
-          'access arguments' => array('view stockinfo'),
         ),
       ),
     ),
+    'access arguments' => array('view stockinfo'),
+    'access callback' => 'stockinfo_entity_access',
     'controller class' => 'EntityAPIController',
     'fieldable' => TRUE,
     'uri callback' => 'stockinfo_uri',
   );
 
   return $info;
+}
+
+/**
+ * Controls entity access - mostly for use with Entity Reference.
+ */
+function stockinfo_entity_access($op, $entity = null, $account = null, $entity_type = '') {
+  return user_access($op, $account);
 }
 
 /**
@@ -377,7 +385,8 @@ function stockinfo_run($item) {
  * Saves stockinfo entity.
  */
 function stockinfo_save($stockinfo) {
-  watchdog("stock is new", "<pre>" . print_r($stockinfo->is_new, true) . "</pre>");
+  // Creates entity first if it is new, otherwise creates revision first and
+  // updates old entity
   if (isset($stockinfo->is_new)) {
     $sid = db_insert('stockinfo')
         ->useDefaults(array('sid'))
