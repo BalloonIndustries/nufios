@@ -120,7 +120,7 @@ function gov_data_cosponsor_page() {
  * Calculates the current Congresses available
  */
 function gov_data_congress_calc() {
-    $congress = array(
+  $congress = array(
     '100' => '100',
     '101' => '101',
     '102' => '102',
@@ -135,14 +135,13 @@ function gov_data_congress_calc() {
     '111' => '111',
     '112' => '112',
     '113' => '113',
-    '114' => '114',
   );
 
   // Adds (projected) additional Congresses based on the year
   if (date("Y") > 2014) {
     $count = date("Y") - 2014;
     for ($i = 1; $i <= $count; $i++) {
-      $congress_num = 114 + $i;
+      $congress_num = 113 + $i;
       $congress[$i] = $congress_num;
     }
   }
@@ -150,7 +149,7 @@ function gov_data_congress_calc() {
 }
 
 function gov_data_bill_page() {
-  
+
   $congress = gov_data_congress_calc();
 
   $form = array();
@@ -272,16 +271,16 @@ function gov_data_voter_page() {
 }
 
 function gov_data_vote_page() {
-  
+
   $congress = gov_data_congress_calc();
-  
+
   $form = array();
   $form['gov_data_vote'] = array(
     '#type' => 'select',
     '#title' => t('Select Vote Records Per Congress'),
     '#options' => $congress,
     '#multiple' => TRUE,
-    '#default_value' => variable_get('gov_data_vote', array("113")),
+    '#default_value' => variable_get('gov_data_vote', array(end(array_values($congress)))),
   );
   $form['gov_data_vote_submit'] = array(
     '#type' => 'submit',
@@ -291,95 +290,132 @@ function gov_data_vote_page() {
   return system_settings_form($form);
 }
 
-  /**
+/**
  * Implements hook_entity_info().
  */
 function gov_data_entity_info() {
 
   $info = array();
 
-  $info['gov_data'] = array(
-    'label' => t('Government Data'),
-    'plural label' => t('Government Data'),
-    'label plural' => t('Government Data'),
-    'base table' => 'gov_data',
+  $info['gov_data_bill'] = array(
+    'label' => t('Government Bill Data'),
+    'plural label' => t('Government Bill Data'),
+    'label plural' => t('Government Bill Data'),
+    'base table' => 'gov_data_bill',
     'entity keys' => array(
       'id' => 'gid',
-      'label' => 'type',
-      'bundle' => 'type',
+      'label' => 'label',
     ),
     'module' => 'gov_data',
     'views controller class' => 'EntityDefaultViewsController',
     'controller class' => 'EntityAPIController',
     'access callback' => 'gov_data_access_callback',
     'fieldable' => TRUE,
-    'bundle keys' => array(
-      'bundle' => 'type',
+  );
+  $info['gov_data_committee'] = array(
+    'label' => t('Government Committee Data'),
+    'plural label' => t('Government Committee Data'),
+    'label plural' => t('Government Committee Data'),
+    'base table' => 'gov_data_committee',
+    'entity keys' => array(
+      'id' => 'gid',
+      'label' => 'label',
     ),
-    'bundles' => array(
-      'bill' => array(
-        'label' => t('Bills'),
-        'admin' => array(
-          'path' => 'admin/structure/gov-data/bill',
-          'real path' => 'admin/structure/gov-data/bill',
-          //'real path' => 'admin/structure/gov-data/manage/',
-          'access arguments' => array('administer site configuration'),
-        ),
-      ),
-      'committee' => array(
-        'label' => t('Committee'),
-        'admin' => array(
-          'path' => 'admin/structure/gov-data/committee',
-          'access arguments' => array('administer site configuration'),
-        ),
-      ),
-      'committee_member' => array(
-        'label' => t('Committee Member'),
-        'admin' => array(
-          'path' => 'admin/structure/gov-data/committee-member',
-          'access arguments' => array('administer site configuration'),
-        ),
-      ),
-      'cosponsor' => array(
-        'label' => t('Cosponsor'),
-        'admin' => array(
-          'path' => 'admin/structure/gov-data/cosponsor',
-          'access arguments' => array('administer site configuration'),
-        ),
-      ),
-      'person' => array(
-        'label' => t('Person'),
-        'admin' => array(
-          'path' => 'admin/structure/gov-data/person',
-          'access arguments' => array('administer site configuration'),
-        ),
-      ),
-      'role' => array(
-        'label' => t('Role'),
-        'admin' => array(
-          'path' => 'admin/structure/gov-data/role',
-          'access arguments' => array('administer site configuration'),
-        ),
-      ),
-      'vote' => array(
-        'label' => t('Vote'),
-        'admin' => array(
-          'path' => 'admin/structure/gov-data/vote',
-          'access arguments' => array('administer site configuration'),
-        ),
-      ),
-      'voter' => array(
-        'label' => t('Voter'),
-        'admin' => array(
-          'path' => 'admin/structure/gov-data/voter',
-          'access arguments' => array('administer site configuration'),
-        ),
-      ),
+    'module' => 'gov_data',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'gov_data_access_callback',
+    'fieldable' => TRUE,
+  );
+  $info['gov_data_cosponsor'] = array(
+    'label' => t('Government Cosponsor Data'),
+    'plural label' => t('Government Cosponsor Data'),
+    'label plural' => t('Government Cosponsor Data'),
+    'base table' => 'gov_data_cosponsor',
+    'entity keys' => array(
+      'id' => 'gid',
+      'label' => 'label',
     ),
-      /* 'admin ui' => array(
-        'path' => 'admin/structure/gov-data',
-        'controller class' => 'EntityDefaultUIController',
-        ) */
+    'module' => 'gov_data',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'gov_data_access_callback',
+    'fieldable' => TRUE,
+  );
+  $info['gov_data_committee_member'] = array(
+    'label' => t('Government Committee Member Data'),
+    'plural label' => t('Government Committee Member Data'),
+    'label plural' => t('Government Committee Member Data'),
+    'base table' => 'gov_data_committee_member',
+    'entity keys' => array(
+      'id' => 'gid',
+      'label' => 'label',
+    ),
+    'module' => 'gov_data',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'gov_data_access_callback',
+    'fieldable' => TRUE,
+  );
+  $info['gov_data_person'] = array(
+    'label' => t('Government Person Data'),
+    'plural label' => t('Government Person Data'),
+    'label plural' => t('Government Person Data'),
+    'base table' => 'gov_data_person',
+    'entity keys' => array(
+      'id' => 'gid',
+      'label' => 'label',
+    ),
+    'module' => 'gov_data',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'gov_data_access_callback',
+    'fieldable' => TRUE,
+  );
+  $info['gov_data_role'] = array(
+    'label' => t('Government Role Data'),
+    'plural label' => t('Government Role Data'),
+    'label plural' => t('Government Role Data'),
+    'base table' => 'gov_data_role',
+    'entity keys' => array(
+      'id' => 'gid',
+      'label' => 'label',
+    ),
+    'module' => 'gov_data',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'gov_data_access_callback',
+    'fieldable' => TRUE,
+  );
+  $info['gov_data_vote'] = array(
+    'label' => t('Government Vote Data'),
+    'plural label' => t('Government Vote Data'),
+    'label plural' => t('Government Vote Data'),
+    'base table' => 'gov_data_vote',
+    'entity keys' => array(
+      'id' => 'gid',
+      'label' => 'label',
+    ),
+    'module' => 'gov_data',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'gov_data_access_callback',
+    'fieldable' => TRUE,
+  );
+  $info['gov_data_voter'] = array(
+    'label' => t('Government Voter Data'),
+    'plural label' => t('Government Voter Data'),
+    'label plural' => t('Government Voter Data'),
+    'base table' => 'gov_data_voter',
+    'entity keys' => array(
+      'id' => 'gid',
+      'label' => 'label',
+    ),
+    'module' => 'gov_data',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'gov_data_access_callback',
+    'fieldable' => TRUE,
   );
 
   return $info;
@@ -404,11 +440,11 @@ function gov_data_property_info() {
     'type' => 'text',
     'schema field' => 'type',
   );
-  $info['gov_data']['properties']['bid'] = array(
+  $info['gov_data']['properties']['gid'] = array(
     'label' => t('Bundle ID'),
     'description' => t('The ID of the bundle.'),
     'type' => 'integer',
-    'schema field' => 'bid',
+    'schema field' => 'gid',
   );
   return $info;
 }
@@ -427,24 +463,6 @@ function gov_data_property_info() {
  */
 /* function gov_data_enable() {
   ctools_get_plugins_reset();
-  } */
-
-/**
- * Implements hook_feeds_plugins().
- */
-/* function gov_data_feeds_plugins() {
-  return array(
-  'GovData' => array(
-  'name' => 'Government Data Processor',
-  'description' => 'Pulls government data down.',
-  'handler' => array(
-  'parent' => 'FeedsProcessor',
-  'class' => 'GovDataProcessor',
-  'file' => 'GovDataProcessor.inc',
-  'path' => drupal_get_path('module', 'gov_data'),
-  ),
-  ),
-  );
   } */
 
 function gov_data_access_callback() {
@@ -487,191 +505,228 @@ function gov_data_term_pull() {
   gov_data_pull("term");
 }
 
-function gov_data_database($type, $bundle, $column, $filter = NULL) {
-  switch ($type) {
-    case "person":
-      $key = "bid";
-      $op = 1;
-      break;
-    case "term":
-      $op = 2;
-      $key = "bid";
-      break;
-    case "voter":
-    case "cosponsor":
-    case "committee_member":
-      $key = "bid";
-      $op = 0;
-      break;
-  }
-  watchdog("cosponsor 2", print_r($type, true));
-  $multiples = db_select("gov_data", "t")
-      ->fields("t", array("bid", "gid", "type"))
-      ->condition("type", $bundle, "=")
-      ->execute();
-  gov_data_multiple_process($multiples, $type, $op, $key, $filter);
-  /* $query = new EntityFieldQuery();
-    $query->entityCondition("entity_type", "gov_data");
-    //->fieldCondition("field_data_gov_data_" . $column)
-    $query->entityCondition("type", $bundle, "=");
-    $multiples = $query->execute();
-    watchdog("after", "<pre>" . print_r($bundle, true) . "</pre>");
-    watchdog("multiples", "<pre>" . print_r($multiples, true) . "</pre>");
-    gov_data_multiple_process($multiples['gov_data'], $type, $op, $key, $filter); */
+/**
+ * Govdata bill mapping modifications.
+ */
+function gov_data_bill_mod(&$item) {
+  unset($item->major_actions);
+  $item->sponsor = $item->sponsor->id;
+  unset($item->sponsor_role);
+  unset($item->titles);
+  unset($item->title);
+  $item->bill_title = $item->title_without_number;
+  unset($item->title_without_number);
+  unset($item->source);
+  unset($item->source_link);
+  unset($item->senate_floor_schedule_postdate);
+  unset($item->link);
+  $item->link = $item->thomas_link;
+  unset($item->thomas_link);
+  unset($item->docs_house_gov_postdate);
+  unset($item->display_number);
+  $item->bill_res_type = $item->bill_resolution_type;
+  unset($item->bill_resolution_type);
+  $item->current_status_desc = $item->current_status_description;
+  unset($item->current_status_description);
+  $item->current_status_date = strtotime($item->current_status_date);
+  $item->introduced_date = strtotime($item->introduced_date);
+  watchdog("full item for bill", "<pre>" . print_r($item, true) . "</pre>");
 }
 
-function gov_data_gov_data_mapping_alter(&$item, $type) {
-  $entity = entity_create("gov_data", array('type' => $type));
-  $fields = field_info_field_map();
-  $item->bid = $item->id;
-  unset($item->id);
-  if ($type == 'bill') {
-    unset($item->major_actions);
-    $item->sponsor = $item->sponsor->id;
-    unset($item->sponsor_role);
-    unset($item->titles);
-    unset($item->title);
-    $item->bill_title = $item->title_without_number;
-    unset($item->title_without_number);
-    unset($item->source);
-    unset($item->source_link);
-    unset($item->senate_floor_schedule_postdate);
-    unset($item->link);
-    $item->link = $item->thomas_link;
-    unset($item->thomas_link);
-    unset($item->docs_house_gov_postdate);
-    unset($item->display_number);
-    $item->bill_res_type = $item->bill_resolution_type;
-    unset($item->bill_resolution_type);
-    $item->current_status_desc = $item->current_status_description;
-    unset($item->current_status_description);
-    $item->current_status_date = strtotime($item->current_status_date);
-    $item->introduced_date = strtotime($item->introduced_date);
-    watchdog("full item for bill", "<pre>" . print_r($item, true) . "</pre>");
-  }
-  elseif ($type == 'role') {
-    $item->person = $item->person->id;
-    $item->role_title = $item->title;
-    unset($item->title);
-    unset($item->caucus);
-    unset($item->congress_numbers);
-    unset($item->role_type_label);
-    unset($item->senator_class_label);
-    unset($item->senator_rank_label);
-    $item->enddate = strtotime($item->enddate);
-    $item->startdate = strtotime($item->startdate);
-  }
-  elseif ($type == 'person') {
-    unset($item->committeeassignments);
-    unset($item->roles);
-    unset($item->cspanid);
-    unset($item->gender_label);
-    unset($item->link);
-    unset($item->osid);
-    unset($item->pvsid);
-    unset($item->sortname);
-    $item->birthday = strtotime($item->birthday);
-  }
-  elseif ($type == "vote") {
-    // Change these values
-    unset($item->options);
-    unset($item->chamber_label);
-    unset($item->link);
-    unset($item->source_label);
-    $item->created = strtotime($item->created);
-    unset($item->missing_data);
-    if (isset($item->related_bill->id)) {
-      $item->related_bill = $item->related_bill->id;
-    }
-    else {
-      $item->related_bill = NULL;
-    }
-  }
-  elseif ($type == "voter") {
-    $item->person_role = $item->person_role->id;
-    $item->vote = $item->vote->id;
-    $item->person = $item->person->id;
-    $item->option = $item->option->value;
-    $item->created = strtotime($item->created);
-    unset($item->voter_type_label);
-    $item->voting_result = $item->option;
-    unset($item->option);
-  }
-  elseif ($type == "cosponsor") {
-    $item->joined = strtotime($item->joined);
-    $item->withdrawn = (int) strtotime($item->withdrawn);
-  }
-  elseif ($type == "committee") {
-    if (isset($item->committee->id)) {
-      $item->parent = $item->committee->id;
-    }
-    $item->committee_name = $item->name;
-    unset($item->name);
-    unset($item->jurisdiction_link);
-    unset($item->committee);
-    unset($item->committee_type_label);
-  }
-  elseif ($type == "committee_member") {
-    $item->person = $item->person->id;
-    unset($item->committee_type);
-    $item->committee_role = $item->role;
-    unset($item->role);
-    $item->committee = $item->committee->committee;
-    unset($item->role_label);
-  }
-  elseif ($type == "term") {
-    $vocab = taxonomy_vocabulary_machine_name_load('government');
-    if (!empty($item)) {
-      $terms = $item->terms;
-      if (!empty($terms)) {
-        foreach ($terms as $term) {
-          $result = db_query("SELECT t.vid, t.tid, t.name FROM {taxonomy_term_data} t WHERE t.name = :name AND t.vid = :vid", array(':name' => $term->name, ":vid" => $vocab->vid));
-          $result_obj = $result->fetchObject();
-          if (empty($result_obj)) {
+/**
+ * Govdata role mapping modifications.
+ */
+function gov_data_role_mod(&$item) {
+  $item->person = $item->person->id;
+  $item->role_title = $item->title;
+  unset($item->title);
+  unset($item->caucus);
+  unset($item->congress_numbers);
+  unset($item->role_type_label);
+  unset($item->senator_class_label);
+  unset($item->senator_rank_label);
+  $item->enddate = strtotime($item->enddate);
+  $item->startdate = strtotime($item->startdate);
+}
 
-            $term_save = (object) array(
-                  "name" => $term->name,
-                  "vocabulary_machine_name" => "government",
-                  'vid' => $vocab->vid,
-            );
-            taxonomy_term_save($term_save);
+/**
+ * Govdata person mapping modifications.
+ */
+function gov_data_person_mod(&$item) {
+  unset($item->committeeassignments);
+  unset($item->roles);
+  unset($item->cspanid);
+  unset($item->gender_label);
+  unset($item->link);
+  unset($item->osid);
+  unset($item->pvsid);
+  unset($item->sortname);
+  $item->birthday = strtotime($item->birthday);
+}
+
+/**
+ * Govdata vote mapping modifications.
+ */
+function gov_data_vote_mod(&$item) {
+  // Change these values
+  unset($item->options);
+  unset($item->chamber_label);
+  unset($item->link);
+  unset($item->source_label);
+  $item->created = strtotime($item->created);
+  unset($item->missing_data);
+  if (isset($item->related_bill->id)) {
+    $item->related_bill = $item->related_bill->id;
+  }
+  else {
+    $item->related_bill = NULL;
+  }
+}
+
+/**
+ * Govdata voter mapping modifications.
+ */
+function gov_data_voter_mod(&$item) {
+  $item->person_role = $item->person_role->id;
+  $item->vote = $item->vote->id;
+  $item->person = $item->person->id;
+  $item->option = $item->option->value;
+  $item->created = strtotime($item->created);
+  unset($item->voter_type_label);
+  $item->voting_result = $item->option;
+  unset($item->option);
+}
+
+/**
+ * Govdata cosponsor mapping modifications.
+ */
+function gov_data_cosponsor_mod(&$item) {
+  $item->joined = strtotime($item->joined);
+  $item->withdrawn = (int) strtotime($item->withdrawn);
+}
+
+/**
+ * Govdata committee mapping modifications.
+ */
+function gov_data_committee_mod(&$item) {
+  if (isset($item->committee->id)) {
+    $item->parent = $item->committee->id;
+  }
+  $item->committee_name = $item->name;
+  unset($item->name);
+  unset($item->jurisdiction_link);
+  unset($item->committee);
+  unset($item->committee_type_label);
+}
+
+/**
+ * Govdata committee member mapping modifications.
+ */
+function gov_data_committee_member_mod(&$item) {
+  $item->person = $item->person->id;
+  unset($item->committee_type);
+  $item->committee_role = $item->role;
+  unset($item->role);
+  $item->committee = $item->committee->committee;
+  unset($item->role_label);
+}
+
+/**
+ * Govdata term mapping modifications.
+ */
+function gov_data_term_mod(&$item) {
+  $vocab = taxonomy_vocabulary_machine_name_load('government');
+  if (!empty($item)) {
+    $terms = $item->terms;
+    if (!empty($terms)) {
+      foreach ($terms as $term) {
+        $result = db_query("SELECT t.vid, t.tid, t.name FROM {taxonomy_term_data} t WHERE t.name = :name AND t.vid = :vid", array(':name' => $term->name, ":vid" => $vocab->vid));
+        $result_obj = $result->fetchObject();
+        if (empty($result_obj)) {
+
+          $term_save = (object) array(
+                "name" => $term->name,
+                "vocabulary_machine_name" => "government",
+                'vid' => $vocab->vid,
+          );
+          taxonomy_term_save($term_save);
+        }
+        else {
+          $term_save = $result_obj;
+        }
+
+        $duplicate = db_query("SELECT f.entity_id, f.gov_data_bill_terms_tid FROM {field_data_gov_data_bill_terms} AS f ORDER BY delta DESC LIMIT 1")->fetchObject();
+
+        if (!isset($duplicate->entity_id)) {
+          $duplicate->entity_id = '';
+        }
+        if (!isset($duplicate->gov_databill_terms_tid)) {
+          $duplicate->gov_data_bill_terms_tid = '';
+        }
+
+        $gid = db_query("SELECT gid FROM gov_data WHERE gid = :gid", array("gid" => $item->gid))->fetchObject();
+
+        if ($gid->gid != $duplicate->entity_id && $term_save->tid != $duplicate->gov_data_bill_terms_tid) {
+
+          $delta = db_query("SELECT f.delta FROM {field_data_gov_data_bill_terms} f WHERE f.entity_id = :entity_id ORDER BY delta DESC LIMIT 1", array(':entity_id' => $gid->gid))->fetchObject();
+          if (!isset($delta->delta)) {
+            $delta->delta = 0;
           }
-          else {
-            $term_save = $result_obj;
-          }
-
-          $duplicate = db_query("SELECT f.entity_id, f.gov_data_bill_terms_tid FROM {field_data_gov_data_bill_terms} AS f ORDER BY delta DESC LIMIT 1")->fetchObject();
-
-          if (!isset($duplicate->entity_id)) {
-            $duplicate->entity_id = '';
-          }
-          if (!isset($duplicate->gov_databill_terms_tid)) {
-            $duplicate->gov_data_bill_terms_tid = '';
-          }
-
-          $gid = db_query("SELECT gid FROM gov_data WHERE bid = :bid", array("bid" => $item->bid))->fetchObject();
-
-          if ($gid->gid != $duplicate->entity_id && $term_save->tid != $duplicate->gov_data_bill_terms_tid) {
-
-            $delta = db_query("SELECT f.delta FROM {field_data_gov_data_bill_terms} f WHERE f.entity_id = :entity_id ORDER BY delta DESC LIMIT 1", array(':entity_id' => $gid->gid))->fetchObject();
-            if (!isset($delta->delta)) {
-              $delta->delta = 0;
-            }
-            db_insert("field_data_gov_data_bill_terms")
-                ->fields(array(
-                  "entity_type" => "gov_data",
-                  "bundle" => "bill",
-                  "deleted" => 0,
-                  "entity_id" => $gid->gid,
-                  "revision_id" => NULL,
-                  "language" => "und",
-                  "delta" => $delta->delta + 1,
-                  "gov_data_bill_terms_tid" => $term_save->tid,
-                ))->execute();
-          }
+          db_insert("field_data_gov_data_bill_terms")
+              ->fields(array(
+                "entity_type" => "gov_data",
+                "bundle" => "bill",
+                "deleted" => 0,
+                "entity_id" => $gid->gid,
+                "revision_id" => NULL,
+                "language" => "und",
+                "delta" => $delta->delta + 1,
+                "gov_data_bill_terms_tid" => $term_save->tid,
+              ))->execute();
         }
       }
     }
+  }
+}
+
+/**
+ * Implements hook_gov_data_mapping_alter().
+ */
+function gov_data_gov_data_mapping_alter(&$item) {
+  watchdog("item before alter", "<pre>" . print_r($item, true) . "</pre>");
+  // Turns govdata item into an entity and saves it.
+  $type = $item->type;
+  $item->label = $type;
+  $entity = entity_create("gov_data_" . $type, array('type' => $type));
+  $fields = field_info_field_map();
+  $item->gid = $item->id;
+  unset($item->id);
+  if ($type == 'bill') {
+    gov_data_bill_mod($item);
+  }
+  elseif ($type == 'role') {
+    gov_data_role_mod($item);
+  }
+  elseif ($type == 'person') {
+    gov_data_person_mod($item);
+  }
+  elseif ($type == "vote") {
+    gov_data_vote_mod($item);
+  }
+  elseif ($type == "voter") {
+    gov_data_voter_nod($item);
+  }
+  elseif ($type == "cosponsor") {
+    gov_data_cosponsor_mod($item);
+  }
+  elseif ($type == "committee") {
+    gov_data_committee_mod($item);
+  }
+  elseif ($type == "committee_member") {
+    gov_data_committee_member_mod($item);
+  }
+  elseif ($type == "term") {
+    gov_data_term_mod($item);
   }
 
   foreach ($item as $key => $value) {
@@ -685,7 +740,7 @@ function gov_data_gov_data_mapping_alter(&$item, $type) {
     elseif ($value == "true") {
       $value = 1;
     }
-    elseif ($key == "bid") {
+    elseif ($key == "gid") {
       continue;
     }
     $gov_data_key = "gov_data_" . $key;
@@ -701,8 +756,9 @@ function gov_data_gov_data_mapping_alter(&$item, $type) {
       $val_type = "value";
     }
 
-    $entity->{$gov_data_key}['und'][0][$val_type][0] = $value;
-    $entity->bid = $item->bid;
+    //$entity->{$gov_data_key}['und'][0][$val_type][0] = $value;
+    $entity->{$gov_data_key} = $value;
+    $entity->gid = $item->gid;
   }
   $item = $entity;
   watchdog("last bill", "<pre>" . print_r($item, true) . "</pre>");
@@ -716,7 +772,7 @@ function gov_data_filter_by_congress($type) {
     $append = '';
   }
 
-  $congresses = variable_get("gov_data_" . $type, array('113'));
+  $congresses = variable_get("gov_data_" . $type, array(end(array_values($congress))));
 
   foreach ($congresses as $congress) {
     $url = "https://www.govtrack.us/api/v2/" . $type . "?congress=" . $congress . $append;
@@ -739,6 +795,124 @@ function gov_data_limit($type, $max_limit) {
   } while ($offset < $max_limit); // puts upper limit on offset
 }
 
+/**
+ * Returns single value from array passed in.
+ */
+function gov_data_array_shifter($array) {
+  return array_shift(array_values($array));
+}
+
+/**
+ * Sets query data.
+ */
+function gov_data_picker($picker, $type) {
+  $params = array();
+  if ($picker == 'get_role_person') {
+    $params['bundle'] = "role";
+    $params['column'] = "person";
+    $params['filter'] = NULL;
+  }
+  elseif ($picker == "person") {
+    $params['bundle'] = "person";
+    $params['column'] = "gid";
+    $params['filter'] = "person";
+  }
+  elseif ($picker == "vote") {
+    $bundle = "voter";
+    $params['column'] = "gid";
+    $params['filter'] = "vote";
+  }
+  elseif ($picker == "bill") {
+    $params['bundle'] = "bill";
+    $params['column'] = "gid";
+    $params['filter'] = "bill";
+  }
+  elseif ($picker == "committee") {
+    $params['bundle'] = "committee";
+    $params['column'] = "gid";
+    $params['filter'] = "committee";
+  }
+  elseif ($picker == 'term') {
+    $params['bundle'] = "bill";
+    $params['column'] = "gid";
+    $params['filter'] = "bill";
+  }
+  gov_data_database($type, $params);
+}
+
+/**
+ * Preprocess database call
+ */
+function gov_data_database($type, $params) {
+  switch ($type) {
+    case "person":
+      $params['key'] = "gid";
+      $params['id'] = "pid";
+      $params['op'] = 1;
+      break;
+    // figure out what is going on here
+    case "term":
+      $params['op'] = 2;
+      $params['key'] = "gid";
+      break;
+    case "voter":
+    case "cosponsor":
+    case "committee_member":
+      $params['key'] = "gid";
+      $params['op'] = 0;
+      break;
+  }
+  watchdog("cosponsor 2", print_r($type, true));
+  $multiples = db_select("gov_data_" . $type, "t")
+      ->fields("t", array($params['id']))
+      ->execute();
+  gov_data_multiple_process($multiples, $type, $params);
+}
+
+function gov_data_multiple_process($multiples, $type, $params) {
+  foreach ($multiples as $single) {
+    watchdog("single", "<pre>" . print_r($single, true) . "</pre>");
+    $url = gov_data_generate_url($single, $type, $params);
+    $results = drupal_http_request($url);
+    if (_gov_data_request_failure($results))
+      return FALSE;
+
+    gov_data_save($results, $type);
+  }
+}
+
+/**
+ * Generates the URL for the API call.
+ */
+function gov_data_generate_url($single, $type, $params) {
+  $appended = "";
+  $prepended = "";
+  watchdog("single no key", "<pre>" . print_r($single, true) . "</pre>");
+  watchdog("key", "<pre>" . print_r($key, true) . "</pre>");
+  if ($params['op'] == 0) {
+    if ($type == "voter") {
+      $prepended = "vote_";
+    }
+    elseif ($type == "cosponsor") {
+      $appended = "ship";
+    }
+    $url = "https://www.govtrack.us/api/v2/" . $prepended . $type . $appended . "?" . $filter . "=" . $single->gid;
+    watchdog("url", "<pre>" . print_r($url, true) . "</pre>");
+  }
+  elseif ($params['op'] == 1) {
+    $url = "https://www.govtrack.us/api/v2/" . $type . "/" . $single->gid;
+    watchdog("url", "<pre>" . print_r($url, true) . "</pre>");
+  }
+  elseif ($params['op'] == 2) {
+    $url = "https://www.govtrack.us/api/v2/bill/" . $single->gid;
+    watchdog("url", "<pre>" . print_r($url, true) . "</pre>");
+  }
+  return $url;
+}
+
+/**
+ * Routs every gov data entity type.
+ */
 function gov_data_pull($type) {
   switch ($type) {
     case "bill":
@@ -746,16 +920,12 @@ function gov_data_pull($type) {
       gov_data_filter_by_congress($type);
       break;
     case "person":
-      $person_picker = variable_get("gov_data_person", array('get_role_person'));
-      if (is_array($person_picker)) {
-        $person_picker = array_shift(array_values($person_picker));
+      $picker = variable_get("gov_data_person", array('get_role_person'));
+      if (is_array($picker)) {
+        $picker = gov_data_array_shifter($person_picker);
+        gov_data_picker($picker, $type);
       }
-      if ($person_picker == 'get_role_person') {
-        $bundle = "role";
-        $column = "person";
-        gov_data_database($type, $bundle, $column);
-      }
-      elseif ($person_picker == "all") {
+      elseif ($picker == "all") {
         $max_limit = 18000;
         gov_data_limit($type, $max_limit);
       }
@@ -765,132 +935,56 @@ function gov_data_pull($type) {
       gov_data_limit($type, $max_limit);
       break;
     case "role":
-      $role_picker = variable_get("gov_data_role", array("current"));
-      if ($role_picker == 'current') {
+      $picker = variable_get("gov_data_role", array("current"));
+      if ($picker == 'current') {
         $url = 'https://www.govtrack.us/api/v2/role?current=true';
         $results = drupal_http_request($url);
         if (_gov_data_request_failure($results))
           return FALSE;
         gov_data_save($results, $type);
       }
-      elseif ($role_picker == "all") {
+      elseif ($picker == "all") {
         $max_limit = 10000;
         gov_data_limit($type, $max_limit);
       }
       break;
     case "voter":
-      $voter_picker = variable_get("gov_data_voter", "person");
-      if (is_array($voter_picker)) {
-        $voter_picker = array_shift(array_values($voter_picker));
+      $picker = variable_get("gov_data_voter", "person");
+      if (is_array($picker)) {
+        $picker = gov_data_array_shifter($picker);
       }
-      if ($voter_picker == "person") {
-        $bundle = "person";
-        $column = "bid";
-        $filter = "person";
-        gov_data_database($type, $bundle, $column, $filter);
-      }
-      elseif ($voter_picker == "vote") {
-        $bundle = "voter";
-        $column = "bid";
-        $filter = "vote";
-        gov_data_database($type, $bundle, $column, $filter);
-      }
+      gov_data_picker($picker, $type);
       break;
     case "cosponsor":
-      watchdog("cosponsor", "<pre>" . print_r("cosponsor", true) . "</pre>");
-      $cosponsor_picker = variable_get("gov_data_cosponsor", "bill");
-      if (is_array($cosponsor_picker)) {
-        $cosponsor_picker = array_shift(array_values($cosponsor_picker));
-      }/*
-        if ($cosponsor_picker == "person") {
-        $bundle = "person";
-        $column = "bid";
-        $filter = "person";
-        gov_data_database($type, $bundle, $column, $filter);
-        } */
-      if ($cosponsor_picker == "bill") {
-        $bundle = "bill";
-        $column = "bid";
-        $filter = "bill";
-        gov_data_database($type, $bundle, $column, $filter);
+      $picker = variable_get("gov_data_cosponsor", "bill");
+      if (is_array($picker)) {
+        $picker = gov_data_array_shifter($cosponsor_picker);
       }
+      gov_data_picker($picker, $type);
       break;
     case "committee_member":
-      $committee_picker = variable_get("gov_data_committee_member", "person");
-      if (is_array($committee_picker)) {
-        $committee_picker = array_shift(array_values($committee_picker));
+      $picker = variable_get("gov_data_committee_member", "person");
+      if (is_array($picker)) {
+        $picker = gov_data_array_shifter($picker);
       }
-      if ($committee_picker == "person") {
-        $bundle = "person";
-        $column = "bid";
-        $filter = "person";
-        gov_data_database($type, $bundle, $column, $filter);
-      }
-      elseif ($committee_picker == "committee") {
-        $bundle = "committee";
-        $column = "bid";
-        $filter = "committee";
-        gov_data_database($type, $bundle, $column, $filter);
-      }
+      gov_data_picker($picker, $type);
       break;
     case "term":
-      $bundle = "bill";
-      $column = "bid";
-      $filter = "bill";
-      gov_data_database($type, $bundle, $column, $filter);
+      gov_data_picker('term', $type);
       break;
   }
 }
 
-function gov_data_generate_url($single, $type, $op, $key, $filter = NULL) {
-  $appended = "";
-  $prepended = "";
-  watchdog("single no key", "<pre>" . print_r($single, true) . "</pre>");
-  watchdog("key", "<pre>" . print_r($key, true) . "</pre>");
-  if ($op == 1) {
-    $url = "https://www.govtrack.us/api/v2/" . $type . "/" . $single->bid;
-    watchdog("url", "<pre>" . print_r($url, true) . "</pre>");
-  }
-  elseif ($op == 0) {
-    if ($type == "voter") {
-      $prepended = "vote_";
-    }
-    elseif ($type == "cosponsor") {
-      $appended = "ship";
-    }
-    $url = "https://www.govtrack.us/api/v2/" . $prepended . $type . $appended . "?" . $filter . "=" . $single->bid;
-    watchdog("url", "<pre>" . print_r($url, true) . "</pre>");
-  }
-  elseif ($op == 2) {
-    $url = "https://www.govtrack.us/api/v2/bill/" . $single->bid;
-    watchdog("url", "<pre>" . print_r($url, true) . "</pre>");
-  }
-  return $url;
-}
+function gov_data_item_save($item) {
 
-function gov_data_multiple_process($multiples, $type, $op, $key = NULL, $filter = NULL) {
-  foreach ($multiples as $single) {
-    watchdog("single", "<pre>" . print_r($single, true) . "</pre>");
-    $url = gov_data_generate_url($single, $type, $op, $key, $filter);
-    $results = drupal_http_request($url);
-    if (_gov_data_request_failure($results))
-      return FALSE;
-
-    gov_data_save($results, $type);
-  }
-}
-
-function gov_data_item_save($item, $type) {
-
-  drupal_alter('gov_data_mapping', $item, $type);
+  drupal_alter('gov_data_mapping', $item);
 
   watchdog("before save", "<pre>" . print_r($item, true) . "</pre>");
 
   // Check to make sure the saved data isn't a duplicate
-  $result = db_select("gov_data", "g")
-          ->fields("g", array("bid"))
-          ->condition("bid", $item->bid, "=")
-          ->condition("type", $item->type, "=")
+  $result = db_select("gov_data_" . $item->type, "g")
+          ->fields("g", array("gid"))
+          ->condition("gid", $item->gid, "=")
           ->execute()->fetchCol();
 
   watchdog("result", "<pre>" . print_r($result, true) . "</pre>");
@@ -900,17 +994,20 @@ function gov_data_item_save($item, $type) {
   }
   else {
 
-    entity_save('gov_data', $item);
+    entity_save('gov_data_' . $item->type, $item);
   }
 }
 
+/**
+ * Saves govdata information.
+ */
 function gov_data_save($results, $type) {
 
   watchdog("role stuff", "<pre>" . print_r($results, true) . "</pre>");
 
   if ($type == "term") {
     $item = json_decode($results->data);
-    gov_data_item_save($item, $type);
+    gov_data_item_queue_add($item);
   }
   else {
 
@@ -918,9 +1015,28 @@ function gov_data_save($results, $type) {
 
     foreach ($items as $item) {
       watchdog("committee items", "<pre>" . print_r($item, true) . "</pre>");
-      gov_data_item_save($item, $type);
+      $item->type = $type;
+      gov_data_item_queue_add($item);
     }
   }
+}
+
+/**
+ * Implementation of hook_cron_queue_info().
+ */
+function gov_data_cron_queue_info() {
+  $queues['gov_data'] = array(
+    'worker callback' => 'gov_data_item_save',
+  );
+  return $queues;
+}
+
+/**
+ * Queues govdata items.
+ */
+function gov_data_item_queue_add($item) {
+  $queue = DrupalQueue::get('gov_data');
+  $queue->createItem($item);
 }
 
 /**

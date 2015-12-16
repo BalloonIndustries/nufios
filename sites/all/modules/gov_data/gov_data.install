@@ -34,14 +34,27 @@ function gov_data_schema() {
   $schema['gov_data_bill'] = array(
     'description' => 'Table for government bill data',
     'fields' => array(
+      'gid' => array(
+        'description' => 'Government id',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => FALSE),
       'bid' => array(
         'description' => 'Bill id',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE),
+            'label' => array(
+        'label' => t('Bill Label'),
+        'type' => 'varchar',
+        'length' => 75,
+        'default' => '',
+      ),
       'gov_data_bill_res_type' => array(
         'label' => t('Bill Resolution Type'),
-        'type' => 'varchar'
+        'type' => 'varchar',
+        'length' => 75,
+        'default' => '',
       ),
       'gov_data_bill_type' => array(
         'description' => t('Bill Type'),
@@ -57,7 +70,6 @@ function gov_data_schema() {
       ),
       'gov_data_congress' => array(
         'description' => t('Congress'),
-        'default' => '',
         'type' => 'int',
         'unsigned' => TRUE,
       ),
@@ -128,17 +140,28 @@ function gov_data_schema() {
         'type' => 'text',
       ),
     ),
-    'primary key' => array('bid'),
+    'primary key' => array('gid', 'bid'),
   );
 
   $schema['gov_data_committee'] = array(
     'description' => 'Table for government committee data',
     'fields' => array(
+      'gid' => array(
+        'description' => 'Government id',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => FALSE),
       'cid' => array(
         'description' => 'Committee id',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE),
+      'label' => array(
+        'label' => t('Committee Label'),
+        'type' => 'varchar',
+        'length' => 75,
+        'default' => '',
+      ),
       'gov_data_abbrev' => array(
         'description' => t('Abbreviation'),
         'type' => 'varchar',
@@ -181,17 +204,28 @@ function gov_data_schema() {
         'type' => 'text',
       ),
     ),
-    'primary key' => array('cid'),
+    'primary key' => array('gid', 'cid'),
   );
 
   $schema['gov_data_cosponsor'] = array(
     'description' => 'Table for government cosponsor data',
     'fields' => array(
+      'gid' => array(
+        'description' => 'Government id',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => FALSE),
       'cid' => array(
         'description' => 'Cosponsor id',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE),
+      'label' => array(
+        'label' => t('Cosponsor Label'),
+        'type' => 'varchar',
+        'length' => 75,
+        'default' => '',
+      ),
       'gov_data_bill' => array(
         'label' => t('Bill'),
         'type' => 'int',
@@ -218,17 +252,28 @@ function gov_data_schema() {
         'unsigned' => TRUE,
       ),
     ),
-    'primary key' => array('cid'),
+    'primary key' => array('gid', 'cid'),
   );
 
   $schema['gov_data_committee_member'] = array(
     'description' => 'Table for government committee member data',
     'fields' => array(
+      'gid' => array(
+        'description' => 'Government id',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => FALSE),
       'cid' => array(
         'description' => 'Committee member id',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE),
+      'label' => array(
+        'label' => t('Commitee Member Label'),
+        'type' => 'varchar',
+        'length' => 75,
+        'default' => '',
+      ),
       'gov_data_parent' => array(
         'description' => t('Committee'),
         'type' => 'int',
@@ -244,17 +289,28 @@ function gov_data_schema() {
         'default' => '',
       ),
     ),
-    'primary key' => array('cid'),
+    'primary key' => array('gid', 'cid'),
   );
 
   $schema['gov_data_person'] = array(
     'description' => 'Table for government person data',
     'fields' => array(
+      'gid' => array(
+        'description' => 'Government id',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => FALSE),
       'pid' => array(
         'description' => 'Person id',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE),
+      'label' => array(
+        'label' => t('Person Label'),
+        'type' => 'varchar',
+        'length' => 75,
+        'default' => '',
+      ),
       'gov_data_bioguideid' => array(
         'description' => t('Bioguide ID'),
         'type' => 'varchar',
@@ -322,17 +378,28 @@ function gov_data_schema() {
         'default' => '',
       ),
     ),
-    'primary key' => array('pid'),
+    'primary key' => array('gid', 'pid'),
   );
 
   $schema['gov_data_role'] = array(
     'description' => 'Table for government role data',
     'fields' => array(
+      'gid' => array(
+        'description' => 'Government id',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => FALSE),
       'rid' => array(
         'description' => 'Role id',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE),
+      'label' => array(
+        'label' => t('Role Label'),
+        'type' => 'varchar',
+        'length' => 75,
+        'default' => '',
+      ),
       'gov_data_current' => array(
         'description' => t('Current'),
         'type' => 'int',
@@ -424,17 +491,28 @@ function gov_data_schema() {
         'default' => '',
       ),
     ),
-    'primary key' => array('rid'),
+    'primary key' => array('gid', 'rid'),
   );
 
   $schema['gov_data_vote'] = array(
     'description' => 'Table for government vote data',
     'fields' => array(
+      'gid' => array(
+        'description' => 'Government id',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => FALSE),
       'vid' => array(
         'description' => 'Vote id',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE),
+      'label' => array(
+        'label' => t('Vote Label'),
+        'type' => 'varchar',
+        'length' => 75,
+        'default' => '',
+      ),
       'gov_data_category' => array(
         'description' => t('Category'),
         'type' => 'varchar',
@@ -542,17 +620,28 @@ function gov_data_schema() {
         'default' => '',
       ),
     ),
-    'primary key' => array('vid'),
+    'primary key' => array('gid', 'vid'),
   );
 
   $schema['gov_data_voter'] = array(
     'description' => 'Table for government voter data',
     'fields' => array(
+      'gid' => array(
+        'description' => 'Government id',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => FALSE),
       'vid' => array(
         'description' => 'Voter id',
         'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE),
+      'label' => array(
+        'label' => t('Voter Label'),
+        'type' => 'varchar',
+        'length' => 75,
+        'default' => '',
+      ),
       'gov_data_vote' => array(
         'description' => t('Vote'),
         'type' => 'int',
@@ -590,7 +679,7 @@ function gov_data_schema() {
         'default' => 0,
       ),
     ),
-    'primary key' => array('vid'),
+    'primary key' => array('gid', 'vid'),
   );
 
 
@@ -608,33 +697,7 @@ function gov_data_install() {
   taxonomy_vocabulary_save($new_vocab);
 
   $fields = array();
-  $fields[] = array(
-    'type' => 'entityreference',
-    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
-    'field_name' => 'gov_data_bill',
-    'settings' => array(
-      'target_type' => 'gov_data',
-      'handler_settings' => array('target_bundles' => array('bill')),
-    )
-  );
-  $fields[] = array(
-    'type' => 'entityreference',
-    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
-    'field_name' => 'gov_data_person',
-    'settings' => array(
-      'target_type' => 'gov_data',
-      'handler_settings' => array('target_bundles' => array('person')),
-    )
-  );
-  $fields[] = array(
-    'type' => 'entityreference',
-    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
-    'field_name' => 'gov_data_role',
-    'settings' => array(
-      'target_type' => 'gov_data',
-      'handler_settings' => array('target_bundles' => array('role')),
-    )
-  );
+
   $fields[] = array(
     'field_name' => 'gov_data_bill_terms',
     'type' => 'taxonomy_term_reference',
@@ -645,249 +708,7 @@ function gov_data_install() {
     'translatable' => FALSE,
   );
 
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_role_title',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_abbrev',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_code',
-  );
-  $fields[] = array(
-    'type' => 'entityreference',
-    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
-    'field_name' => 'gov_data_parent',
-    'settings' => array(
-      'target_type' => 'gov_data',
-      'handler_settings' => array('target_bundles' => array('committee')),
-    )
-  );
-  $fields[] = array(
-    'type' => 'text_long',
-    'field_name' => 'gov_data_jurisdiction',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_name',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_committee_name',
-  );
-  $fields[] = array(
-    'type' => 'number_integer',
-    'field_name' => 'gov_data_obsolete',
-  );
-  $fields[] = array(
-    'type' => 'text_long',
-    'field_name' => 'gov_data_url',
-  );
-  $fields[] = array(
-    'type' => 'entityreference',
-    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
-    'field_name' => 'gov_data_committee',
-    'settings' => array(
-      'target_type' => 'gov_data',
-      'handler_settings' => array('target_bundles' => array('committee_member')),
-    )
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_committee_role',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_committee_type',
-  );
-  $fields[] = array(
-    'type' => 'number_integer',
-    'field_name' => 'gov_data_joined',
-  );
-  $fields[] = array(
-    'type' => 'number_integer',
-    'field_name' => 'gov_data_withdrawn',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_bioguideid',
-  );
-  $fields[] = array(
-    'type' => 'number_integer',
-    'field_name' => 'gov_data_birthday',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_firstname',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_lastname',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_middlename',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_gender',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_namemod',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_nickname',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_twitterid',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_youtubeid',
-  );
-  $fields[] = array(
-    'type' => 'number_integer',
-    'field_name' => 'gov_data_current',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_description',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_district',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_state',
-  );
-  $fields[] = array(
-    'type' => 'number_integer',
-    'field_name' => 'gov_data_enddate',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_leadership_title',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_party',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_phone',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_role_type',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_senator_class',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_senator_rank',
-  );
-  $fields[] = array(
-    'type' => 'number_integer',
-    'field_name' => 'gov_data_startdate',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_title_long',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_website',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_category',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_required',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_result',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_source',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_vote_type',
-  );
-  $fields[] = array(
-    'type' => 'number_integer',
-    'field_name' => 'gov_data_session',
-  );
-  $fields[] = array(
-    'type' => 'number_integer',
-    'field_name' => 'gov_data_total_minus',
-  );
-  $fields[] = array(
-    'type' => 'number_integer',
-    'field_name' => 'gov_data_total_plus',
-  );
-  $fields[] = array(
-    'type' => 'number_integer',
-    'field_name' => 'gov_data_total_other',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_category_label',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_chamber',
-  );
-  $fields[] = array(
-    'type' => 'number_integer',
-    'field_name' => 'gov_data_created',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_missing_data',
-  );
-  $fields[] = array(
-    'type' => 'text_long',
-    'field_name' => 'gov_data_question',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_question_details',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_related_amendment',
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_voting_result',
-  );
-  $fields[] = array(
-    'type' => 'entityreference',
-    'cardinality' => FIELD_CARDINALITY_UNLIMITED,
-    'field_name' => 'gov_data_vote',
-    'settings' => array(
-      'target_type' => 'gov_data',
-      'handler_settings' => array('target_bundles' => array('vote')),
-    )
-  );
-  $fields[] = array(
-    'type' => 'text',
-    'field_name' => 'gov_data_voter_type',
-  );
+
   foreach ($fields as $field) {
     field_create_field($field);
   }
@@ -904,495 +725,6 @@ function gov_data_install() {
     ),
   );
 
-  $instances[] = array(
-    'field_name' => 'gov_data_abbrev',
-    'label' => t('Abbreviation'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'committee',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_code',
-    'label' => t('Code'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'committee',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_parent',
-    'label' => t('Parent'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'committee',
-    'widget' => array(
-      'type' => 'options_select',
-    ),
-    'settings' => array(
-      'target_type' => 'gov_data',
-      'handler_settings' => array('target_bundles' => array('committee')),
-    )
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_committee_type',
-    'label' => t('Committee Type'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'committee',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_jurisdiction',
-    'label' => t('Jurisdiction'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'committee',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_committee_name',
-    'label' => t('Name'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'committee',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_obsolete',
-    'label' => t('Obsolete'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'committee',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_url',
-    'label' => t('URL'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'committee',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_committee',
-    'label' => t('Committee'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'committee_member',
-    'widget' => array(
-      'type' => 'options_select',
-    ),
-    'settings' => array(
-      'target_type' => 'gov_data',
-      'handler_settings' => array('target_bundles' => array('committee')),
-    )
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_parent',
-    'label' => t('Committee'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'committee_member',
-    'widget' => array(
-      'type' => 'options_select',
-    ),
-    'settings' => array(
-      'target_type' => 'gov_data',
-      'handler_settings' => array('target_bundles' => array('committee')),
-    )
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_person',
-    'label' => t('Person'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'committee_member',
-    'widget' => array(
-      'type' => 'options_select',
-    ),
-    'settings' => array(
-      'target_type' => 'gov_data',
-      'handler_settings' => array('target_bundles' => array('person')),
-    )
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_committee_role',
-    'label' => t('Committee Role'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'committee_member',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_bill',
-    'label' => t('Bill'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'cosponsor',
-    'widget' => array(
-      'type' => 'options_select',
-    ),
-    'settings' => array(
-      'target_type' => 'gov_data',
-      'handler_settings' => array('target_bundles' => array('bill')),
-    )
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_person',
-    'label' => t('Person'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'cosponsor',
-    'widget' => array(
-      'type' => 'options_select',
-    ),
-    'settings' => array(
-      'target_type' => 'gov_data',
-      'handler_settings' => array('target_bundles' => array('person')),
-    )
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_role',
-    'label' => t('Role'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'cosponsor',
-    'widget' => array(
-      'type' => 'options_select',
-    ),
-    'settings' => array(
-      'target_type' => 'gov_data',
-      'handler_settings' => array('target_bundles' => array('role')),
-    )
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_withdrawn',
-    'label' => t('Withdrawn'),
-    'bundle' => 'cosponsor',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_joined',
-    'label' => t('Joined'),
-    'bundle' => 'cosponsor',
-    'entity_type' => 'gov_data',
-  );
-
-  $instances[] = array(
-    'field_name' => 'gov_data_bioguideid',
-    'label' => t('Bioguide ID'),
-    'bundle' => 'person',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_birthday',
-    'label' => t('Birthday'),
-    'bundle' => 'person',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_firstname',
-    'label' => t('First Name'),
-    'bundle' => 'person',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_lastname',
-    'label' => t('Last Name'),
-    'bundle' => 'person',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_middlename',
-    'label' => t('Middle Name'),
-    'bundle' => 'person',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_name',
-    'label' => t('Name'),
-    'bundle' => 'person',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_gender',
-    'label' => t('Gender'),
-    'bundle' => 'person',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_namemod',
-    'label' => t('Name Modification'),
-    'bundle' => 'person',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_nickname',
-    'label' => t('Nickname'),
-    'bundle' => 'person',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_twitterid',
-    'label' => t('Twitter ID'),
-    'bundle' => 'person',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_youtubeid',
-    'label' => t('YouTube ID'),
-    'bundle' => 'person',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_current',
-    'label' => t('Current'),
-    'bundle' => 'role',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_district',
-    'label' => t('District'),
-    'bundle' => 'role',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_state',
-    'label' => t('State'),
-    'bundle' => 'role',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_enddate',
-    'label' => t('End Date'),
-    'bundle' => 'role',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_leadership_title',
-    'label' => t('Leadership Title'),
-    'bundle' => 'role',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_party',
-    'label' => t('Party'),
-    'bundle' => 'role',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_person',
-    'label' => t('Person'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'role',
-    'widget' => array(
-      'type' => 'options_select',
-    ),
-    'settings' => array(
-      'target_type' => 'gov_data',
-      'handler_settings' => array('target_bundles' => array('person')),
-    )
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_phone',
-    'label' => t('Phone'),
-    'bundle' => 'role',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_role_type',
-    'label' => t('Role Type'),
-    'bundle' => 'role',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_senator_class',
-    'label' => t('Senator Class'),
-    'bundle' => 'role',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_senator_rank',
-    'label' => t('Senator Rank'),
-    'bundle' => 'role',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_startdate',
-    'label' => t('Start Date'),
-    'bundle' => 'role',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_role_title',
-    'label' => t('Title'),
-    'bundle' => 'role',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_title_long',
-    'label' => t('Long Title'),
-    'bundle' => 'role',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_website',
-    'label' => t('Website'),
-    'bundle' => 'role',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_category',
-    'label' => t('Category'),
-    'bundle' => 'vote',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_required',
-    'label' => t('Required'),
-    'bundle' => 'vote',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_result',
-    'label' => t('Result'),
-    'bundle' => 'vote',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_source',
-    'label' => t('Source'),
-    'bundle' => 'vote',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_vote_type',
-    'label' => t('Vote Type'),
-    'bundle' => 'vote',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_session',
-    'label' => t('Session'),
-    'bundle' => 'vote',
-    'entity_type' => 'gov_data',
-  );
-
-  $instances[] = array(
-    'field_name' => 'gov_data_bill',
-    'label' => t('Bill'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'vote',
-    'widget' => array(
-      'type' => 'options_select',
-    ),
-    'settings' => array(
-      'target_type' => 'gov_data',
-      'handler_settings' => array('target_bundles' => array('bill')),
-    )
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_total_minus',
-    'label' => t('Total Minus Votes'),
-    'bundle' => 'vote',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_total_plus',
-    'label' => t('Total Plus Votes'),
-    'bundle' => 'vote',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_total_other',
-    'label' => t('Total Other Votes'),
-    'bundle' => 'vote',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_category_label',
-    'label' => t('Category Label'),
-    'bundle' => 'vote',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_chamber',
-    'label' => t('Chamber'),
-    'bundle' => 'vote',
-    'entity_type' => 'gov_data',
-  );
-
-  $instances[] = array(
-    'field_name' => 'gov_data_congress',
-    'label' => t('Congress'),
-    'bundle' => 'vote',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_created',
-    'label' => t('Created Date'),
-    'bundle' => 'vote',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_missing_data',
-    'label' => t('Missing Data'),
-    'bundle' => 'vote',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_number',
-    'label' => t('Number'),
-    'bundle' => 'vote',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_question',
-    'label' => t('Question'),
-    'bundle' => 'vote',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_related_amendment',
-    'label' => t('Related Amendment'),
-    'bundle' => 'vote',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_vote',
-    'label' => t('Vote'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'voter',
-    'widget' => array(
-      'type' => 'options_select',
-    ),
-    'settings' => array(
-      'target_type' => 'gov_data',
-      'handler_settings' => array('target_bundles' => array('vote')),
-    )
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_created',
-    'label' => t('Created Date'),
-    'bundle' => 'voter',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_voting_result',
-    'label' => t('Voting Result'),
-    'bundle' => 'voter',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_voter_type',
-    'label' => t('Voter Type'),
-    'bundle' => 'voter',
-    'entity_type' => 'gov_data',
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_person',
-    'label' => t('Person'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'voter',
-    'widget' => array(
-      'type' => 'options_select',
-    ),
-    'settings' => array(
-      'target_type' => 'gov_data',
-      'handler_settings' => array('target_bundles' => array('person')),
-    )
-  );
-  $instances[] = array(
-    'field_name' => 'gov_data_role',
-    'label' => t('Person Role'),
-    'entity_type' => 'gov_data',
-    'bundle' => 'voter',
-    'widget' => array(
-      'type' => 'options_select',
-    ),
-    'settings' => array(
-      'target_type' => 'gov_data',
-      'handler_settings' => array('target_bundles' => array('role')),
-    )
-  );
   foreach ($instances as $instance) {
     field_create_instance($instance);
   }
@@ -1421,86 +753,7 @@ function gov_data_uninstall() {
     taxonomy_vocabulary_delete($vid);
   }
   $fields = array(
-    "gov_data_bill",
-    "gov_data_person",
-    "gov_data_role",
     "gov_data_bill_terms",
-    "gov_data_bill_res_type",
-    "gov_data_bill_type",
-    "gov_data_bill_type_label",
-    "gov_data_congress",
-    "gov_data_current_status",
-    "gov_data_current_status_date",
-    "gov_data_current_status_desc",
-    "gov_data_current_status_label",
-    "gov_data_introduced_date",
-    "gov_data_is_alive",
-    "gov_data_is_current",
-    "gov_data_noun",
-    "gov_data_number",
-    "gov_data_sliplawnum",
-    "gov_data_sponsor",
-    "gov_data_link",
-    "gov_data_gov_title",
-    "gov_data_bill_title",
-    "gov_data_role_title",
-    "gov_data_abbrev",
-    "gov_data_code",
-    "gov_data_parent",
-    "gov_data_committee_type",
-    "gov_data_jurisdiction",
-    "gov_data_committee_name",
-    "gov_data_obsolete",
-    "gov_data_url",
-    "gov_data_committee",
-    "gov_data_committee_role",
-    "gov_data_joined",
-    "gov_data_withdrawn",
-    "gov_data_bioguideid",
-    "gov_data_birthday",
-    "gov_data_firstname",
-    "gov_data_lastname",
-    "gov_data_middlename",
-    "gov_data_gender",
-    "gov_data_name",
-    "gov_data_namemod",
-    "gov_data_nickname",
-    "gov_data_twitterid",
-    "gov_data_youtubeid",
-    "gov_data_current",
-    "gov_data_description",
-    "gov_data_district",
-    "gov_data_state",
-    "gov_data_enddate",
-    "gov_data_leadership_title",
-    "gov_data_party",
-    "gov_data_phone",
-    "gov_data_role_type",
-    "gov_data_senator_class",
-    "gov_data_senator_rank",
-    "gov_data_startdate",
-    "gov_data_title_long",
-    "gov_data_website",
-    "gov_data_category",
-    "gov_data_required",
-    "gov_data_result",
-    "gov_data_source",
-    "gov_data_vote_type",
-    "gov_data_session",
-    "gov_data_total_minus",
-    "gov_data_total_plus",
-    "gov_data_total_other",
-    "gov_data_category_label",
-    "gov_data_chamber",
-    "gov_data_created",
-    "gov_data_missing_data",
-    "gov_data_question",
-    "gov_data_question_details",
-    "gov_data_related_amendment",
-    "gov_data_voting_result",
-    "gov_data_vote",
-    "gov_data_voter_type",
-    "gov_data_sliplawpubpriv",
   );
   foreach ($fields as $field) {
     field_delete_field($field);
