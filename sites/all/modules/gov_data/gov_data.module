@@ -674,8 +674,7 @@ function gov_data_term_mod(&$item) {
           }
           db_insert("field_data_gov_data_bill_terms")
               ->fields(array(
-                "entity_type" => "gov_data",
-                "bundle" => "bill",
+                "entity_type" => "gov_data_bill",
                 "deleted" => 0,
                 "entity_id" => $gid->gid,
                 "revision_id" => NULL,
@@ -696,7 +695,6 @@ function gov_data_gov_data_mapping_alter(&$item) {
   watchdog("item before alter", "<pre>" . print_r($item, true) . "</pre>");
   // Turns govdata item into an entity and saves it.
   $type = $item->type;
-  $item->label = $type;
   $entity = entity_create("gov_data_" . $type, array('type' => $type));
   $fields = field_info_field_map();
   $item->gid = $item->id;
@@ -759,6 +757,7 @@ function gov_data_gov_data_mapping_alter(&$item) {
     //$entity->{$gov_data_key}['und'][0][$val_type][0] = $value;
     $entity->{$gov_data_key} = $value;
     $entity->gid = $item->gid;
+    $entity->label = $type;
   }
   $item = $entity;
   watchdog("last bill", "<pre>" . print_r($item, true) . "</pre>");
@@ -800,114 +799,6 @@ function gov_data_limit($type, $max_limit) {
  */
 function gov_data_array_shifter($array) {
   return array_shift(array_values($array));
-}
-
-/**
- * Sets query data.
- */
-function gov_data_picker($picker, $type) {
-  $params = array();
-  if ($picker == 'get_role_person') {
-    $params['bundle'] = "role";
-    $params['column'] = "person";
-    $params['filter'] = NULL;
-  }
-  elseif ($picker == "person") {
-    $params['bundle'] = "person";
-    $params['column'] = "gid";
-    $params['filter'] = "person";
-  }
-  elseif ($picker == "vote") {
-    $bundle = "voter";
-    $params['column'] = "gid";
-    $params['filter'] = "vote";
-  }
-  elseif ($picker == "bill") {
-    $params['bundle'] = "bill";
-    $params['column'] = "gid";
-    $params['filter'] = "bill";
-  }
-  elseif ($picker == "committee") {
-    $params['bundle'] = "committee";
-    $params['column'] = "gid";
-    $params['filter'] = "committee";
-  }
-  elseif ($picker == 'term') {
-    $params['bundle'] = "bill";
-    $params['column'] = "gid";
-    $params['filter'] = "bill";
-  }
-  gov_data_database($type, $params);
-}
-
-/**
- * Preprocess database call
- */
-function gov_data_database($type, $params) {
-  switch ($type) {
-    case "person":
-      $params['key'] = "gid";
-      $params['id'] = "pid";
-      $params['op'] = 1;
-      break;
-    // figure out what is going on here
-    case "term":
-      $params['op'] = 2;
-      $params['key'] = "gid";
-      break;
-    case "voter":
-    case "cosponsor":
-    case "committee_member":
-      $params['key'] = "gid";
-      $params['op'] = 0;
-      break;
-  }
-  watchdog("cosponsor 2", print_r($type, true));
-  $multiples = db_select("gov_data_" . $type, "t")
-      ->fields("t", array($params['id']))
-      ->execute();
-  gov_data_multiple_process($multiples, $type, $params);
-}
-
-function gov_data_multiple_process($multiples, $type, $params) {
-  foreach ($multiples as $single) {
-    watchdog("single", "<pre>" . print_r($single, true) . "</pre>");
-    $url = gov_data_generate_url($single, $type, $params);
-    $results = drupal_http_request($url);
-    if (_gov_data_request_failure($results))
-      return FALSE;
-
-    gov_data_save($results, $type);
-  }
-}
-
-/**
- * Generates the URL for the API call.
- */
-function gov_data_generate_url($single, $type, $params) {
-  $appended = "";
-  $prepended = "";
-  watchdog("single no key", "<pre>" . print_r($single, true) . "</pre>");
-  watchdog("key", "<pre>" . print_r($key, true) . "</pre>");
-  if ($params['op'] == 0) {
-    if ($type == "voter") {
-      $prepended = "vote_";
-    }
-    elseif ($type == "cosponsor") {
-      $appended = "ship";
-    }
-    $url = "https://www.govtrack.us/api/v2/" . $prepended . $type . $appended . "?" . $filter . "=" . $single->gid;
-    watchdog("url", "<pre>" . print_r($url, true) . "</pre>");
-  }
-  elseif ($params['op'] == 1) {
-    $url = "https://www.govtrack.us/api/v2/" . $type . "/" . $single->gid;
-    watchdog("url", "<pre>" . print_r($url, true) . "</pre>");
-  }
-  elseif ($params['op'] == 2) {
-    $url = "https://www.govtrack.us/api/v2/bill/" . $single->gid;
-    watchdog("url", "<pre>" . print_r($url, true) . "</pre>");
-  }
-  return $url;
 }
 
 /**
@@ -973,6 +864,104 @@ function gov_data_pull($type) {
       gov_data_picker('term', $type);
       break;
   }
+}
+
+/**
+ * Sets query data.
+ */
+function gov_data_picker($picker, $type) {
+  $params = array();
+  if ($picker == 'get_role_person') {
+    $params['type'] = "role";
+    $params['filter'] = NULL;
+  }
+  elseif ($picker == "person") {
+    $params['type'] = "person";
+    $params['filter'] = "person";
+  }
+  elseif ($picker == "vote") {
+    $bundle = "voter";
+    $params['filter'] = "vote";
+  }
+  elseif ($picker == "bill") {
+    $params['type'] = "bill";
+    $params['filter'] = "bill";
+  }
+  elseif ($picker == "committee") {
+    $params['type'] = "committee";
+    $params['filter'] = "committee";
+  }
+  elseif ($picker == 'term') {
+    $params['type'] = "bill";
+    $params['filter'] = "bill";
+  }
+  gov_data_database($type, $params);
+}
+
+/**
+ * Preprocess database call
+ */
+function gov_data_database($type, $params) {
+  switch ($type) {
+    case "person":
+      $params['op'] = 1;
+      break;
+    // figure out what is going on here
+    case "term":
+      $params['op'] = 2;
+      break;
+    case "voter":
+    case "cosponsor":
+    case "committee_member":
+      $params['op'] = 0;
+      break;
+  }
+  watchdog("cosponsor 2", print_r($type, true));
+  $multiples = db_select("gov_data_" . $params['type'], "t")
+      ->fields("t", array('gid'))
+      ->execute();
+  gov_data_multiple_process($multiples, $type, $params);
+}
+
+function gov_data_multiple_process($multiples, $type, $params) {
+  foreach ($multiples as $single) {
+    watchdog("single", "<pre>" . print_r($single, true) . "</pre>");
+    $url = gov_data_generate_url($single, $type, $params);
+    $results = drupal_http_request($url);
+    if (_gov_data_request_failure($results))
+      return FALSE;
+
+    gov_data_save($results, $type);
+  }
+}
+
+/**
+ * Generates the URL for the API call.
+ */
+function gov_data_generate_url($single, $type, $params) {
+  $appended = "";
+  $prepended = "";
+  watchdog("single no key", "<pre>" . print_r($single, true) . "</pre>");
+  watchdog("key", "<pre>" . print_r($key, true) . "</pre>");
+  if ($params['op'] == 0) {
+    if ($type == "voter") {
+      $prepended = "vote_";
+    }
+    elseif ($type == "cosponsor") {
+      $appended = "ship";
+    }
+    $url = "https://www.govtrack.us/api/v2/" . $prepended . $type . $appended . "?" . $filter . "=" . $single->gid;
+    watchdog("url", "<pre>" . print_r($url, true) . "</pre>");
+  }
+  elseif ($params['op'] == 1) {
+    $url = "https://www.govtrack.us/api/v2/" . $type . "/" . $single->gid;
+    watchdog("url", "<pre>" . print_r($url, true) . "</pre>");
+  }
+  elseif ($params['op'] == 2) {
+    $url = "https://www.govtrack.us/api/v2/bill/" . $single->gid;
+    watchdog("url", "<pre>" . print_r($url, true) . "</pre>");
+  }
+  return $url;
 }
 
 function gov_data_item_save($item) {

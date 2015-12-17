@@ -13,7 +13,7 @@ function gov_data_schema() {
     'fields' => array(
     'gid' => array(
     'description' => 'Government id',
-    'type' => 'serial',
+    'type' => 'int',
     'unsigned' => TRUE,
     'not null' => FALSE),
     'type' => array(
@@ -36,15 +36,10 @@ function gov_data_schema() {
     'fields' => array(
       'gid' => array(
         'description' => 'Government id',
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => FALSE),
-      'bid' => array(
-        'description' => 'Bill id',
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE),
-            'label' => array(
+        'not null' => FALSE),
+      'label' => array(
         'label' => t('Bill Label'),
         'type' => 'varchar',
         'length' => 75,
@@ -140,7 +135,7 @@ function gov_data_schema() {
         'type' => 'text',
       ),
     ),
-    'primary key' => array('gid', 'bid'),
+    'primary key' => array('gid'),
   );
 
   $schema['gov_data_committee'] = array(
@@ -148,14 +143,9 @@ function gov_data_schema() {
     'fields' => array(
       'gid' => array(
         'description' => 'Government id',
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => FALSE),
-      'cid' => array(
-        'description' => 'Committee id',
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE),
+        'not null' => FALSE),
       'label' => array(
         'label' => t('Committee Label'),
         'type' => 'varchar',
@@ -204,7 +194,7 @@ function gov_data_schema() {
         'type' => 'text',
       ),
     ),
-    'primary key' => array('gid', 'cid'),
+    'primary key' => array('gid'),
   );
 
   $schema['gov_data_cosponsor'] = array(
@@ -212,14 +202,9 @@ function gov_data_schema() {
     'fields' => array(
       'gid' => array(
         'description' => 'Government id',
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => FALSE),
-      'cid' => array(
-        'description' => 'Cosponsor id',
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE),
+        'not null' => FALSE),
       'label' => array(
         'label' => t('Cosponsor Label'),
         'type' => 'varchar',
@@ -252,7 +237,7 @@ function gov_data_schema() {
         'unsigned' => TRUE,
       ),
     ),
-    'primary key' => array('gid', 'cid'),
+    'primary key' => array('gid'),
   );
 
   $schema['gov_data_committee_member'] = array(
@@ -260,14 +245,9 @@ function gov_data_schema() {
     'fields' => array(
       'gid' => array(
         'description' => 'Government id',
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => FALSE),
-      'cid' => array(
-        'description' => 'Committee member id',
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE),
+        'not null' => FALSE),
       'label' => array(
         'label' => t('Commitee Member Label'),
         'type' => 'varchar',
@@ -289,7 +269,7 @@ function gov_data_schema() {
         'default' => '',
       ),
     ),
-    'primary key' => array('gid', 'cid'),
+    'primary key' => array('gid'),
   );
 
   $schema['gov_data_person'] = array(
@@ -297,14 +277,9 @@ function gov_data_schema() {
     'fields' => array(
       'gid' => array(
         'description' => 'Government id',
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => FALSE),
-      'pid' => array(
-        'description' => 'Person id',
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE),
+        'not null' => FALSE),
       'label' => array(
         'label' => t('Person Label'),
         'type' => 'varchar',
@@ -320,7 +295,7 @@ function gov_data_schema() {
       'gov_data_birthday' => array(
         'description' => t('Birthday'),
         'type' => 'int',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'default' => 0,
       ),
       'gov_data_firstname' => array(
@@ -378,7 +353,7 @@ function gov_data_schema() {
         'default' => '',
       ),
     ),
-    'primary key' => array('gid', 'pid'),
+    'primary key' => array('gid'),
   );
 
   $schema['gov_data_role'] = array(
@@ -386,14 +361,9 @@ function gov_data_schema() {
     'fields' => array(
       'gid' => array(
         'description' => 'Government id',
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => FALSE),
-      'rid' => array(
-        'description' => 'Role id',
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE),
+        'not null' => FALSE),
       'label' => array(
         'label' => t('Role Label'),
         'type' => 'varchar',
@@ -421,7 +391,7 @@ function gov_data_schema() {
       'gov_data_enddate' => array(
         'description' => t('End Date'),
         'type' => 'int',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'default' => 0,
       ),
       'gov_data_leadership_title' => array(
@@ -469,7 +439,7 @@ function gov_data_schema() {
       'gov_data_startdate' => array(
         'description' => t('Start Date'),
         'type' => 'int',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'default' => 0,
       ),
       'gov_data_role_title' => array(
@@ -491,7 +461,7 @@ function gov_data_schema() {
         'default' => '',
       ),
     ),
-    'primary key' => array('gid', 'rid'),
+    'primary key' => array('gid'),
   );
 
   $schema['gov_data_vote'] = array(
@@ -499,14 +469,9 @@ function gov_data_schema() {
     'fields' => array(
       'gid' => array(
         'description' => 'Government id',
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => FALSE),
-      'vid' => array(
-        'description' => 'Vote id',
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE),
+        'not null' => FALSE),
       'label' => array(
         'label' => t('Vote Label'),
         'type' => 'varchar',
@@ -620,7 +585,7 @@ function gov_data_schema() {
         'default' => '',
       ),
     ),
-    'primary key' => array('gid', 'vid'),
+    'primary key' => array('gid'),
   );
 
   $schema['gov_data_voter'] = array(
@@ -628,14 +593,9 @@ function gov_data_schema() {
     'fields' => array(
       'gid' => array(
         'description' => 'Government id',
-        'type' => 'serial',
-        'unsigned' => TRUE,
-        'not null' => FALSE),
-      'vid' => array(
-        'description' => 'Voter id',
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE),
+        'not null' => FALSE),
       'label' => array(
         'label' => t('Voter Label'),
         'type' => 'varchar',
@@ -679,7 +639,7 @@ function gov_data_schema() {
         'default' => 0,
       ),
     ),
-    'primary key' => array('gid', 'vid'),
+    'primary key' => array('gid'),
   );
 
 
