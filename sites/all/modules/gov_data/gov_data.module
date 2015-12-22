@@ -291,137 +291,6 @@ function gov_data_vote_page() {
 }
 
 /**
- * Implements hook_entity_info().
- */
-function gov_data_entity_info() {
-
-  $info = array();
-
-  $info['gov_data_bill'] = array(
-    'label' => t('Government Bill Data'),
-    'plural label' => t('Government Bill Data'),
-    'label plural' => t('Government Bill Data'),
-    'base table' => 'gov_data_bill',
-    'entity keys' => array(
-      'id' => 'gid',
-      'label' => 'label',
-    ),
-    'module' => 'gov_data',
-    'views controller class' => 'EntityDefaultViewsController',
-    'controller class' => 'EntityAPIController',
-    'access callback' => 'gov_data_access_callback',
-    'fieldable' => TRUE,
-  );
-  $info['gov_data_committee'] = array(
-    'label' => t('Government Committee Data'),
-    'plural label' => t('Government Committee Data'),
-    'label plural' => t('Government Committee Data'),
-    'base table' => 'gov_data_committee',
-    'entity keys' => array(
-      'id' => 'gid',
-      'label' => 'label',
-    ),
-    'module' => 'gov_data',
-    'views controller class' => 'EntityDefaultViewsController',
-    'controller class' => 'EntityAPIController',
-    'access callback' => 'gov_data_access_callback',
-    'fieldable' => TRUE,
-  );
-  $info['gov_data_cosponsor'] = array(
-    'label' => t('Government Cosponsor Data'),
-    'plural label' => t('Government Cosponsor Data'),
-    'label plural' => t('Government Cosponsor Data'),
-    'base table' => 'gov_data_cosponsor',
-    'entity keys' => array(
-      'id' => 'gid',
-      'label' => 'label',
-    ),
-    'module' => 'gov_data',
-    'views controller class' => 'EntityDefaultViewsController',
-    'controller class' => 'EntityAPIController',
-    'access callback' => 'gov_data_access_callback',
-    'fieldable' => TRUE,
-  );
-  $info['gov_data_committee_member'] = array(
-    'label' => t('Government Committee Member Data'),
-    'plural label' => t('Government Committee Member Data'),
-    'label plural' => t('Government Committee Member Data'),
-    'base table' => 'gov_data_committee_member',
-    'entity keys' => array(
-      'id' => 'gid',
-      'label' => 'label',
-    ),
-    'module' => 'gov_data',
-    'views controller class' => 'EntityDefaultViewsController',
-    'controller class' => 'EntityAPIController',
-    'access callback' => 'gov_data_access_callback',
-    'fieldable' => TRUE,
-  );
-  $info['gov_data_person'] = array(
-    'label' => t('Government Person Data'),
-    'plural label' => t('Government Person Data'),
-    'label plural' => t('Government Person Data'),
-    'base table' => 'gov_data_person',
-    'entity keys' => array(
-      'id' => 'gid',
-      'label' => 'label',
-    ),
-    'module' => 'gov_data',
-    'views controller class' => 'EntityDefaultViewsController',
-    'controller class' => 'EntityAPIController',
-    'access callback' => 'gov_data_access_callback',
-    'fieldable' => TRUE,
-  );
-  $info['gov_data_role'] = array(
-    'label' => t('Government Role Data'),
-    'plural label' => t('Government Role Data'),
-    'label plural' => t('Government Role Data'),
-    'base table' => 'gov_data_role',
-    'entity keys' => array(
-      'id' => 'gid',
-      'label' => 'label',
-    ),
-    'module' => 'gov_data',
-    'views controller class' => 'EntityDefaultViewsController',
-    'controller class' => 'EntityAPIController',
-    'access callback' => 'gov_data_access_callback',
-    'fieldable' => TRUE,
-  );
-  $info['gov_data_vote'] = array(
-    'label' => t('Government Vote Data'),
-    'plural label' => t('Government Vote Data'),
-    'label plural' => t('Government Vote Data'),
-    'base table' => 'gov_data_vote',
-    'entity keys' => array(
-      'id' => 'gid',
-      'label' => 'label',
-    ),
-    'module' => 'gov_data',
-    'views controller class' => 'EntityDefaultViewsController',
-    'controller class' => 'EntityAPIController',
-    'access callback' => 'gov_data_access_callback',
-    'fieldable' => TRUE,
-  );
-  $info['gov_data_voter'] = array(
-    'label' => t('Government Voter Data'),
-    'plural label' => t('Government Voter Data'),
-    'label plural' => t('Government Voter Data'),
-    'base table' => 'gov_data_voter',
-    'entity keys' => array(
-      'id' => 'gid',
-      'label' => 'label',
-    ),
-    'module' => 'gov_data',
-    'views controller class' => 'EntityDefaultViewsController',
-    'controller class' => 'EntityAPIController',
-    'access callback' => 'gov_data_access_callback',
-    'fieldable' => TRUE,
-  );
-
-  return $info;
-}
-
-/**
  * Implements hook_entity_property_info().
  */
 function gov_data_property_info() {
@@ -636,53 +505,55 @@ function gov_data_committee_member_mod(&$item) {
  */
 function gov_data_term_mod(&$item) {
   $vocab = taxonomy_vocabulary_machine_name_load('government');
-  if (!empty($item)) {
-    $terms = $item->terms;
-    if (!empty($terms)) {
-      foreach ($terms as $term) {
-        $result = db_query("SELECT t.vid, t.tid, t.name FROM {taxonomy_term_data} t WHERE t.name = :name AND t.vid = :vid", array(':name' => $term->name, ":vid" => $vocab->vid));
-        $result_obj = $result->fetchObject();
-        if (empty($result_obj)) {
+  watchdog("gov data term item", "<pre>" . print_r($item, true) . "</pre>");
+  $terms = $item->terms;
+  if (!empty($terms)) {
+    foreach ($terms as $term) {
+      $result = db_query("SELECT t.vid, t.tid, t.name FROM {taxonomy_term_data} t WHERE t.name = :name AND t.vid = :vid", array(':name' => $term->name, ":vid" => $vocab->vid))->fetchObject();
+      if (empty($result)) {
 
-          $term_save = (object) array(
-                "name" => $term->name,
-                "vocabulary_machine_name" => "government",
-                'vid' => $vocab->vid,
-          );
-          taxonomy_term_save($term_save);
+        $term_save = (object) array(
+              "name" => $term->name,
+              "vocabulary_machine_name" => "government",
+              'vid' => $vocab->vid,
+        );
+        taxonomy_term_save($term_save);
+      }
+      else {
+        $term_save = $result;
+      }
+
+      $duplicate = db_query("SELECT f.entity_id, f.gov_data_bill_terms_tid FROM {field_data_gov_data_bill_terms} AS f ORDER BY delta DESC LIMIT 1")->fetchObject();
+
+      if (!isset($duplicate->entity_id)) {
+        $duplicate->entity_id = '';
+      }
+      if (!isset($duplicate->gov_data_bill_terms_tid)) {
+        $duplicate->gov_data_bill_terms_tid = '';
+      }
+
+      $gid = db_query("SELECT gid FROM gov_data_bill WHERE gid = :gid", array("gid" => $item->gid))->fetchField();
+
+      watchdog("gid", "<pre>" . print_r($gid, true) . "</pre>");
+      watchdog("duplicate", "<pre>" . print_r($duplicate, true) . "</pre>");
+      watchdog("term save", "<pre>" . print_r($term_save, true) . "</pre>");
+
+      if ($gid != $duplicate->entity_id && $term_save->tid != $duplicate->gov_data_bill_terms_tid) {
+
+        $delta = db_query("SELECT f.delta FROM {field_data_gov_data_bill_terms} f WHERE f.entity_id = :entity_id ORDER BY delta DESC LIMIT 1", array(':entity_id' => $gid))->fetchField();
+        if (!isset($delta)) {
+          $delta = 0;
         }
-        else {
-          $term_save = $result_obj;
-        }
-
-        $duplicate = db_query("SELECT f.entity_id, f.gov_data_bill_terms_tid FROM {field_data_gov_data_bill_terms} AS f ORDER BY delta DESC LIMIT 1")->fetchObject();
-
-        if (!isset($duplicate->entity_id)) {
-          $duplicate->entity_id = '';
-        }
-        if (!isset($duplicate->gov_databill_terms_tid)) {
-          $duplicate->gov_data_bill_terms_tid = '';
-        }
-
-        $gid = db_query("SELECT gid FROM gov_data WHERE gid = :gid", array("gid" => $item->gid))->fetchObject();
-
-        if ($gid->gid != $duplicate->entity_id && $term_save->tid != $duplicate->gov_data_bill_terms_tid) {
-
-          $delta = db_query("SELECT f.delta FROM {field_data_gov_data_bill_terms} f WHERE f.entity_id = :entity_id ORDER BY delta DESC LIMIT 1", array(':entity_id' => $gid->gid))->fetchObject();
-          if (!isset($delta->delta)) {
-            $delta->delta = 0;
-          }
-          db_insert("field_data_gov_data_bill_terms")
-              ->fields(array(
-                "entity_type" => "gov_data_bill",
-                "deleted" => 0,
-                "entity_id" => $gid->gid,
-                "revision_id" => NULL,
-                "language" => "und",
-                "delta" => $delta->delta + 1,
-                "gov_data_bill_terms_tid" => $term_save->tid,
-              ))->execute();
-        }
+        db_insert("field_data_gov_data_bill_terms")
+            ->fields(array(
+              "entity_type" => "gov_data_bill",
+              "deleted" => 0,
+              "entity_id" => $gid,
+              "revision_id" => NULL,
+              "language" => "und",
+              "delta" => $delta + 1,
+              "gov_data_bill_terms_tid" => $term_save->tid,
+            ))->execute();
       }
     }
   }
@@ -693,6 +564,7 @@ function gov_data_term_mod(&$item) {
  */
 function gov_data_gov_data_mapping_alter(&$item) {
   watchdog("item before alter", "<pre>" . print_r($item, true) . "</pre>");
+  watchdog("item type", "<pre>" . print_r($item, true) . "</pre>");
   // Turns govdata item into an entity and saves it.
   $type = $item->type;
   $entity = entity_create("gov_data_" . $type, array('type' => $type));
@@ -742,19 +614,7 @@ function gov_data_gov_data_mapping_alter(&$item) {
       continue;
     }
     $gov_data_key = "gov_data_" . $key;
-    if (isset($fields[$gov_data_key])) {
-      if ($fields[$gov_data_key]['type'] == 'entityreference') {
-        $val_type = "target_id";
-      }
-      else {
-        $val_type = "value";
-      }
-    }
-    else {
-      $val_type = "value";
-    }
 
-    //$entity->{$gov_data_key}['und'][0][$val_type][0] = $value;
     $entity->{$gov_data_key} = $value;
     $entity->gid = $item->gid;
     $entity->label = $type;
@@ -776,9 +636,9 @@ function gov_data_filter_by_congress($type) {
   foreach ($congresses as $congress) {
     $url = "https://www.govtrack.us/api/v2/" . $type . "?congress=" . $congress . $append;
     $results = drupal_http_request($url);
-    if (_gov_data_request_failure($results))
-      return FALSE;
-    gov_data_save($results, $type);
+    if (!empty($results->data)) {
+      gov_data_save($results, $type);
+    }
   }
 }
 
@@ -906,7 +766,6 @@ function gov_data_database($type, $params) {
     case "person":
       $params['op'] = 1;
       break;
-    // figure out what is going on here
     case "term":
       $params['op'] = 2;
       break;
@@ -928,10 +787,9 @@ function gov_data_multiple_process($multiples, $type, $params) {
     watchdog("single", "<pre>" . print_r($single, true) . "</pre>");
     $url = gov_data_generate_url($single, $type, $params);
     $results = drupal_http_request($url);
-    if (_gov_data_request_failure($results))
-      return FALSE;
-
-    gov_data_save($results, $type);
+    if (!empty($results->data)) {
+      gov_data_save($results, $type);
+    }
   }
 }
 
@@ -942,7 +800,7 @@ function gov_data_generate_url($single, $type, $params) {
   $appended = "";
   $prepended = "";
   watchdog("single no key", "<pre>" . print_r($single, true) . "</pre>");
-  watchdog("key", "<pre>" . print_r($key, true) . "</pre>");
+  watchdog("params", "<pre>" . print_r($params, true) . "</pre>");
   if ($params['op'] == 0) {
     if ($type == "voter") {
       $prepended = "vote_";
@@ -996,6 +854,8 @@ function gov_data_save($results, $type) {
 
   if ($type == "term") {
     $item = json_decode($results->data);
+    $item->type = $type;
+    watchdog("term item", "<pre>" . print_r($item, true) . "</pre>");
     gov_data_item_queue_add($item);
   }
   else {
@@ -1029,16 +889,204 @@ function gov_data_item_queue_add($item) {
 }
 
 /**
- * Internal helper function to deal cleanly with various HTTP response codes.
+ * Implements hook_entity_info().
  */
-function _gov_data_request_failure($results) {
-  switch ($results->code) {
-    case '200': // Success!
-    case '304': // Not modified, nothing to do.
-      return FALSE;
-    default:
-      watchdog('gov_data', 'Failed to retrieve government data with error: %error', array('%error' => $results->error));
-      return TRUE;
-  }
-  return FALSE;
+function gov_data_entity_info() {
+
+  $info = array();
+
+  $info['gov_data_bill'] = array(
+    'label' => t('Government Bill Data'),
+    'plural label' => t('Government Bill Data'),
+    'label plural' => t('Government Bill Data'),
+    'base table' => 'gov_data_bill',
+    'entity keys' => array(
+      'id' => 'gid',
+      'label' => 'label',
+    ),
+    'module' => 'gov_data',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'gov_data_access_callback',
+    'fieldable' => TRUE,
+    'bundles' => array(
+      'gov_data_bill' => array(
+        'label' => t('Government Data Bill'),
+        'admin' => array(
+          'path' => 'admin/structure/gov-data/bill',
+          'real path' => 'admin/structure/gov-data/bill',
+        ),
+      ),
+    ),
+  );
+  $info['gov_data_committee'] = array(
+    'label' => t('Government Committee Data'),
+    'plural label' => t('Government Committee Data'),
+    'label plural' => t('Government Committee Data'),
+    'base table' => 'gov_data_committee',
+    'entity keys' => array(
+      'id' => 'gid',
+      'label' => 'label',
+    ),
+    'module' => 'gov_data',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'gov_data_access_callback',
+    'fieldable' => TRUE,
+    'bundles' => array(
+      'gov_data_committee' => array(
+        'label' => t('Government Data Committee'),
+        'admin' => array(
+          'path' => 'admin/structure/gov-data/committee',
+          'real path' => 'admin/structure/gov-data/committee',
+        ),
+      ),
+    ),
+  );
+  $info['gov_data_cosponsor'] = array(
+    'label' => t('Government Cosponsor Data'),
+    'plural label' => t('Government Cosponsor Data'),
+    'label plural' => t('Government Cosponsor Data'),
+    'base table' => 'gov_data_cosponsor',
+    'entity keys' => array(
+      'id' => 'gid',
+      'label' => 'label',
+    ),
+    'module' => 'gov_data',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'gov_data_access_callback',
+    'fieldable' => TRUE,
+    'bundles' => array(
+      'gov_data_cosponsor' => array(
+        'label' => t('Government Data Cosponsor'),
+        'admin' => array(
+          'path' => 'admin/structure/gov-data/cosponsor',
+          'real path' => 'admin/structure/gov-data/cosponsor',
+        ),
+      ),
+    ),
+  );
+  $info['gov_data_committee_member'] = array(
+    'label' => t('Government Committee Member Data'),
+    'plural label' => t('Government Committee Member Data'),
+    'label plural' => t('Government Committee Member Data'),
+    'base table' => 'gov_data_committee_member',
+    'entity keys' => array(
+      'id' => 'gid',
+      'label' => 'label',
+    ),
+    'module' => 'gov_data',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'gov_data_access_callback',
+    'fieldable' => TRUE,
+    'bundles' => array(
+      'gov_data_committee_member' => array(
+        'label' => t('Government Data Committee Member'),
+        'admin' => array(
+          'path' => 'admin/structure/gov-data/committee-member',
+          'real path' => 'admin/structure/gov-data/committee-member',
+        ),
+      ),
+    ),
+  );
+  $info['gov_data_person'] = array(
+    'label' => t('Government Person Data'),
+    'plural label' => t('Government Person Data'),
+    'label plural' => t('Government Person Data'),
+    'base table' => 'gov_data_person',
+    'entity keys' => array(
+      'id' => 'gid',
+      'label' => 'label',
+    ),
+    'module' => 'gov_data',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'gov_data_access_callback',
+    'fieldable' => TRUE,
+    'bundles' => array(
+      'gov_data_person' => array(
+        'label' => t('Government Data Person'),
+        'admin' => array(
+          'path' => 'admin/structure/gov-data/person',
+          'real path' => 'admin/structure/gov-data/person',
+        ),
+      ),
+    ),
+  );
+  $info['gov_data_role'] = array(
+    'label' => t('Government Role Data'),
+    'plural label' => t('Government Role Data'),
+    'label plural' => t('Government Role Data'),
+    'base table' => 'gov_data_role',
+    'entity keys' => array(
+      'id' => 'gid',
+      'label' => 'label',
+    ),
+    'module' => 'gov_data',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'gov_data_access_callback',
+    'fieldable' => TRUE,
+    'bundles' => array(
+      'gov_data_role' => array(
+        'label' => t('Government Data Role'),
+        'admin' => array(
+          'path' => 'admin/structure/gov-data/role',
+          'real path' => 'admin/structure/gov-data/role',
+        ),
+      ),
+    ),
+  );
+  $info['gov_data_vote'] = array(
+    'label' => t('Government Vote Data'),
+    'plural label' => t('Government Vote Data'),
+    'label plural' => t('Government Vote Data'),
+    'base table' => 'gov_data_vote',
+    'entity keys' => array(
+      'id' => 'gid',
+      'label' => 'label',
+    ),
+    'module' => 'gov_data',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'gov_data_access_callback',
+    'fieldable' => TRUE,
+    'bundles' => array(
+      'gov_data_vote' => array(
+        'label' => t('Government Data Vote'),
+        'admin' => array(
+          'path' => 'admin/structure/gov-data/vote',
+          'real path' => 'admin/structure/gov-data/vote',
+        ),
+      ),
+    ),
+  );
+  $info['gov_data_voter'] = array(
+    'label' => t('Government Voter Data'),
+    'plural label' => t('Government Voter Data'),
+    'label plural' => t('Government Voter Data'),
+    'base table' => 'gov_data_voter',
+    'entity keys' => array(
+      'id' => 'gid',
+      'label' => 'label',
+    ),
+    'module' => 'gov_data',
+    'views controller class' => 'EntityDefaultViewsController',
+    'controller class' => 'EntityAPIController',
+    'access callback' => 'gov_data_access_callback',
+    'fieldable' => TRUE,
+    'bundles' => array(
+      'gov_data_voter' => array(
+        'label' => t('Government Data Voter'),
+        'admin' => array(
+          'path' => 'admin/structure/gov-data/voter',
+          'real path' => 'admin/structure/gov-data/voter',
+        ),
+      ),
+    ),
+  );
+
+  return $info;
 }

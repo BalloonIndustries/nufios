@@ -662,7 +662,12 @@ function gov_data_install() {
     'field_name' => 'gov_data_bill_terms',
     'type' => 'taxonomy_term_reference',
     'settings' => array(
-      'target_type' => 'gov_data',
+      'allowed_values' => array(
+        array(
+          'vocabulary' => 'government',
+          'parent' => 0
+        ),
+      ),
     ),
     'cardinality' => 1,
     'translatable' => FALSE,
@@ -676,8 +681,8 @@ function gov_data_install() {
   $instances = array();
   $instances[] = array(
     'field_name' => 'gov_data_bill_terms',
-    'entity_type' => 'gov_data',
-    'bundle' => 'bill',
+    'entity_type' => 'gov_data_bill',
+    'bundle' => 'gov_data_bill',
     'label' => t('Bill Terms'),
     'required' => FALSE,
     'widget' => array(
