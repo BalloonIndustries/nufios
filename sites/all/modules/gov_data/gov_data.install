@@ -182,7 +182,7 @@ function gov_data_schema() {
       'gov_data_committee_name' => array(
         'description' => t('Name'),
         'type' => 'varchar',
-        'length' => 75,
+        'length' => 255,
         'default' => '',
       ),
       'gov_data_obsolete' => array(

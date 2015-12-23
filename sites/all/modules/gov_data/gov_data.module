@@ -836,11 +836,7 @@ function gov_data_item_save($item) {
 
   watchdog("result", "<pre>" . print_r($result, true) . "</pre>");
 
-  if (!empty($result) || $item->type == "term") {
-    
-  }
-  else {
-
+  if(empty($result) && $item->type != "term") {
     entity_save('gov_data_' . $item->type, $item);
   }
 }
