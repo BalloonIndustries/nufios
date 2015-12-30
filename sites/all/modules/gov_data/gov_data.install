@@ -559,7 +559,7 @@ function gov_data_schema() {
       'gov_data_created' => array(
         'description' => t('Created Date'),
         'type' => 'int',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'default' => 0,
       ),
       'gov_data_missing_data' => array(
@@ -611,7 +611,7 @@ function gov_data_schema() {
       'gov_data_created' => array(
         'description' => t('Created Date'),
         'type' => 'int',
-        'unsigned' => TRUE,
+        'unsigned' => FALSE,
         'default' => 0,
       ),
       'gov_data_voting_result' => array(
