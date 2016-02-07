@@ -48,12 +48,12 @@ function sentiment_analyzer_data_collection() {
     '#description' => t('Process from the date specified, collecting all the data.'),
     '#submit' => array('system_settings_form_submit', 'sentiment_analyzer_historical_data'),
   );
-  $form['sentiment_analyzer_delete_button'] = array(
+  /*$form['sentiment_analyzer_delete_button'] = array(
     '#type' => 'submit',
     '#value' => t('Delete Old Values'),
     '#description' => t('Delete all values - useful for reimporting data'),
     '#submit' => array('sentiment_analyzer_delete'),
-  );
+  );*/
   $form['#theme'] = 'system_settings_form';
   return $form;
 }
