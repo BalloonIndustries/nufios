@@ -489,7 +489,6 @@ h2 {
 #socmediatitle {
     font-weight: bold;
     color: #FFF;
-    font-size: 1.5em;
 }
 
 /* Views rows changes for other pages */
@@ -544,7 +543,7 @@ h2 {
     margin-left: 12%;
 }
 .social-media {
-    width: 20%;
+    width: 15%;
 }
 .view-related-stories .field-content {
     text-align: center;
