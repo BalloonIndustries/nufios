@@ -446,11 +446,11 @@ function nufios_chart_alter(&$chart, $chart_id) {
     $chart['panel_pane_1__last_trade_price_only_2']['#data'] = array_reverse($chart['panel_pane_1__last_trade_price_only_2']['#data']);
     $chart['counter'] = 1;
   }
-else if ($chart_id == "stockinfo_historical__panel_pane_1" && $chart['counter'] != 1) {
-   $chart['xaxis']['#labels'] = array_reverse($chart['xaxis']['#labels']);
+  else if ($chart_id == "stockinfo_historical__panel_pane_1" && $chart['counter'] != 1) {
+    $chart['xaxis']['#labels'] = array_reverse($chart['xaxis']['#labels']);
     $chart['panel_pane_1__stockinfo_historical_close']['#data'] = array_reverse($chart['panel_pane_1__stockinfo_historical_close']['#data']);
     $chart['counter'] = 1;
-}
+  }
 }
 
 /**
@@ -464,7 +464,23 @@ function nufios_entity_info_alter(&$entity_info) {
  * Defines URI for stockinfo
  */
 function nufios_uri($stock) {
-    return array(
+  return array(
     'path' => 'stock/' . $stock->symbol,
   );
+}
+
+/**
+ * Implementation of hook_views_query_alter
+ */
+function nufios_views_query_alter(&$view, &$query) {
+  if ($view->name == 'related_stories') {
+    $query->where[1]['conditions'][] = array(
+      "field" => "node.nid",
+      "value" => array
+        (
+        $view->args[0],
+      ),
+      "operator" => "!="
+    );
+  }
 }
