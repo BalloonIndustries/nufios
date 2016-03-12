@@ -88,10 +88,21 @@ body {
 }
 
 
-@media(min-width:1024px) {
+@media(min-width:1050px) {
 .two-sidebars #content .section {
-  padding-left: 200px; /* The width + left margin of .region-sidebar-first. */
   padding-right: 200px; /* The width + right margin of .region-sidebar-second. */
+}
+}
+
+@media(min-width:1500px) {
+.two-sidebars #content .section {
+padding-left: 200px; /* The width + left margin of .region-sidebar-first. */
+}
+}
+
+@media(max-width: 1500px) {
+.region-sidebar-first {
+display: none;
 }
 }
 

@@ -34,15 +34,26 @@ body {
     }
 }
 
-
-
 #header {
     background-color: #45719E;
     margin: 0 auto;
-    padding: 0 2em 2em 2em;
     position: relative;
     z-index: 10;
     height: 100px;
+padding-top: 0px;
+padding-right: 2em;
+padding-left: 2em;
+}
+
+@media(max-width:1050px) {
+#header {
+padding-bottom: 12px;
+}
+}
+@media(min-width: 1050px) {
+#header {
+padding-bottom: 28px;
+}
 }
 
 #footer {
@@ -119,15 +130,26 @@ div#site-name /* The name of the website */ {
 /*
  * Main (container for everything else)
  */
-@media(min-width:1200px) {
+@media(min-width:1515px) {
     #main-wrapper {
         width: 80%; 
     }
 }
+@media(max-width:1050) {
+#main-wrapper{
+width: 90%;
+}
+}
 
-@media(max-width:1200px) {
+@media(max-width:1515px) {
+#main-wrapper {
+width: 90%;
+}
+}
+
+@media(max-width:1300px) {
     #main-wrapper {
-        width: 90%; 
+        width: 95%; 
     }
 }
 
@@ -266,7 +288,7 @@ ul.links li {
 .region-sidebar-first .section {
 }
 
-@media(max-width:1024px) {
+@media(max-width:1050px) {
     .region-sidebar-first, .region-sidebar-second {
         display: none;
     }
@@ -471,8 +493,7 @@ h2 {
 /*Social Media*/
 #socialmedia {
     float: right;
-    margin-right: 150px;
-    margin-top: -105px;
+    margin-top: -110px;
 }
 
 .sharethis {
@@ -552,7 +573,7 @@ h2 {
     padding-right: 5%;
     width: 15%;
 }
-@media (max-width: 736px) {
+@media (max-width: 1050px) {
     #header img {
        width: 85%; 
     }
